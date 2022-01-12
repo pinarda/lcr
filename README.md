@@ -1,0 +1,2 @@
+# lcr
+Lossy Compression Research
