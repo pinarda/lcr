@@ -1,0 +1,77 @@
+******************
+Jan 25 Meeting
+******************
+
+The files plots/daily_comp_ratios.png and plots/monthly_comp_ratios.png give the optimal compression ratio for
+sz1.4, zfp, and bg. Notice that the sz ratio is always very close to one, which is partially due to the wide spread
+of compression levels within each variable for which we choose the least compressed as the optimal level for the
+entire variable. Looking at the compression ratios, sz would need an optimal compression level of about 0.01 to be
+competitive with the other options which it rarely achieves, so even if there was less spread it would still
+underperform the other variables.
+
+The histogram csv files in manual_data/ are easist to look at if opened in excel or saved as a pandas dataframe and
+printed to the console as done in scripts/csv_plotter.py. They show the spread of optimal compression levels for each
+time slice for each different compression algorithm. There is a large spread of optimal values for sz, a medium spread
+for zfp, and a very small spread for bg, whose variables usually fall in only one or two compression bins.
+
+Can we get the filesizes for using zfp not as preconditioner to compare? Are there ways we can improve sz to be
+competitive with the other algorithms?
+
+
+NOTES:
+
+
+
+Todos:
+Alex:
+interested in looking at the DSSIM that is optimal for each algorithm - do the algorithms that perform
+better have DSSIMS right near 0.9995 while the ones that perform worse (in terms of ratio) have higher
+DSSIMS?
+
+redo plots/tables for sz when ready
+Fix up the dssim gathering script to speedup gathering:
+    run dssim on all 730 time steps for the daily variables
+    finish computing dssim for the 60 3D monthly variables
+
+
+******************
+Jan 11 Meeting
+******************
+
+Bitgrooming is a contender for compression - Charlie Zender
+
+We were applying zip as 1d data - this is not ideal in terms of compression ratio.
+Would be better to compress as 2d or 3d data.
+Using zfp as a preconditioner - so the things that happen to the trailing bits can be random, so it is less good as a preconditioned than just cutting them all to zero
+
+Need to be able to use netcdf support for zfp if we don’t use it as a preconditioner
+
+Need to have a version of netcdf that uses hdf5 - version on Cheyenne does not have it currently
+
+No hdf5 filter for sz - have to use as preconditioner
+
+Bit grooming, try 2-7 for bit grooming on each variable.
+
+
+We can get better compression using the absolute error mode potentially, but it makes less sense to Allison because absolute error is not as general across variables.
+
+
+Alex:
+
+Describe the data
+
+Look at the LENS2 data, how it is all organized,
+
+Look at the web page. Confused until studied the figure that they made at the bottom
+
+Spend time reading the CESM-LENS2/COSP documentation
+
+Original data can be found at the beginning of the documentation, see https://www.cesm.ucar.edu/projects/community-projects/LENS2/data-sets.html
+
+
+
+
+Start going in to NCAR February on Tuesday afternoons
+
+
+Allison sent error analysis zfp paper to email - will discuss later in semester after working through some of the textbook

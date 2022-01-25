@@ -1,7 +1,3 @@
-Todo:
+Alex todo:
 
-split dssims into monthly and daily files
-make sure optimal_compression script correctly deals with different compression types "bg" and "zfp"
-run dssim on all 730 time steps for the daily bg variables
-finish computing dssim for the 60 3D monthly bg variables
-plot results from table
+technically should list orig as optimal level if none pass the dssim theshold, currently just uses lowest compression level which is equivalent to lossless in most cases
