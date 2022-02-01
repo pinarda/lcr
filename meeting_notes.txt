@@ -1,4 +1,10 @@
 ******************
+Feb 1 Meeting
+******************
+
+
+
+******************
 Jan 25 Meeting
 ******************
 
@@ -20,15 +26,33 @@ competitive with the other algorithms?
 
 NOTES:
 
+Haiying and Allison can compress netcdf files with zfp, how can you read that data without decompressing it first?
+Got it working with netCDF for python, and working on a new kernel in jupyterhub (needed a newer version of netCDF for py)
+can use netcdf but not ldcpy on new kernel.
 
+Should be aware of how we are compressing the data (our data is compressed "all at once",
+but when we are performing prediction we will have to make predicitons for a single
+time slice. In general - make sure we are testing the full range of possibilities (want bounds that
+are not used to show we have the right levels dialed in)
 
 Todos:
 Alex:
+
+Read 2.1, 2.2 of compression book. Have ideas about how Hayden can contribute.
+
+DONE --- Find the time slice that corresponds to each of the optimal levels (for every variable in the table)
+
+Think about writing a paper/thesis - note that we are not interested in the sz tolerances 0.1 to 0.005
+because we tested them and found that they were not optimal for any of the compression levels.
+
+DONE --- add texture to the plots (to make it easier for colorblind people (stripes, dots, etc))
+
 interested in looking at the DSSIM that is optimal for each algorithm - do the algorithms that perform
 better have DSSIMS right near 0.9995 while the ones that perform worse (in terms of ratio) have higher
 DSSIMS?
 
 redo plots/tables for sz when ready
+Also redo for everything when Allison runs them using a chunk size of 1 since it will slightly change the compression
 Fix up the dssim gathering script to speedup gathering:
     run dssim on all 730 time steps for the daily variables
     finish computing dssim for the 60 3D monthly variables
