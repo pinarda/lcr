@@ -1,3 +1,9 @@
 Alex todo:
 
 technically should list orig as optimal level if none pass the dssim theshold, currently just uses lowest compression level which is equivalent to lossless in most cases
+
+read NCAR presentations for Peter, Frank, AI/ML talks
+Finish investigations notebook
+grade for 438/538
+do signals homework
+resume/apply to summer things

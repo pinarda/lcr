@@ -2,6 +2,25 @@
 Feb 1 Meeting
 ******************
 
+Charlie's talk, and David's. There will be slides posted later so I can review.
+
+Peter (zfp) and Frank Capello's (sz) Talk (first two talks), AI and ML talk at the end
+
+Mondays 3-5 xdev meeting "open office hours"
+
+Do problems 3, 4, 6, from the compression textbook
+
+Answers to text snippets: No, Yes, Yes, No, Yes
+
+DONE - Add a small amount to the entire dataset
+DONE - Try rounding the data (e.g. converting it to 16 bit)
+DONE - Add increasing noise
+DONE - Change a single value by a lot (middle of distribution, extremes of distribution)
+DONE - Change really small values to zero
+DONE - change 5% of the points to fail the spatial relative error (barely)
+
+TS, CLOUD/PRECT
+
 
 
 ******************
