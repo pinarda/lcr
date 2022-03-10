@@ -23,9 +23,32 @@ def plot_optimal_level_comparison():
         plt.show()
         # plt.savefig(f"../plots/{freq}_comp_ratios.png")
 
+def plot_optimal_ratios():
+    data_dir = "../data"
+    for freq in ["daily", "monthly"]:
+        df = pd.read_csv(f"{data_dir}/{freq}_optimal_over_var.csv")
+        ax = plt.figure(figsize=(10, 6)).add_subplot(111)
+        df.plot("variable", ["best_ratio"], title=f"Best Lossless/Lossy Compression Ratio ({freq})", ylabel="Ratio", ax=ax, kind='bar', legend=False, ylim=[0,2.2])
+
+        rects = ax.patches
+
+        # Make some labels
+        labels = df["best_alg"]
+
+        for rect, label in zip(rects, labels):
+            height = rect.get_height()
+            ax.text(
+                rect.get_x() + rect.get_width() / 2, height, label, ha="center", va="bottom"
+            )
+
+        ax.legend(loc='upper right', bbox_to_anchor=(1.2, 0.9), ncol=1)
+        plt.show()
+        # plt.savefig(f"../plots/{freq}_comp_ratios.png")
+
 
 if __name__ == "__main__":
-    plot_optimal_level_comparison()
+    #plot_optimal_level_comparison()
+    plot_optimal_ratios()
 
     #data_dir = "../manual_data"
     #for comp in ["zfp", "sz", "bg"]:

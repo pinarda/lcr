@@ -23,7 +23,9 @@ def search_csv(csvfilename: str, variable: str, timestep: int, compression:str):
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            m = re.search('(?P<compression>.*)_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            if len(row) == 0:
+                continue
+            m = re.search('(?P<compression>.*)_(?P<level>.+)_(?P<varname>.*)', row[0])
             time = row[1]
             if(m is not None):
                 if (m.group("varname") == variable and str(timestep) == time and m.group("compression") == compression):
@@ -37,6 +39,8 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
     column with the format .*_LEVEL_.* and the DSSIM/comparison values are in the third column.
     """
     rows = search_csv(csvfilename, variable, timestep, compression)
+    if len(rows) == 0:
+        return 0
     levels = []
 
     # ensure unique variable/level/timeslice
@@ -48,16 +52,16 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
 
     # ensure list of levels is in descending order (i.e. least compressed first)
 
-    if compression != "sz1.4":
+    if compression not in ["sz1.4", "sz1ROn"]:
         for row in rows:
-            m = re.search('.*_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
             levels.append(int(m.group("level")))
             sort_index = np.argsort(levels)
         rows = [rows[i] for i in sort_index[::-1]]
         levels = [levels[i] for i in sort_index[::-1]]
-    if compression == "sz1.4":
+    if compression in ["sz1.4", "sz1ROn"]:
         for row in rows:
-            m = re.search('.*_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
             levels.append(m.group("level"))
         rows = rows[::-1]
         levels = levels[::-1]
@@ -89,7 +93,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq):
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            m = re.search('.*_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
             time = row[1]
             if(m is not None):
                 if (m.group("varname") == variable):
@@ -112,7 +116,9 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq):
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            m = re.search('.*_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            if len(row) == 0:
+                continue
+            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
             time = row[1]
             if(m is not None):
                 if (m.group("varname") == variable):
@@ -133,7 +139,9 @@ def varlist(csvfilename):
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            m = re.search('.*_(?P<level>\d+)_(?P<varname>.*)', row[0])
+            if len(row) == 0:
+                continue
+            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
             if m is not None:
                 vars.append(m.group("varname"))
     vars = np.unique(vars)
@@ -143,11 +151,52 @@ def filesize(csvfilename, variable, level, compression):
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
+            if len(row) == 0:
+                return -1
             if level == "orig" or level == -1:
                 if row[0] == variable and row[1] == f"orig":
                     return row[2]
             if row[0] == variable and row[1] == f"{compression}_{level}":
                 return row[2]
+
+def create_daily_monthly_freq_hist():
+    for freq in ['daily', 'monthly']:
+        v = varlist(f"../data/{freq}_dssims.csv")
+        for varname in v:
+            level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
+            bg_levels=[2, 3, 4, 5, 6, 7]
+            hist = {}
+            for l in bg_levels:
+                hist[l] = level.count(l)
+            location = f"../data/{freq}_bg_hist.csv"
+            file_exists = os.path.isfile(location)
+            with open(location, 'a', newline='') as csvfile:
+                fieldnames = [
+                    'variable',
+                    'frequency',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                if not file_exists:
+                    writer.writeheader()
+                writer.writerow(
+                    {
+                        'variable': varname,
+                        'frequency': freq,
+                        '2': hist[2],
+                        '3': hist[3],
+                        '4': hist[4],
+                        '5': hist[5],
+                        '6': hist[6],
+                        '7': hist[7]
+                    }
+                )
 
 # if __name__ == "__main__":
 #     # daily_sizecsv = "../data/daily_filesizes.csv"
@@ -222,188 +271,151 @@ def filesize(csvfilename, variable, level, compression):
 #                     }
 #                 )
 
-def create_daily_monthly_freq_hist():
-    for freq in ['daily', 'monthly']:
-        v = varlist(f"../data/{freq}_dssims.csv")
-        for varname in v:
-            level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
-            bg_levels=[2, 3, 4, 5, 6, 7]
-            hist = {}
-            for l in bg_levels:
-                hist[l] = level.count(l)
-            location = f"../data/{freq}_bg_hist.csv"
-            file_exists = os.path.isfile(location)
-            with open(location, 'a', newline='') as csvfile:
-                fieldnames = [
-                    'variable',
-                    'frequency',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-                if not file_exists:
-                    writer.writeheader()
-                writer.writerow(
-                    {
-                        'variable': varname,
-                        'frequency': freq,
-                        '2': hist[2],
-                        '3': hist[3],
-                        '4': hist[4],
-                        '5': hist[5],
-                        '6': hist[6],
-                        '7': hist[7]
-                    }
-                )
 
-if __name__ == "__main__":
-
-    for freq in ['daily', 'monthly']:
-        v = varlist(f"../data/{freq}_dssims.csv")
-        for varname in v:
-            level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
-            location = f"../data/{freq}_sz14_optimal_slices.csv"
-            file_exists = os.path.isfile(location)
-            with open(location, 'a', newline='') as csvfile:
-                fieldnames = [
-                    'variable',
-                    'frequency',
-                    '0',
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                    '12',
-                    '13',
-                    '14',
-                    '15',
-                    '16',
-                    '17',
-                    '18',
-                    '19',
-                    '20',
-                    '21',
-                    '22',
-                    '23',
-                    '24',
-                    '25',
-                    '26',
-                    '27',
-                    '28',
-                    '29',
-                    '30',
-                    '31',
-                    '32',
-                    '33',
-                    '34',
-                    '35',
-                    '36',
-                    '37',
-                    '38',
-                    '39',
-                    '40',
-                    '41',
-                    '42',
-                    '43',
-                    '44',
-                    '45',
-                    '46',
-                    '47',
-                    '48',
-                    '49',
-                    '50',
-                    '51',
-                    '52',
-                    '53',
-                    '54',
-                    '55',
-                    '56',
-                    '57',
-                    '58',
-                    '59'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-                if not file_exists:
-                    writer.writeheader()
-                writer.writerow(
-                    {
-                        'variable': varname,
-                        'frequency': freq,
-                        '0': level[0],
-                        '1': level[1],
-                        '2': level[2],
-                        '3': level[3],
-                        '4': level[4],
-                        '5': level[5],
-                        '6': level[6],
-                        '7': level[7],
-                        '8': level[8],
-                        '9': level[9],
-                        '10': level[10],
-                        '11': level[11],
-                        '12': level[12],
-                        '13': level[13],
-                        '14': level[14],
-                        '15': level[15],
-                        '16': level[16],
-                        '17': level[17],
-                        '18': level[18],
-                        '19': level[19],
-                        '20': level[20],
-                        '21': level[21],
-                        '22': level[22],
-                        '23': level[23],
-                        '24': level[24],
-                        '25': level[25],
-                        '26': level[26],
-                        '27': level[27],
-                        '28': level[28],
-                        '29': level[29],
-                        '30': level[30],
-                        '31': level[31],
-                        '32': level[32],
-                        '33': level[33],
-                        '34': level[34],
-                        '35': level[35],
-                        '36': level[36],
-                        '37': level[37],
-                        '38': level[38],
-                        '39': level[39],
-                        '40': level[40],
-                        '41': level[41],
-                        '42': level[42],
-                        '43': level[43],
-                        '44': level[44],
-                        '45': level[45],
-                        '46': level[46],
-                        '47': level[47],
-                        '48': level[48],
-                        '49': level[49],
-                        '50': level[50],
-                        '51': level[51],
-                        '52': level[52],
-                        '53': level[53],
-                        '54': level[54],
-                        '55': level[55],
-                        '56': level[56],
-                        '57': level[57],
-                        '58': level[58],
-                        '59': level[59],
-                    }
-                )
+# if __name__ == "__main__":
+#
+#     for freq in ['daily', 'monthly']:
+#         v = varlist(f"../data/{freq}_dssims.csv")
+#         for varname in v:
+#             level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
+#             location = f"../data/{freq}_sz14_optimal_slices.csv"
+#             file_exists = os.path.isfile(location)
+#             with open(location, 'a', newline='') as csvfile:
+#                 fieldnames = [
+#                     'variable',
+#                     'frequency',
+#                     '0',
+#                     '1',
+#                     '2',
+#                     '3',
+#                     '4',
+#                     '5',
+#                     '6',
+#                     '7',
+#                     '8',
+#                     '9',
+#                     '10',
+#                     '11',
+#                     '12',
+#                     '13',
+#                     '14',
+#                     '15',
+#                     '16',
+#                     '17',
+#                     '18',
+#                     '19',
+#                     '20',
+#                     '21',
+#                     '22',
+#                     '23',
+#                     '24',
+#                     '25',
+#                     '26',
+#                     '27',
+#                     '28',
+#                     '29',
+#                     '30',
+#                     '31',
+#                     '32',
+#                     '33',
+#                     '34',
+#                     '35',
+#                     '36',
+#                     '37',
+#                     '38',
+#                     '39',
+#                     '40',
+#                     '41',
+#                     '42',
+#                     '43',
+#                     '44',
+#                     '45',
+#                     '46',
+#                     '47',
+#                     '48',
+#                     '49',
+#                     '50',
+#                     '51',
+#                     '52',
+#                     '53',
+#                     '54',
+#                     '55',
+#                     '56',
+#                     '57',
+#                     '58',
+#                     '59'
+#                 ]
+#                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#
+#                 if not file_exists:
+#                     writer.writeheader()
+#                 writer.writerow(
+#                     {
+#                         'variable': varname,
+#                         'frequency': freq,
+#                         '0': level[0],
+#                         '1': level[1],
+#                         '2': level[2],
+#                         '3': level[3],
+#                         '4': level[4],
+#                         '5': level[5],
+#                         '6': level[6],
+#                         '7': level[7],
+#                         '8': level[8],
+#                         '9': level[9],
+#                         '10': level[10],
+#                         '11': level[11],
+#                         '12': level[12],
+#                         '13': level[13],
+#                         '14': level[14],
+#                         '15': level[15],
+#                         '16': level[16],
+#                         '17': level[17],
+#                         '18': level[18],
+#                         '19': level[19],
+#                         '20': level[20],
+#                         '21': level[21],
+#                         '22': level[22],
+#                         '23': level[23],
+#                         '24': level[24],
+#                         '25': level[25],
+#                         '26': level[26],
+#                         '27': level[27],
+#                         '28': level[28],
+#                         '29': level[29],
+#                         '30': level[30],
+#                         '31': level[31],
+#                         '32': level[32],
+#                         '33': level[33],
+#                         '34': level[34],
+#                         '35': level[35],
+#                         '36': level[36],
+#                         '37': level[37],
+#                         '38': level[38],
+#                         '39': level[39],
+#                         '40': level[40],
+#                         '41': level[41],
+#                         '42': level[42],
+#                         '43': level[43],
+#                         '44': level[44],
+#                         '45': level[45],
+#                         '46': level[46],
+#                         '47': level[47],
+#                         '48': level[48],
+#                         '49': level[49],
+#                         '50': level[50],
+#                         '51': level[51],
+#                         '52': level[52],
+#                         '53': level[53],
+#                         '54': level[54],
+#                         '55': level[55],
+#                         '56': level[56],
+#                         '57': level[57],
+#                         '58': level[58],
+#                         '59': level[59],
+#                     }
+#                 )
 
     # for freq in ['daily', 'monthly']:
     #     v = varlist(f"../data/{freq}_dssims.csv")
@@ -448,7 +460,7 @@ if __name__ == "__main__":
     #                     '24': hist[24]
     #                 }
     #             )
-
+    #
     # for freq in ['daily', 'monthly']:
     #     v = varlist(f"../data/{freq}_dssims.csv")
     #     for varname in v:
@@ -496,3 +508,95 @@ if __name__ == "__main__":
     #                     '000001': hist["000001"]
     #                 }
     #             )
+
+
+if __name__ == "__main__":
+
+    for freq in ['daily', 'monthly']:
+        v = varlist(f"../data/{freq}_dssims.csv")
+
+        location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
+        file_exists = os.path.isfile(location)
+        with open(location, 'a', newline='') as csvfile:
+            fieldnames = [
+                'variable',
+                'frequency',
+                'timestep',
+                'bg_level',
+                'bg_size',
+                'bg_ratio',
+                'zfp_level',
+                'zfp_size',
+                'zfp_ratio',
+                'sz_level',
+                'sz_size',
+                'sz_ratio',
+                'sz1413_level',
+                'sz1413_size',
+                'sz1413_ratio'
+            ]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            if not file_exists:
+                writer.writeheader()
+
+        for varname in v:
+            levelsz = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
+            levelsz1413 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1ROn", freq)
+            levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
+            levelzfp = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp_p", freq)
+            location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
+            file_exists = os.path.isfile(location)
+            with open(location, 'a', newline='') as csvfile:
+                fieldnames = [
+                    'variable',
+                    'frequency',
+                    'timestep',
+                    'bg_level',
+                    'bg_size',
+                    'bg_ratio',
+                    'zfp_level',
+                    'zfp_size',
+                    'zfp_ratio',
+                    'sz_level',
+                    'sz_size',
+                    'sz_ratio',
+                    'sz1413_level',
+                    'sz1413_size',
+                    'sz1413_ratio'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                sizecsv = f"../data/{freq}_filesizes.csv"
+
+                for i in range(0, 60):
+                    fsz = filesize(sizecsv, varname, levelsz[i], "sz1.4")
+                    fsz1413 = filesize(sizecsv, varname, levelsz1413[i], "sz1ROn")
+                    fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
+                    fbg = filesize(sizecsv, varname, levelbg[i], "bg")
+                    if fsz is not None:
+                        sizesz = float(fsz)
+                        sizesz1413 = float(fsz1413)
+                        sizezfp = float(fzfp)
+                        sizebg = float(fbg)
+                        ratiosz = float(filesize(sizecsv, varname, "orig", "sz1.4")) / float(fsz)
+                        ratiosz1413 = float(filesize(sizecsv, varname, "orig", "sz1ROn")) / float(fsz1413)
+                        ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
+                        ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
+                    writer.writerow(
+                        {
+                            'variable': varname,
+                            'frequency': freq,
+                            'timestep': i,
+                            'bg_level': levelbg[i],
+                            'bg_size': sizebg,
+                            'bg_ratio': ratiobg,
+                            'zfp_level': levelzfp[i],
+                            'zfp_size': sizezfp,
+                            'zfp_ratio': ratiozfp,
+                            'sz_level': levelsz[i],
+                            'sz_size': sizesz,
+                            'sz_ratio': ratiosz,
+                            'sz1413_level': levelsz1413[i],
+                            'sz1413_size': sizesz1413,
+                            'sz1413_ratio': ratiosz1413,
+                        }
+                    )

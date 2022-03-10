@@ -61,7 +61,7 @@ if __name__ == "__main__":
         probs = {}
         for j in range(0, len(seqs)):
             probs[seqs[j]] = sequence.count(seqs[j]) / len(sequence)
-        print(entropy(probs, i))
+        print(f"{i}th order entropy: {entropy(probs, i)}")
 
     # part b
     # Based just on the entropies, we can infer that there is strong correlation

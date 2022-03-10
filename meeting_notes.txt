@@ -1,4 +1,52 @@
 ******************
+March 1 Meeting
+******************
+
+The reason that  sz has a bad compression ratio is that sz does not work well as a preconditioner.
+Need to be able to use sz through netCDF the way we are currently using zfp.
+
+Alex:
+
+Look through Julian Kunkle's code to add to notebook
+Add the new sz and zfp data to the comparisons
+want a histogram that shows the distribtuion of the optimal level for each time slice, grouped by algorithm (do one plot for each variables)
+and add a label to the top of the bars)
+
+DONE - Take out the word "alternative" from the new spatial relative error measure, add lines for the 0.05 cutoff and 0.01 cutoff
+
+https://hrsather.medium.com/
+
+
+******************
+Feb 8 Meeting
+******************
+Right now we divide the difference by the original - want to see if value is 5 or 10% of the original
+conservative threshold for multiple points - but have a maximum of 5% difference for a single point
+
+call it alternative spatial error (part 2!)
+
+Allison:
+
+sz data - chunk size 1 will change file size so need to compare across algorithms.
+
+Alex:
+
+read presentations from wednesday
+think of practical example of kth order model DONE
+read klower paper (allison sent in email) DONE
+
+get entropy of temperature, precipitation data for Hayden's blog DONE
+
+read through 3.2.2 in the book DONE
+
+ldcpy problem allison sent in email (colorbar)
+
+Finish the notebook - last two sections and move the writing sections.
+if we want to use speck - make sure it is easy to include another algorithm.
+Have all of the ideal algorithms and ratios for all the sample data that we have.
+
+
+******************
 Feb 1 Meeting
 ******************
 
