@@ -1,0 +1,15 @@
+Detecting Compression Artifacts in Massive Spatiotemporal Datasets
+
+Numerical simulations are key tools used in the investigation and prediction of Earth’s climate.
+These simulations track hundreds of climate variables at fine-grained spatial and temporal resolutions.
+Consequently, the amount of disk storage required to store the output data for a large-scale simulation
+is massive and scientists are forced to make hard decisions about what data to keep and what to discard.
+To alleviate this problem, data reduction methods such as lossy compression are needed. Lossy compression
+involves information loss, and care must be taken to carefully compress the data to avoid affecting scientific
+conclusions based on the data. Here, we present an approach developed with scientists at the National Center
+for Atmospheric Research (NCAR) to apply lossy compression to output data from the Community Earth System Model
+(CESM). In particular, we show how we use statistical techniques such as the Pearson correlation coefficient,
+Kolmogorov-Smirnov test, and Structural Similarity Index Measure (SSIM) to capture compression artifacts.
+Each of these metrics can capture classes of compression error, and we critically explore the advantages
+and shortcoming of each. Finally, we discuss the role these metrics play in efficiently classifying datasets
+according to their optimal compression setting.

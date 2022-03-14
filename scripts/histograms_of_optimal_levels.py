@@ -1,3 +1,5 @@
+# requires: daily_optimal_slices.csv and monthly_optimal_slices.csv.
+
 import csv
 import pandas as pd
 import matplotlib as mpl
@@ -94,7 +96,7 @@ def hist_plotter(v, freq, csvfile, tags=True):
             labels.append("")
 
     for rect, label in zip(rects, labels):
-        height = rect.get_height() + 1
+        height = rect.get_height() + 0.5
         ax.text(
             rect.get_x() + rect.get_width() / 2, height, label, ha="center", va="bottom"
         )
@@ -112,8 +114,10 @@ def hist_plotter(v, freq, csvfile, tags=True):
 
 
 if __name__ == "__main__":
-    for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
-              "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
-        hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
-    for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
-        hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
+     for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
+               "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
+         hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
+    # for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
+    #     hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
+    # for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
+    #  hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")

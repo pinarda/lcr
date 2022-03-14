@@ -2,6 +2,17 @@
 March 1 Meeting
 ******************
 
+Alex:
+
+want every compression algorithms (and level) displayed on the histograms (even if the frequecny is 0)
+use different colors for each compression algorithm (and add shading for each group)
+fix the level labeling
+reverse the order of the levels
+
+******************
+March 1 Meeting
+******************
+
 The reason that  sz has a bad compression ratio is that sz does not work well as a preconditioner.
 Need to be able to use sz through netCDF the way we are currently using zfp.
 
