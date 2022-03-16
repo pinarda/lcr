@@ -512,7 +512,7 @@ def create_daily_monthly_freq_hist():
 
 if __name__ == "__main__":
 
-    for freq in ['daily', 'monthly']:
+    for freq in ['monthly', 'daily']:
         v = varlist(f"../data/{freq}_dssims.csv")
 
         location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
@@ -533,7 +533,9 @@ if __name__ == "__main__":
                 'sz_ratio',
                 'sz1413_level',
                 'sz1413_size',
-                'sz1413_ratio'
+                'zfp5_level',
+                'zfp5_size',
+                'zfp5_ratio'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
@@ -544,6 +546,7 @@ if __name__ == "__main__":
             levelsz1413 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1ROn", freq)
             levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             levelzfp = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp_p", freq)
+            levelzfp5 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp5_p", freq)
             location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
@@ -562,7 +565,10 @@ if __name__ == "__main__":
                     'sz_ratio',
                     'sz1413_level',
                     'sz1413_size',
-                    'sz1413_ratio'
+                    'sz1413_ratio',
+                    'zfp5_level',
+                    'zfp5_size',
+                    'zfp5_ratio'
                 ]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 sizecsv = f"../data/{freq}_filesizes.csv"
@@ -572,15 +578,18 @@ if __name__ == "__main__":
                     fsz1413 = filesize(sizecsv, varname, levelsz1413[i], "sz1ROn")
                     fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
                     fbg = filesize(sizecsv, varname, levelbg[i], "bg")
+                    fzfp5 = filesize(sizecsv, varname, levelzfp5[i], "zfp5")
                     if fsz is not None:
                         sizesz = float(fsz)
                         sizesz1413 = float(fsz1413)
                         sizezfp = float(fzfp)
                         sizebg = float(fbg)
+                        sizezfp5 = float(fzfp5)
                         ratiosz = float(filesize(sizecsv, varname, "orig", "sz1.4")) / float(fsz)
                         ratiosz1413 = float(filesize(sizecsv, varname, "orig", "sz1ROn")) / float(fsz1413)
                         ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
                         ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
+                        ratiozfp5 = float(filesize(sizecsv, varname, "orig", "zfp5")) / float(fzfp5)
                     writer.writerow(
                         {
                             'variable': varname,
@@ -598,5 +607,8 @@ if __name__ == "__main__":
                             'sz1413_level': levelsz1413[i],
                             'sz1413_size': sizesz1413,
                             'sz1413_ratio': ratiosz1413,
+                            'zfp5_level': levelzfp5[i],
+                            'zfp5_size': sizezfp5,
+                            'zfp5_ratio': ratiozfp5,
                         }
                     )

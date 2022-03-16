@@ -1,5 +1,13 @@
 ******************
-March 1 Meeting
+March 14 Meeting
+******************
+
+Alex todo: Julian Kunkle's code to add to notebook
+	   Fix histograms so they use all the possible levels (combine monthly and daily)
+
+
+******************
+March 10 Meeting
 ******************
 
 Alex:

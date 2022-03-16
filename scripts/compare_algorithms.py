@@ -12,10 +12,10 @@ def optimal_per_slice():
         for rowstring in rowstrings:
             row = rowstring.strip().split(",")
             variable = row[0]
-            ratios = [row[5], row[8], row[11]]
+            ratios = [row[5], row[8], row[11], row[14], row[17]]
             np_ratios = np.array(ratios)
             best_ratio = max(ratios)
-            best_size = min(row[4], row[7], row[10])
+            best_size = min(row[4], row[7], row[10], row[13], row[16])
             best_level = row[3 + np_ratios.argmax(0) * 3]
             if np_ratios.argmax(0) == 0:
                 best_alg = "bg"
@@ -23,6 +23,10 @@ def optimal_per_slice():
                 best_alg = "zfp"
             elif np_ratios.argmax(0) == 2:
                 best_alg = "sz"
+            elif np_ratios.argmax(0) == 3:
+                best_alg = "sz1413"
+            elif np_ratios.argmax(0) == 4:
+                best_alg = "z_hdf5"
             location = f"../data/{freq}_optimal_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
@@ -51,10 +55,10 @@ def optimal_over_var():
         for rowstring in rowstrings:
             row = rowstring.strip().split(",")
             variable = row[0]
-            ratios = [row[3], row[6], row[9]]
+            ratios = [row[3], row[6], row[9], row[12], row[15]]
             np_ratios = np.array(ratios)
             best_ratio = max(ratios)
-            best_size = min(row[2], row[5], row[8])
+            best_size = min(row[2], row[5], row[8], row[11], row[14])
             best_level = row[1 + np_ratios.argmax(0)*3]
             if np_ratios.argmax(0) == 0:
                 best_alg = "bg"
@@ -62,6 +66,10 @@ def optimal_over_var():
                 best_alg = "zfp"
             elif np_ratios.argmax(0) == 2:
                 best_alg = "sz"
+            elif np_ratios.argmax(0) == 3:
+                best_alg = "sz1413"
+            elif np_ratios.argmax(0) == 4:
+                best_alg = "z_hdf5"
             location = f"../data/{freq}_optimal_over_var.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
