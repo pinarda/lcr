@@ -63,7 +63,8 @@ def batch_calcs(
 
     calc_dict = {}
     for calc in calcs:
-        calc_dict[calc] = metrics.get_calc(calc).compute()
+        temp = metrics.get_calc(calc).compute()
+        calc_dict[calc] = temp.item(0)
 
 
     file_exists = os.path.isfile(location)
