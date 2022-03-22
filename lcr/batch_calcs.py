@@ -63,7 +63,7 @@ def batch_calcs(
 
     calc_dict = {}
     for calc in calcs:
-        calc_dict[calc] = metrics.get_calc(calc)
+        calc_dict[calc] = metrics.get_calc(calc).compute()
 
 
     file_exists = os.path.isfile(location)
@@ -77,7 +77,7 @@ def batch_calcs(
         if not file_exists:
             writer.writeheader()
         row = {
-                'set': set2,
+                'set': set1,
                 'time': time
             }
         row.update(calc_dict)
