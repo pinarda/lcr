@@ -1,3 +1,6 @@
+""" This script is intended to be used by the notebook DataGathering.ipynb for
+gathering overall single-value features on datasets. """
+
 import csv
 import ldcpy
 import os

@@ -1,10 +1,20 @@
 ******************
-March 14 Meeting
+March 29 Meeting
 ******************
 
-Alex todo: Julian Kunkle's code to add to notebook
-	   Fix histograms so they use all the possible levels (combine monthly and daily)
+Make sure all models return best params
 
+
+******************
+March 16 Meeting
+******************
+
+People will read the proposal if I present closer to deadline...
+but would rather do thesis proposal earlier
+
+Alex todo: Julian Kunkle's code to add to notebook
+Fix histograms so they use all the possible levels (combine monthly and daily)
+Fix hatching/color on hists
 
 ******************
 March 10 Meeting

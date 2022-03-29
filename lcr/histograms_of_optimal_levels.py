@@ -1,10 +1,16 @@
 # requires: daily_optimal_slices.csv and monthly_optimal_slices.csv.
 
 import csv
+import sys
+from pathlib import Path
+path_root = Path(__file__).parents[2]
+sys.path.append(str(path_root))
+
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
+import lcr_global_vars
+from os.path import exists
 mpl.use( 'tkagg' )
 
 def omit_by(dct, predicate=lambda x: x==0):
@@ -169,12 +175,98 @@ def hist_plotter(v, freq, csvfile, tags=True):
     plt.savefig(f"../slice_hists/{v}{freq}")
     #plt.show()
 
+def save_labels(v, freq, csvfile, tags=True):
+    df = pd.read_csv(csvfile)
+    vdf = df[df["variable"]==v]
+    #vdf=df
+
+    adf=df["best_alg"].to_list()
+    ldf=df["best_level"].to_list()
+    a=vdf["best_alg"].to_list()
+    l=vdf["best_level"].to_list()
+    r=vdf["best_ratio"].to_list()
+    v=vdf["variable"].to_list()
+    rf = [float(x) for x in r]
+    r = ["%.2f" % i for i in rf]
+
+    # yikes
+    new_list={}
+    for i in range(0, len(adf)):
+        new_list[f"{adf[i]} {ldf[i]}"] = 0
+
+    for i in range(0, len(a)):
+        if f"{a[i]} {l[i]}" in new_list.keys():
+            new_list[f"{a[i]} {l[i]}"] += 1
+        else:
+            new_list[f"{a[i]} {l[i]}"] = 0
+
+
+    new_list = dict(sorted(new_list.items()))
+
+    ratio_list = {}
+    # yikes
+    for i in range(0, len(adf)):
+        ratio_list[f"{adf[i]} {ldf[i]}"] = 0
+
+    for i in range(0, len(a)):
+        ratio_list[f"{a[i]} {l[i]}"] = r[i]
+
+    ratio_list = dict(sorted(ratio_list.items()))
+
+    level_list = {}
+    # yikes
+    for i in range(0, len(adf)):
+        level_list[f"{adf[i]} {ldf[i]}"] = ldf[i]
+    for i in range(0, len(a)):
+        level_list[f"{a[i]} {l[i]}"] = l[i]
+
+    level_list = dict(sorted(level_list.items()))
+
+    alg_list = set(adf)
+    algs = []
+    cur_alg = None
+    index=-1
+    empty_count = 0
+    empty_indices = []
+    for element in sorted(new_list.keys())[::-1]:
+        index += 1
+        for alg in alg_list:
+            if alg in element:
+                if cur_alg:
+                    if alg != cur_alg:
+                        empty_indices.append(index + empty_count)
+                        empty_count += 1
+                        cur_alg = alg
+                else:
+                    cur_alg = alg
+                algs.append(alg)
+
+    newdf = pd.DataFrame()
+    newdf["levels"] = l
+    newdf["algs"] = a
+    newdf["ratios"] = r
+    newdf["variable"] = v
+    # At the moment it is assumed that the time slices are in order here.
+    newdf["times"] = list(range(0,60))
+
+    fileloc = f"../data/{freq}_labels.csv"
+    file_exists = exists(fileloc)
+    if file_exists:
+        newdf.to_csv(fileloc, mode="a", header=False, index=False)
+    else:
+        newdf.to_csv(fileloc, mode="a", header=True, index=False)
+
 
 if __name__ == "__main__":
-    for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
-               "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
-         hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
-    for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
-         hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
-    #for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
-    #    hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
+    # create histograms
+    # for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
+    #            "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
+    #      hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
+    # for v in ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]:
+    #      hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
+
+    # just save the dataframe as labels
+    for v in lcr_global_vars.monthly_vars:
+        save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
+    for v in lcr_global_vars.daily_vars:
+        save_labels(v, "daily", "../data/daily_optimal_slices.csv")

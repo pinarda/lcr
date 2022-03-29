@@ -11,6 +11,7 @@ import csv
 import re
 import numpy as np
 import os
+import lcr_global_vars
 from scipy import stats
 
 
@@ -131,21 +132,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq):
         levs.append(lev)
     return levs
 
-def varlist(csvfilename):
-    """
-    Gets list of variables in a csv file
-    """
-    vars = []
-    with open(csvfilename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            if len(row) == 0:
-                continue
-            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
-            if m is not None:
-                vars.append(m.group("varname"))
-    vars = np.unique(vars)
-    return vars
+
 
 def filesize(csvfilename, variable, level, compression):
     with open(csvfilename, newline='') as csvfile:
@@ -161,7 +148,7 @@ def filesize(csvfilename, variable, level, compression):
 
 def create_daily_monthly_freq_hist():
     for freq in ['daily', 'monthly']:
-        v = varlist(f"../data/{freq}_dssims.csv")
+        v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         for varname in v:
             level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             bg_levels=[2, 3, 4, 5, 6, 7]
@@ -206,7 +193,7 @@ def create_daily_monthly_freq_hist():
 #     monthly_sizecsv = "../data/monthly_filesizes.csv"
 #     daily_sizecsv = "../data/daily_filesizes.csv"
 #     for freq in ['daily', 'monthly']:
-#         v = varlist(f"../data/{freq}_dssims.csv")
+#         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 #         for varname in v:
 #             level = optimal_level_min(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
 #             f = filesize(daily_sizecsv, varname, level, "bg")
@@ -276,7 +263,7 @@ def create_daily_monthly_freq_hist():
 # if __name__ == "__main__":
 #
 #     for freq in ['daily', 'monthly']:
-#         v = varlist(f"../data/{freq}_dssims.csv")
+#         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 #         for varname in v:
 #             level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
 #             location = f"../data/{freq}_sz14_optimal_slices.csv"
@@ -418,7 +405,7 @@ def create_daily_monthly_freq_hist():
 #                 )
 
     # for freq in ['daily', 'monthly']:
-    #     v = varlist(f"../data/{freq}_dssims.csv")
+    #     v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
     #     for varname in v:
     #         level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp_p", freq)
     #         bg_levels=[8, 10, 12, 14, 16, 18, 20, 22, 24]
@@ -462,7 +449,7 @@ def create_daily_monthly_freq_hist():
     #             )
     #
     # for freq in ['daily', 'monthly']:
-    #     v = varlist(f"../data/{freq}_dssims.csv")
+    #     v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
     #     for varname in v:
     #         level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
     #         bg_levels=["1", "05", "01", "005", "001", "0005", "0001", "00005", "00001", "000005", "000001"]
@@ -513,7 +500,7 @@ def create_daily_monthly_freq_hist():
 if __name__ == "__main__":
 
     for freq in ['monthly', 'daily']:
-        v = varlist(f"../data/{freq}_dssims.csv")
+        v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 
         location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
