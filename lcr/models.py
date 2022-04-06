@@ -1,8 +1,8 @@
 """ Contains model code using daily_compress_df.csv and
-monthly_compress_df.csv (using levels as target for classification) """
+monthly_compress_df.csv (see create_dataframe.py) (using levels as target for classification) """
 
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
@@ -34,12 +34,24 @@ validate_vars = ["ICEFRAC", "LHFLX", "PRECT", "Q500", "TREFHTMN", "TS", "U850", 
                  "FSNSC"]
 test_vars = ["dst_a3_SRF",  "FSNS", "FSNTOA", "Q850", "TREFHTMX", "Z050", "U010", "PRECTMX"]
 
+
 def random_forest(X_train, X_test, y_train, y_test):
     params = {
         "max_depth": [2, 5],
         "random_state": [0]
     }
-    clf = GridSearchCV(estimator=RandomForestClassifier(), param_grid=params, scoring="accuracy", cv=100)
+    clf = GridSearchCV(estimator=RandomForestClassifier(), param_grid=params, scoring="accuracy", cv=10)
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    return (y_pred, accuracy)
+
+def adaboost(X_train, X_test, y_train, y_test):
+    params = {
+        "n_estimators": [50],
+        "learning_rate": [0.1]
+    }
+    clf = GridSearchCV(estimator=AdaBoostClassifier(), param_grid=params, scoring="accuracy", cv=10)
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -51,7 +63,7 @@ def neural_net(X_train, X_test, y_train, y_test):
 
     layers = [Dense(10, activation='relu', input_shape=(3,)),
               Dense(10, activation='relu'),
-              Dense(7)]
+              Dense(max(y_train)+1)]
     model = keras.Sequential(layers=layers)
     model.compile(optimizer="adam",
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -65,7 +77,7 @@ def kNN(X_train, X_test, y_train, y_test):
     params = {
         "n_neighbors": [1, 2, 3, 4, 5, 10, 20, 50, 100]
     }
-    clf = GridSearchCV(estimator=KNeighborsClassifier(), param_grid=params, scoring="accuracy", cv=100)
+    clf = GridSearchCV(estimator=KNeighborsClassifier(), param_grid=params, scoring="accuracy", cv=10)
 
     clf.fit(X_train, y_train)
     # Step 3 - Predict the validation data
@@ -79,7 +91,7 @@ def SVM(X_train, X_test, y_train, y_test):
         "random_state": [0],
         "gamma": ["auto"]
     }
-    clf = GridSearchCV(estimator=SVC(), param_grid=params, scoring="accuracy", cv=100)
+    clf = GridSearchCV(estimator=SVC(), param_grid=params, scoring="accuracy", cv=10)
 
     clf.fit(X_train, y_train)
     acc = clf.score(X_test, y_test)
@@ -90,7 +102,7 @@ def LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test):
     params = {
         "n_components": [1],
     }
-    clf = GridSearchCV(estimator=LDA(), param_grid=params, scoring="accuracy", cv=100)
+    clf = GridSearchCV(estimator=LDA(), param_grid=params, scoring="accuracy", cv=10)
 
     clf.fit(X_train, y_train)
     acc = clf.score(X_test, y_test)
@@ -101,7 +113,7 @@ def QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test):
     params = {
         # "n_components": [1],
     }
-    clf = GridSearchCV(estimator=QDA(), param_grid=params, scoring="accuracy", cv=100)
+    clf = GridSearchCV(estimator=QDA(), param_grid=params, scoring="accuracy", cv=10)
     clf.fit(X_train, y_train)
     acc = clf.score(X_test, y_test)
     y_pred = clf.predict(X_test)
@@ -127,13 +139,12 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     return(y_pred, sum(np.array(y_pred)==np.array(y_test)) / len(np.array(y_test)))
 
 
-
 if __name__ == "__main__":
-    daily_df = pd.read_csv('../data/daily_compress_df.csv')
-    monthly_df = pd.read_csv('../data/monthly_compress_df.csv')
+    daily_df = pd.read_csv('../data/newold/daily_compress_df.csv')
+    # monthly_df = pd.read_csv('../data/monthly_compress_df.csv')
 
     # just look at a particular algorithm and try and guess the level for now
-    subset_daily = daily_df[daily_df["algs"] == "z_hdf5"]
+    subset_daily = daily_df[daily_df["algs"] == "zfp"]
     X = subset_daily[lcr_global_vars.features]
     y = subset_daily[["levels"]]
     y = np.array(y).ravel()
@@ -143,8 +154,6 @@ if __name__ == "__main__":
     # X_train, X_test, y_train, y_test = train_test_split(X,
     #                                                     y,
     #                                                     test_size = 0.33, random_state = 42)
-
-
 
     # create train-test split by selecting variables
     X_train = X[subset_daily["variable"].isin(train_vars)]
@@ -158,34 +167,55 @@ if __name__ == "__main__":
     # (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
     # print(rf_acc)
     # print(confusion_matrix(y_test, rf_preds))
-    # print(classification_report(y_test, rf_preds))
-    #
+    # report = classification_report(y_test, rf_preds, output_dict=True)
+    # rf_df = pd.DataFrame(report).transpose()
+    # rf_df.to_csv('../data/rf_report.csv', float_format="%.3f")
+
+    (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
+    print(boost_acc)
+    print(confusion_matrix(y_test, boost_preds))
+    report = classification_report(y_test, boost_preds, output_dict=True)
+    boost_df = pd.DataFrame(report).transpose()
+    boost_df.to_csv('../data/boost_report.csv', float_format="%.3f")
+
     # (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
     # print(nn_acc)
     # print(confusion_matrix(y_test, nn_preds))
-    # print(classification_report(y_test, nn_preds))
+    # report = classification_report(y_test, nn_preds, output_dict=True)
+    # nn_df = pd.DataFrame(report).transpose()
+    # nn_df.to_csv('../data/nn_report.csv', float_format="%.3f")
     #
-    (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
-    print(knn_acc)
-    print(confusion_matrix(y_test, knn_preds))
-    print(classification_report(y_test, knn_preds))
+    # (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
+    # print(knn_acc)
+    # print(confusion_matrix(y_test, knn_preds))
+    # report = classification_report(y_test, knn_preds, output_dict=True)
+    # knn_df = pd.DataFrame(report).transpose()
+    # knn_df.to_csv('../data/knn_report.csv', float_format="%.3f")
     #
     # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
     # print(svm_acc)
     # print(confusion_matrix(y_test, svm_preds))
-    # print(classification_report(y_test, svm_preds))
-
+    # report = classification_report(y_test, svm_preds, output_dict=True)
+    # svm_df = pd.DataFrame(report).transpose()
+    # svm_df.to_csv('../data/svm_report.csv', float_format="%.3f")
+    #
     # (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     # print(lda_acc)
     # print(confusion_matrix(y_test, lda_preds))
-    # print(classification_report(y_test, lda_preds))
-
+    # report = classification_report(y_test, lda_preds, output_dict=True)
+    # lda_df = pd.DataFrame(report).transpose()
+    # lda_df.to_csv('../data/lda_report.csv', float_format="%.3f")
+    #
     # (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     # print(qda_acc)
     # print(confusion_matrix(y_test, qda_preds))
-    # print(classification_report(y_test, qda_preds))
-
+    # report = classification_report(y_test, qda_preds, output_dict=True)
+    # qda_df = pd.DataFrame(report).transpose()
+    # qda_df.to_csv('../data/qda_report.csv', float_format="%.3f")
+    #
     # (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
     # print(combine_acc)
     # print(confusion_matrix(y_test, combine_preds))
-    # print(classification_report(y_test, combine_preds))
+    # report = classification_report(y_test, combine_preds, output_dict=True)
+    # combine_df = pd.DataFrame(report).transpose()
+    # combine_df.to_csv('../data/combine_report.csv', float_format="%.3f")

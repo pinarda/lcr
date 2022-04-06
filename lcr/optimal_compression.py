@@ -5,6 +5,8 @@ columns corresponding to {compression_type}_{level}, {variable}, {time}, and {DS
 It would be best to open the csv file once, and get a list of all variables, levels, and timesteps
 so I don't read the csv file more times than necessary. Seems like search_csv does most of what I need
 already.
+
+REQUIRES: daily/monthly_dssims.csv
 """
 
 import csv
@@ -499,7 +501,7 @@ def create_daily_monthly_freq_hist():
 
 if __name__ == "__main__":
 
-    for freq in ['monthly', 'daily']:
+    for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 
         location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
@@ -514,26 +516,15 @@ if __name__ == "__main__":
                 'bg_ratio',
                 'zfp_level',
                 'zfp_size',
-                'zfp_ratio',
-                'sz_level',
-                'sz_size',
-                'sz_ratio',
-                'sz1413_level',
-                'sz1413_size',
-                'zfp5_level',
-                'zfp5_size',
-                'zfp5_ratio'
+                'zfp_ratio'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
 
         for varname in v:
-            levelsz = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
-            levelsz1413 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1ROn", freq)
             levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             levelzfp = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp_p", freq)
-            levelzfp5 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp5_p", freq)
             location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
@@ -546,37 +537,19 @@ if __name__ == "__main__":
                     'bg_ratio',
                     'zfp_level',
                     'zfp_size',
-                    'zfp_ratio',
-                    'sz_level',
-                    'sz_size',
-                    'sz_ratio',
-                    'sz1413_level',
-                    'sz1413_size',
-                    'sz1413_ratio',
-                    'zfp5_level',
-                    'zfp5_size',
-                    'zfp5_ratio'
+                    'zfp_ratio'
                 ]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 sizecsv = f"../data/{freq}_filesizes.csv"
 
-                for i in range(0, 60):
-                    fsz = filesize(sizecsv, varname, levelsz[i], "sz1.4")
-                    fsz1413 = filesize(sizecsv, varname, levelsz1413[i], "sz1ROn")
+                for i in range(0, 24):
                     fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
                     fbg = filesize(sizecsv, varname, levelbg[i], "bg")
-                    fzfp5 = filesize(sizecsv, varname, levelzfp5[i], "zfp5")
-                    if fsz is not None:
-                        sizesz = float(fsz)
-                        sizesz1413 = float(fsz1413)
+                    if fzfp is not None:
                         sizezfp = float(fzfp)
                         sizebg = float(fbg)
-                        sizezfp5 = float(fzfp5)
-                        ratiosz = float(filesize(sizecsv, varname, "orig", "sz1.4")) / float(fsz)
-                        ratiosz1413 = float(filesize(sizecsv, varname, "orig", "sz1ROn")) / float(fsz1413)
                         ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
                         ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
-                        ratiozfp5 = float(filesize(sizecsv, varname, "orig", "zfp5")) / float(fzfp5)
                     writer.writerow(
                         {
                             'variable': varname,
@@ -587,15 +560,107 @@ if __name__ == "__main__":
                             'bg_ratio': ratiobg,
                             'zfp_level': levelzfp[i],
                             'zfp_size': sizezfp,
-                            'zfp_ratio': ratiozfp,
-                            'sz_level': levelsz[i],
-                            'sz_size': sizesz,
-                            'sz_ratio': ratiosz,
-                            'sz1413_level': levelsz1413[i],
-                            'sz1413_size': sizesz1413,
-                            'sz1413_ratio': ratiosz1413,
-                            'zfp5_level': levelzfp5[i],
-                            'zfp5_size': sizezfp5,
-                            'zfp5_ratio': ratiozfp5,
+                            'zfp_ratio': ratiozfp
                         }
                     )
+
+    # for freq in ['monthly', 'daily']:
+    #     v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
+    #
+    #     location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
+    #     file_exists = os.path.isfile(location)
+    #     with open(location, 'a', newline='') as csvfile:
+    #         fieldnames = [
+    #             'variable',
+    #             'frequency',
+    #             'timestep',
+    #             'bg_level',
+    #             'bg_size',
+    #             'bg_ratio',
+    #             'zfp_level',
+    #             'zfp_size',
+    #             'zfp_ratio',
+    #             'sz_level',
+    #             'sz_size',
+    #             'sz_ratio',
+    #             'sz1413_level',
+    #             'sz1413_size',
+    #             'zfp5_level',
+    #             'zfp5_size',
+    #             'zfp5_ratio'
+    #         ]
+    #         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #         if not file_exists:
+    #             writer.writeheader()
+    #
+    #     for varname in v:
+    #         levelsz = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
+    #         levelsz1413 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "sz1ROn", freq)
+    #         levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
+    #         levelzfp = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp_p", freq)
+    #         levelzfp5 = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "zfp5_p", freq)
+    #         location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
+    #         file_exists = os.path.isfile(location)
+    #         with open(location, 'a', newline='') as csvfile:
+    #             fieldnames = [
+    #                 'variable',
+    #                 'frequency',
+    #                 'timestep',
+    #                 'bg_level',
+    #                 'bg_size',
+    #                 'bg_ratio',
+    #                 'zfp_level',
+    #                 'zfp_size',
+    #                 'zfp_ratio',
+    #                 'sz_level',
+    #                 'sz_size',
+    #                 'sz_ratio',
+    #                 'sz1413_level',
+    #                 'sz1413_size',
+    #                 'sz1413_ratio',
+    #                 'zfp5_level',
+    #                 'zfp5_size',
+    #                 'zfp5_ratio'
+    #             ]
+    #             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #             sizecsv = f"../data/{freq}_filesizes.csv"
+    #
+    #             for i in range(0, 60):
+    #                 fsz = filesize(sizecsv, varname, levelsz[i], "sz1.4")
+    #                 fsz1413 = filesize(sizecsv, varname, levelsz1413[i], "sz1ROn")
+    #                 fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
+    #                 fbg = filesize(sizecsv, varname, levelbg[i], "bg")
+    #                 fzfp5 = filesize(sizecsv, varname, levelzfp5[i], "zfp5")
+    #                 if fsz is not None:
+    #                     sizesz = float(fsz)
+    #                     sizesz1413 = float(fsz1413)
+    #                     sizezfp = float(fzfp)
+    #                     sizebg = float(fbg)
+    #                     sizezfp5 = float(fzfp5)
+    #                     ratiosz = float(filesize(sizecsv, varname, "orig", "sz1.4")) / float(fsz)
+    #                     ratiosz1413 = float(filesize(sizecsv, varname, "orig", "sz1ROn")) / float(fsz1413)
+    #                     ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
+    #                     ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
+    #                     ratiozfp5 = float(filesize(sizecsv, varname, "orig", "zfp5")) / float(fzfp5)
+    #                 writer.writerow(
+    #                     {
+    #                         'variable': varname,
+    #                         'frequency': freq,
+    #                         'timestep': i,
+    #                         'bg_level': levelbg[i],
+    #                         'bg_size': sizebg,
+    #                         'bg_ratio': ratiobg,
+    #                         'zfp_level': levelzfp[i],
+    #                         'zfp_size': sizezfp,
+    #                         'zfp_ratio': ratiozfp,
+    #                         'sz_level': levelsz[i],
+    #                         'sz_size': sizesz,
+    #                         'sz_ratio': ratiosz,
+    #                         'sz1413_level': levelsz1413[i],
+    #                         'sz1413_size': sizesz1413,
+    #                         'sz1413_ratio': ratiosz1413,
+    #                         'zfp5_level': levelzfp5[i],
+    #                         'zfp5_size': sizezfp5,
+    #                         'zfp5_ratio': ratiozfp5,
+    #                     }
+    #                 )

@@ -1,9 +1,14 @@
+"""
+requires: daily and monthly_zfp_bg_sz_comp_slices.csv (see optimal_compresssion.py)
+creates: daily and monthly_optimal_slices.csv (for histograms_of_optimal_levels.csv)
+"""
+
 import csv
 import numpy as np
 import os
 
 def optimal_per_slice():
-    freqs = ["daily", "monthly"]
+    freqs = ["daily"]
     for freq in freqs:
         csvfilename = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
         with open(csvfilename, newline='') as csvfile:
@@ -12,10 +17,10 @@ def optimal_per_slice():
         for rowstring in rowstrings:
             row = rowstring.strip().split(",")
             variable = row[0]
-            ratios = [row[5], row[8], row[11], row[14], row[17]]
+            ratios = [row[5], row[8]]#, row[11], row[14], row[17]]
             np_ratios = np.array(ratios)
             best_ratio = max(ratios)
-            best_size = min(row[4], row[7], row[10], row[13], row[16])
+            best_size = min(row[4], row[7])#, row[10], row[13], row[16])
             best_level = row[3 + np_ratios.argmax(0) * 3]
             if np_ratios.argmax(0) == 0:
                 best_alg = "bg"
@@ -55,10 +60,10 @@ def optimal_over_var():
         for rowstring in rowstrings:
             row = rowstring.strip().split(",")
             variable = row[0]
-            ratios = [row[3], row[6], row[9], row[12], row[15]]
+            ratios = [row[3], row[6]]#, row[9], row[12], row[15]]
             np_ratios = np.array(ratios)
             best_ratio = max(ratios)
-            best_size = min(row[2], row[5], row[8], row[11], row[14])
+            best_size = min(row[2], row[5])#, row[8], row[11], row[14])
             best_level = row[1 + np_ratios.argmax(0)*3]
             if np_ratios.argmax(0) == 0:
                 best_alg = "bg"

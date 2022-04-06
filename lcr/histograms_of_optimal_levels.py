@@ -1,4 +1,7 @@
-# requires: daily_optimal_slices.csv and monthly_optimal_slices.csv.
+"""
+requires: daily_optimal_slices.csv and monthly_optimal_slices.csv. (see compare_algorithms.csv)
+used for: daily/monthly_labels.csv (for create_dataframe.csv)
+"""
 
 import csv
 import sys
@@ -247,7 +250,7 @@ def save_labels(v, freq, csvfile, tags=True):
     newdf["ratios"] = r
     newdf["variable"] = v
     # At the moment it is assumed that the time slices are in order here.
-    newdf["times"] = list(range(0,60))
+    newdf["times"] = list(range(0,24))
 
     fileloc = f"../data/{freq}_labels.csv"
     file_exists = exists(fileloc)
@@ -266,7 +269,7 @@ if __name__ == "__main__":
     #      hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
 
     # just save the dataframe as labels
-    for v in lcr_global_vars.monthly_vars:
-        save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
+    # for v in lcr_global_vars.monthly_vars:
+    #     save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
     for v in lcr_global_vars.daily_vars:
         save_labels(v, "daily", "../data/daily_optimal_slices.csv")

@@ -1,9 +1,47 @@
 ******************
+April 5 Meeting
+******************
+
+add the additional metrics (relative error, ks test, etc, real information?)
+see and report on how often it makes a difference (consider other approaches if it doesn't change much)
+wavelet scattering - make a presentation ina  few weeks and look into it more
+remove the prectmx varaible
+
+see if the varaibles that are conceptually different than the other variables,
+because we may need a more complicated modeling approach for them
+
+also-need to work on fine-tuning models - not important right now until we have more data
+
+
+
+TO DO MOST URGENT:::::::
+speed up metric calculation gathering
+
+In the document - give an overview of the distribution between the zfp and bg levels (include the histograms)
+how many times metrics other than the DSSIM mattered
+
+
+Send Allison an email of what I am running to gather metrics
+
+bg, sz, zfp,
+
+https://carbonplan.org/
+******************
 March 29 Meeting
 ******************
 
 Make sure all models return best params
+Check out the paper from Allison
+put results in report
+experiment with leaving out a single climate variable from the model to see if it changes the model.
+DONE - figure out how tunstall code handles last letters, find an implementation or look at paper
+DONE - point hayden towards some sample data (try p_8-24, and a few more variables. look at the information to see what makes sense)
 
+we don't want to screw up the bit-pattern entopy in the left side of the plot in the limit (as we add more compression)
+there should be a way to detect if we have introduced compression artiacats (see the PRECT file) because the entropy on the
+left side will be screwed up and not just leveling off as we might hope it would.
+
+We need a way to find where the entropy starts to decay in the compressed data (and levels off in the original data)
 
 ******************
 March 16 Meeting
