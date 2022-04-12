@@ -71,20 +71,20 @@ def batch_calcs(
 
 
     file_exists = os.path.isfile(location)
-    with open(location, 'a', newline='') as csvfile:
-        fieldnames = [
-            'set',
-            'time'
-        ] + calcs
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        if not file_exists:
-            writer.writeheader()
-        row = {
-                'set': set1,
-                'time': time
-            }
-        row.update(calc_dict)
-        writer.writerow(row)
+    # with open(location, 'a', newline='') as csvfile:
+    #     fieldnames = [
+    #         'set',
+    #         'time'
+    #     ] + calcs
+    #     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #
+    #     if not file_exists:
+    #         writer.writeheader()
+    #     row = {
+    #             'set': set1,
+    #             'time': time
+    #         }
+    #     row.update(calc_dict)
+    #     writer.writerow(row)
 
     return num_fail
