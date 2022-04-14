@@ -72,45 +72,47 @@ def main(argv):
         cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var])
 
     #create/open csv file and add computations 
-    file_exists = os.path.isfile(outfile)
+
     if verbose:
         print("Output file = ", outfile)
-    with open(outfile, 'a', newline='') as csvfile:
-        fieldnames = [
-            'set',
-            'time'
-            ] + calcs
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-        if not file_exists:
-            writer.writeheader()
-
-        #loop through calculations
-        for var in var_list:
-            if verbose:
-                print("var =", var)
-
-            #get time range to iterate on
-            ntime = cols[var].dims["time"]
-            if ts > ntime:
-                print("Specified start time slice is greater than total number of slices for variable", var, ". Skipping")
-                continue
-            if tt < 0:
+    #loop through calculations
+    for var in var_list:
+        if verbose:
+            print("var =", var)
+            
+        #get time range to iterate on
+        ntime = cols[var].dims["time"]
+        if ts > ntime:
+            print("Specified start time slice is greater than total number of slices for variable", var, ". Skipping")
+            continue
+        if tt < 0:
+            tend = ntime
+        else:
+            tend = ts + tt
+            if tend > ntime:
                 tend = ntime
-            else:
-                tend = ts + tt
-                if tend > ntime:
-                    tend = ntime
-            if ts < 0:
-                ts = 0
+        if ts < 0:
+            ts = 0
 
-            if verbose:
-                print("   ts = ", ts)
-                print("   tend = ", tend)
+        if verbose:
+            print("   ts = ", ts)
+            print("   tend = ", tend)
+            
+        orig = labels[var][0]
+        comp_list = labels[var][1:]
+        for c in comp_list:
 
-            orig = labels[var][0]
-            comp_list = labels[var][1:]
-            for c in comp_list:
+            #write with each time group            
+            file_exists = os.path.isfile(outfile)
+            with open(outfile, 'a', newline='') as csvfile:
+                fieldnames = [
+                    'set',
+                    'time'
+                ] + calcs
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                if not file_exists:
+                    writer.writeheader()
 
                 for t in range(ts, tend):
                     #print(var, orig, c, t)
@@ -120,7 +122,6 @@ def main(argv):
                         'time': t
                     }
                     row.update(calc_dict)
-                    #print(row)
                     writer.writerow(row)
 
 
