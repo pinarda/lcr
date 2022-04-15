@@ -8,14 +8,16 @@
 #PBS -l select=1:ncpus=1
 
 module load conda
-conda activate my-npl-ldc
+conda activate npl
 
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/abaker/chey_bg_daily.csv' -j 'bg_daily.json' -tt 10 -ts 10
+setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+
+python ./compute_batch.py -o '/glade/scratch/abaker/testzfp.csv' -j 'sample-zfp.json' -tt 1 -ld
 
 
 
- 
+    
 

@@ -1,4 +1,3 @@
-import ldcpy
 import os,sys
 import argparse
 import json
@@ -13,6 +12,7 @@ def main(argv):
     verbose = args.verbose
     ts = args.tstart
     tt = args.ttotal
+    ldc = args.ldcpydev
 
     data_type = "cam-fv"
 
@@ -23,10 +23,11 @@ def main(argv):
         print("   verbose = ", verbose)
         print("   tstart = ", ts)
         print("   ttotal = ", tt)
+        print("   ldcpydev = ", ldc)
 
     #read from jsonfile
     if jsonfile:
-        var_list, label_list, calcs,filename_pre, filename_post, orig_path, comp_path, comp_dirs = read_jsonlist(jsonfile)
+        var_list, label_list, calcs,filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path = read_jsonlist(jsonfile)
     else:
         var_list = ['TS', 'LHFLX']
         label_list = ["bg_2", "bg_3", "bg_4", "bg_5", "bg_6", "bg_7"]
@@ -36,10 +37,14 @@ def main(argv):
         calcs = ["ssim_fp"]
         comp_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/bg/"
         orig_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/"
+        ldcpy_dev_path = ""
 
     #TODO: add checks : e.g.,  that varlist and label list are the same length
 
-    
+    if ldc:
+        sys.path.insert(0, ldcpy_dev_path)
+    import ldcpy
+
 
     #populate dictionaries
     cols = {}
@@ -142,6 +147,7 @@ def read_jsonlist(metajson):
         orig_path = ""
         comp_path = ""
         comp_dirs = ""
+        ldcpy_dev_path = ""
     else:
         fd = open(metajson)
         metainfo = json.load(fd)
@@ -161,8 +167,10 @@ def read_jsonlist(metajson):
             comp_path = metainfo["CompPath"]
         if "CompDirs" in metainfo:
             comp_dirs = metainfo["CompDirs"]
+        if "OptLdcpyDevPath" in metainfo:
+            ldcpy_dev_path = metainfo["OptLdcpyDevPath"]
 
-    return var_list, label_list, calcs, filename_pre, filename_post, orig_path, comp_path, comp_dirs
+    return var_list, label_list, calcs, filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path
 
 
 
@@ -190,6 +198,8 @@ def simple_diff_calcs(
     set2 : str                                                   
         The collection label of the (1st) data to compare   
     """
+    
+    import ldcpy
 
     agg_dims = ['lat', 'lon']
     
@@ -215,12 +225,14 @@ def parseArguments():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json input file that describes the calculation to perform.", type=str, default="./sample.json")
-    parser.add_argument("-o", "--outfile", help="csv file to store output (if exists, t hen it will append).", type=str, default="./sample.csv")
+    parser.add_argument("-o", "--outfile", help="csv file to store output (if file exists, then data will append).", type=str, default="./sample.csv")
 
     parser.add_argument("-ts", "--tstart", help="Starting time slice.", type=int, default=0)
     parser.add_argument("-tt", "--ttotal", help="Number of time slices to process  (-1 means all slices from the start).", type=int, default=-1)
 
     parser.add_argument("-v", "--verbose", help="Output extra info as the computation runs.", action="store_true")
+    parser.add_argument("-ld", "--ldcpydev", help="Use the decevlopment version of ldcpy specified in the json file",action="store_true")
+
     args = parser.parse_args()
 
     return args  
