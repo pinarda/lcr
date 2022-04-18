@@ -8,7 +8,7 @@
 #PBS -l select=1:ncpus=1:mem=109GB
 
 module load conda
-conda activate npl
+conda activate ldcpy_env
 
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
