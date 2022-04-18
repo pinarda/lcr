@@ -13,7 +13,7 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/apinard/chey_calcs_daily.csv' -j 'alex.json' -tt 10 -ts 10 -v -ld "/glade/u/home/apinard/newldcpy/ldcpy"
+python ./compute_batch.py -o '/glade/scratch/apinard/chey_calcs_daily2.csv' -j 'alex.json' -tt 10 -ts 10 -v -ld
 
 
 
