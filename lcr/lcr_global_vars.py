@@ -25,8 +25,8 @@ def varlist(csvfilename):
 # daily_vars = ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]
 
 # variables automatically specified based on available dssim calcs
-monthly_vars = varlist(f"../data/monthly_dssims.csv")
-daily_vars = varlist(f"../data/daily_dssims.csv")
+monthly_vars = varlist(f"../data/test_set/monthly_dssims.csv")
+daily_vars = varlist(f"../data/test_set/daily_dssims.csv")
 
 # array of the name prefixes for each compression algorithm
 # used in most csv files and most other places in the python code
