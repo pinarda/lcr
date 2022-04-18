@@ -1,4 +1,49 @@
 ******************
+April 11 Meeting
+******************
+
+DONE - Add NCAR logo to the bottom of the slide/we collaborate with them, they create this nice climate model
+
+The reason it is tapering off is that they don't allow them to store anything else
+They put hard limits on individual labs not exceeds ome threshold of storage
+
+Slide 4 - combnine the two sentences, add the "however"clasuse"
+bold/italicize "lossy", "lossless" - make it bolder/bigger
+
+instead of saying it doens't work well - mention that we get "limited gains"
+
+at the end of slide 4 -
+however, we need to be careful with scientific data"
+
+at the beginning of the four metrics slides - need to tell the story
+also that slide - the main metrics we are using is the DSSIM, the others are present to catch specific unusual cases
+
+do the image ssim thing
+
+add a box around the pearson correlation coefficient
+talk about it
+
+move text in slide 15 to four metrics slide
+remove the mean from the images
+
+"Used as part of an ensemble of metrics, we would ideally like each metric to measure a different type of compression artifact, making it easy to identify what went wrong in the compression."
+
+
+slide 20 - errors that affect a small spatial area
+
+
+add color to future work slide - add image where we match compression to datasets
+remore the real information slide
+
+
+
+mention how the actual data that has been altered
+DONE - swap the columns on slide 20
+DONE - pearson correlation coefficient varies between -1 and 1
+DONE - talk about the 11x11 grid on slide 9 - mention how the boxes are shifted pixel by [ixel
+DONE - make the bit on slide 7 not a fragment
+
+******************
 April 5 Meeting
 ******************
 
@@ -21,7 +66,10 @@ In the document - give an overview of the distribution between the zfp and bg le
 how many times metrics other than the DSSIM mattered
 
 
-Send Allison an email of what I am running to gather metrics
+DONE - 32Send Allison an email of what I am running to gather metrics
+
+DONE - FOR ALLISON - GET THE CONSERVATIVE, MIDDLE GROUND, AGGRESSIVE ssims for each time slice for new zfp
+DONE = Check with dorit about meeting next week
 
 bg, sz, zfp,
 
