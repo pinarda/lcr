@@ -285,7 +285,7 @@ def simple_orig_calcs(
     for calc in calcs:
         # print(calc)
         # temp = diff_metrics.get_diff_calc(calc).compute()
-        temp = diff_metrics.get_calc(calc)
+        temp = diff_metrics.get_calc(calc).compute()
         # calc_dict[calc] = temp.item(0)
         calc_dict[calc] = temp
 
