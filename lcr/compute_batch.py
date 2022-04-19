@@ -27,7 +27,7 @@ def main(argv):
 
     #read from jsonfile
     if jsonfile:
-        var_list, label_list, calcs,filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path = read_jsonlist(jsonfile)
+        var_list, label_list, calcs, orig_calcs, filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path = read_jsonlist(jsonfile)
     else:
         var_list = ['TS', 'LHFLX']
         label_list = ["bg_2", "bg_3", "bg_4", "bg_5", "bg_6", "bg_7"]
@@ -35,6 +35,7 @@ def main(argv):
         filename_pre = "b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1."
         filename_post = ".20060101-20071231.nc"
         calcs = ["ssim_fp"]
+        orig_calcs = ["mean"]
         comp_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/bg/"
         orig_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/"
         ldcpy_dev_path = ""
@@ -127,6 +128,8 @@ def main(argv):
                         'time': t
                     }
                     row.update(calc_dict)
+                    orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs,  orig, c , t, data_type)
+                    row.update(orig_calc_dict)
                     writer.writerow(row)
 
 
@@ -142,6 +145,7 @@ def read_jsonlist(metajson):
         var_list = []
         label_list = []
         calcs = []
+        orig_calcs = []
         filename_pre = ""
         filename_post = ""
         orig_path = ""
@@ -157,6 +161,8 @@ def read_jsonlist(metajson):
             label_list = metainfo['VarLabel']
         if "DiffCalcs" in metainfo:
             calcs = metainfo["DiffCalcs"]
+        if "OrigCalcs" in metainfo:
+            orig_calcs = metainfo["OrigCalcs"]
         if "FilenamePre" in metainfo:
             filename_pre = metainfo["FilenamePre"]
         if "FilenamePost" in metainfo:
@@ -170,7 +176,7 @@ def read_jsonlist(metajson):
         if "OptLdcpyDevPath" in metainfo:
             ldcpy_dev_path = metainfo["OptLdcpyDevPath"]
 
-    return var_list, label_list, calcs, filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path
+    return var_list, label_list, calcs, orig_calcs, filename_pre, filename_post, orig_path, comp_path, comp_dirs, ldcpy_dev_path
 
 
 
@@ -221,6 +227,51 @@ def simple_diff_calcs(
     return calc_dict
 
 
+def simple_orig_calcs(
+        ds,
+        varname,
+        calcs,
+        set1,
+        time,
+        data_type
+):
+    """
+    This function takes an input list of metrics to compute on a
+    dataset and returns them
+
+    ds : xarray.Dataset
+        An xarray dataset containing multiple netCDF files concatenated across a 'collection' dimension
+    varname : str
+        The variable of interest in the dataset
+    calcs :
+        The array of calculations to perform on the dataset
+    set1 : str
+        The collection label of the "control" data
+    set2 : str
+        The collection label of the (1st) data to compare
+    """
+
+    import ldcpy
+
+    agg_dims = ['lat', 'lon']
+
+    diff_metrics = ldcpy.Datasetcalcs(
+        ds[varname].sel(collection=set1).isel(time=time),
+        data_type,
+        agg_dims
+    )
+
+    calc_dict = {}
+    for calc in calcs:
+        # print(calc)
+        # temp = diff_metrics.get_diff_calc(calc).compute()
+        temp = diff_metrics.get_calc(calc)
+        # calc_dict[calc] = temp.item(0)
+        calc_dict[calc] = temp
+
+    return calc_dict
+
+
 def parseArguments():
 
     parser = argparse.ArgumentParser()
@@ -231,11 +282,11 @@ def parseArguments():
     parser.add_argument("-tt", "--ttotal", help="Number of time slices to process  (-1 means all slices from the start).", type=int, default=-1)
 
     parser.add_argument("-v", "--verbose", help="Output extra info as the computation runs.", action="store_true")
-    parser.add_argument("-ld", "--ldcpydev", help="Use the decevlopment version of ldcpy specified in the json file",action="store_true")
+    parser.add_argument("-ld", "--ldcpydev", help="Use the development version of ldcpy specified in the json file",action="store_true")
 
     args = parser.parse_args()
 
-    return args  
+    return args
 
        
 if __name__ == "__main__":
