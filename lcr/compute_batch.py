@@ -143,13 +143,14 @@ def main(argv):
             if not orig_file_exists:
                 writer.writeheader()
 
-            row = {
-                'set': orig,
-                'time': t
-            }
-            orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs, orig, t, data_type)
-            row.update(orig_calc_dict)
-            writer.writerow(row)
+            for t in range(ts, tend):
+                row = {
+                    'set': orig,
+                    'time': t
+                }
+                orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs, orig, t, data_type)
+                row.update(orig_calc_dict)
+                writer.writerow(row)
 
 
 def read_jsonlist(metajson):
