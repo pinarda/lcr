@@ -8,6 +8,7 @@ def main(argv):
     args = parseArguments()
 
     outfile = args.outfile
+    origoutfile = args.origoutfile
     jsonfile = args.json
     verbose = args.verbose
     ts = args.tstart
@@ -19,6 +20,7 @@ def main(argv):
     if verbose:
         print("Starting compute_batch.py")
         print("   output file = ", outfile)
+        print("   orig output file = ", origoutfile)
         print("   json file = ", jsonfile)
         print("   verbose = ", verbose)
         print("   tstart = ", ts)
@@ -128,10 +130,26 @@ def main(argv):
                         'time': t
                     }
                     row.update(calc_dict)
-                    orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs,  orig, c , t, data_type)
-                    row.update(orig_calc_dict)
                     writer.writerow(row)
 
+
+        orig_file_exists = os.path.isfile(origoutfile)
+        with open(origoutfile, 'a', newline='') as origcsvfile:
+            fieldnames = [
+                             'set',
+                             'time'
+                         ] + orig_calcs
+            writer = csv.DictWriter(origcsvfile, fieldnames=fieldnames)
+            if not orig_file_exists:
+                writer.writeheader()
+
+            row = {
+                'set': orig,
+                'time': t
+            }
+            orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs, orig, t, data_type)
+            row.update(orig_calc_dict)
+            writer.writerow(row)
 
 
 def read_jsonlist(metajson):
@@ -277,6 +295,7 @@ def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json input file that describes the calculation to perform.", type=str, default="./sample.json")
     parser.add_argument("-o", "--outfile", help="csv file to store output (if file exists, then data will append).", type=str, default="./sample.csv")
+    parser.add_argument("-oo", "--origoutfile", help="csv file to store original data output (if file exists, then data will append).", type=str, default="./origsample.csv")
 
     parser.add_argument("-ts", "--tstart", help="Starting time slice.", type=int, default=0)
     parser.add_argument("-tt", "--ttotal", help="Number of time slices to process  (-1 means all slices from the start).", type=int, default=-1)
