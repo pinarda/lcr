@@ -153,6 +153,17 @@ def main(argv):
 
 
 def read_jsonlist(metajson):
+    var_list = []
+    label_list = []
+    calcs = []
+    orig_calcs = []
+    filename_pre = ""
+    filename_post = ""
+    orig_path = ""
+    comp_path = ""
+    comp_dirs = ""
+    ldcpy_dev_path = ""
+
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
         print("\n")
@@ -160,16 +171,6 @@ def read_jsonlist(metajson):
         print("Warning: Specified json file does not exist: ", metajson)
         print("*************************************************************************************")
         print("\n")
-        var_list = []
-        label_list = []
-        calcs = []
-        orig_calcs = []
-        filename_pre = ""
-        filename_post = ""
-        orig_path = ""
-        comp_path = ""
-        comp_dirs = ""
-        ldcpy_dev_path = ""
     else:
         fd = open(metajson)
         metainfo = json.load(fd)
