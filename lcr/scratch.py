@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 
 def binary_fix(i, n):
@@ -63,23 +64,30 @@ def tunstall_decode(master_directory):
     return string
 
 
-n = int(input("Enter number of bits: " ))
-string = input("Enter the string to be encoded: ")
-len_str = len(string)
-dictionary = dict()
-for i in string:
-    if i in dictionary:
-        dictionary[i] = dictionary[i] + 1
-    else:
-        dictionary[i] = 1
-alphabet = []
-probability = []
-for i in dictionary.items():
-    alphabet.append(i[0])
-    probability.append(i[1])
-for i in range(len(probability)):
-    probability[i] = probability[i] / len_str
-N = len(alphabet)
-k = math.floor(((2 ** n) - N)/ (N - 1))
-master_directory = tunstall_encode(alphabet, probability, k, N, n, string)
-print(tunstall_decode(master_directory))
+# n = int(input("Enter number of bits: " ))
+# string = input("Enter the string to be encoded: ")
+# len_str = len(string)
+# dictionary = dict()
+# for i in string:
+#     if i in dictionary:
+#         dictionary[i] = dictionary[i] + 1
+#     else:
+#         dictionary[i] = 1
+# alphabet = []
+# probability = []
+# for i in dictionary.items():
+#     alphabet.append(i[0])
+#     probability.append(i[1])
+# for i in range(len(probability)):
+#     probability[i] = probability[i] / len_str
+# N = len(alphabet)
+# k = math.floor(((2 ** n) - N)/ (N - 1))
+# master_directory = tunstall_encode(alphabet, probability, k, N, n, string)
+# print(tunstall_decode(master_directory))
+
+if __name__ == "__main__":
+    arr = np.array([0b0000101101, 0b101010101, 0b111000111])
+
+    t_arr = np.transpose(arr)
+    print(t_arr)
+

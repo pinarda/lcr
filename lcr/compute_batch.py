@@ -83,6 +83,7 @@ def main(argv):
 
     if verbose:
         print("Output file = ", outfile)
+        print("Orig output file = ", origoutfile)
 
     #loop through calculations
     for var in var_list:

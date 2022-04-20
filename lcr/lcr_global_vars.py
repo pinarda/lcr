@@ -12,7 +12,7 @@ def varlist(csvfilename):
         for row in reader:
             if len(row) == 0:
                 continue
-            m = re.search('.*_(?P<level>.+)_(?P<varname>.*)', row[0])
+            m = re.search('^(?P<compression>.*?)_(?P<level>[0-9]+?)_(?P<varname>.*)$', row[0])
             if m is not None:
                 vars.append(m.group("varname"))
     vars = np.unique(vars)
@@ -26,7 +26,7 @@ def varlist(csvfilename):
 
 # variables automatically specified based on available dssim calcs
 monthly_vars = varlist(f"../data/test_set/monthly_dssims.csv")
-daily_vars = varlist(f"../data/test_set/daily_dssims.csv")
+daily_vars = varlist(f"../data/all_daily_24/daily_dssims.csv")
 
 # array of the name prefixes for each compression algorithm
 # used in most csv files and most other places in the python code

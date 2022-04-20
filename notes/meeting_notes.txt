@@ -2,8 +2,18 @@
 April 19 Meeting
 ******************
 
-Hayden Stuff
+Hayden Stuff - give him dssim data (anything else?)
 
+formatting the z050
+formatting the text size on the histograms
+verify the labels on the overall histogram for the ratio
+add an arrow - more compression this way
+
+bookmark - we would like to know from the histogram what the distribution is accross each level - think about representing
+
+in bitgrooming we specify the number of significant digits
+
+Comparing Significant Digits derived from real information content and Data SSIM
 ******************
 April 11 Meeting
 ******************
