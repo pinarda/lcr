@@ -13,7 +13,7 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/apinard/PRECL_calcs.csv' -j 'PRECL.json' -v -ld
+python ./compute_batch.py -o '/glade/scratch/apinard/PRECL_calcs.csv' -j '/glade/u/home/apinard/lcr/lcr/batch_scripts/modified_scripts/PRECL.json' -v -ld
 
 
 
