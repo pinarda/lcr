@@ -14,6 +14,10 @@ bookmark - we would like to know from the histogram what the distribution is acc
 in bitgrooming we specify the number of significant digits
 
 Comparing Significant Digits derived from real information content and Data SSIM
+
+Talk to dorit about fall payne institue/chris thing
+Talk to dorit about methane monitoring stuff - if I can get involved.
+
 ******************
 April 11 Meeting
 ******************
