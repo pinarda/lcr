@@ -272,7 +272,7 @@ if __name__ == "__main__":
                "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
                "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
                "WSPDSRFAV", "Z050", "Z500"]:
-         hist_plotter(v, "daily", "../data/all_daily_24/daily_optimal_slices.csv")
+         hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
 
     # just save the dataframe as labels
     # for v in lcr_global_vars.monthly_vars:

@@ -26,7 +26,7 @@ def varlist(csvfilename):
 
 # variables automatically specified based on available dssim calcs
 monthly_vars = varlist(f"../data/test_set/monthly_dssims.csv")
-daily_vars = varlist(f"../data/all_daily_24/daily_dssims.csv")
+daily_vars = varlist(f"../data/daily_dssims.csv")
 
 # array of the name prefixes for each compression algorithm
 # used in most csv files and most other places in the python code
@@ -37,4 +37,4 @@ alg_prefixes = ["zfp", "bg", "sz", "sz1ROn", "zfp5"]
 algs = ["zfp", "bg", "sz", "sz1413", "z_hdf5"]
 
 # list of single-value features being used by the models
-features = ["mean", "variance", "ns_con_var"]
+features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile"]
