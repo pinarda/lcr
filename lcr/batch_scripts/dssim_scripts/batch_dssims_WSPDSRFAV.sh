@@ -1,5 +1,5 @@
 #!/bin/tcsh
-#PBS -A NTDD0004
+#PBS -A NTDD0005
 #PBS -N testb
 #PBS -q regular
 #PBS -l walltime=0:20:00
