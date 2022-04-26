@@ -89,7 +89,7 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
     return levels[len(levels)-1]
 
 
-def optimal_level_min(csvfilename, variable, threshold, compression, freq):
+def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_var):
     """
     Find the minimum of all the optimal compression levels for a specified variable
     over all time slices.
@@ -107,12 +107,12 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq):
 
     levs = []
     for time in times:
-        lev = optimal_level(f"../data/{variable}_calcs.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression)
         levs.append(lev)
     min_level = min(levs)
     return min_level
 
-def optimal_level_spread(csvfilename, variable, threshold, compression, freq):
+def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var):
     """
     Find the minimum of all the optimal compression levels for a specified variable
     over all time slices.
@@ -132,7 +132,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq):
 
     levs = []
     for time in times:
-        lev = optimal_level(f"../data/{variable}_calcs.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression, argv_var)
         levs.append(lev)
     return levs
 
@@ -228,7 +228,7 @@ def main_zfp(argv):
         for varname in v:
             print(f"current_var: {varname}")
             # levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
-            levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq)
+            levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
             location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
