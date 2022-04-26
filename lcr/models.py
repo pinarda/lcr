@@ -61,7 +61,7 @@ def neural_net(X_train, X_test, y_train, y_test):
     X_train_arr = X_train.to_numpy().astype(float)
     X_test_arr = X_test.to_numpy().astype(float)
 
-    layers = [Dense(10, activation='relu', input_shape=(3,)),
+    layers = [Dense(10, activation='relu', input_shape=(8,)),
               Dense(10, activation='relu'),
               Dense(max(y_train)+1)]
     model = keras.Sequential(layers=layers)
@@ -124,7 +124,7 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
     (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
     (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
-    (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
+    # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
     (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     y_pred = []
@@ -132,7 +132,7 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
         y_pred.append(statistics.mode([rf_preds[i],
                                        nn_preds[i],
                                        knn_preds[i],
-                                       svm_preds[i],
+                                       # svm_preds[i],
                                        lda_preds[i],
                                        qda_preds[i]]))
 
@@ -140,12 +140,13 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    daily_df = pd.read_csv('../data/zfp_only/daily_compress_df.csv')
+    daily_df = pd.read_csv('../data/daily_compress_df.csv')
     # monthly_df = pd.read_csv('../data/monthly_compress_df.csv')
 
     # just look at a particular algorithm and try and guess the level for now
-    subset_daily = daily_df[daily_df["algs"] == "zfp"]
+    subset_daily = daily_df[daily_df["algs"] == "bg"]
     X = subset_daily[lcr_global_vars.features]
+    subset_daily["levels"][subset_daily["levels"] == -1] = 26
     y = subset_daily[["levels"]]
     y = np.array(y).ravel()
     y = np.unique(y, return_inverse=True)[1]
@@ -164,34 +165,45 @@ if __name__ == "__main__":
     y_validate = y[subset_daily["variable"].isin(validate_vars)]
     y_test = y[subset_daily["variable"].isin(test_vars)]
 
-    # (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
-    # print(rf_acc)
-    # print(confusion_matrix(y_test, rf_preds))
-    # report = classification_report(y_test, rf_preds, output_dict=True)
-    # rf_df = pd.DataFrame(report).transpose()
-    # rf_df.to_csv('../data/rf_report.csv', float_format="%.3f")
+    (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
+    print("SECTION RANDOM FOREST -----------------")
+    print(rf_acc)
+    print(confusion_matrix(y_test, rf_preds))
+    report = classification_report(y_test, rf_preds, output_dict=True)
+    rf_df = pd.DataFrame(report).transpose()
+    rf_df.to_csv('../data/rf_report.csv', float_format="%.3f")
+    print("END SECTION RANDOM FOREST -----------------")
 
     (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
+    print("SECTION ADABOOST -----------------")
     print(boost_acc)
     print(confusion_matrix(y_test, boost_preds))
     report = classification_report(y_test, boost_preds, output_dict=True)
     boost_df = pd.DataFrame(report).transpose()
     boost_df.to_csv('../data/boost_report.csv', float_format="%.3f")
+    print("END SECTION ADABOOST -----------------")
 
-    # (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
-    # print(nn_acc)
-    # print(confusion_matrix(y_test, nn_preds))
-    # report = classification_report(y_test, nn_preds, output_dict=True)
-    # nn_df = pd.DataFrame(report).transpose()
-    # nn_df.to_csv('../data/nn_report.csv', float_format="%.3f")
-    #
-    # (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
-    # print(knn_acc)
-    # print(confusion_matrix(y_test, knn_preds))
-    # report = classification_report(y_test, knn_preds, output_dict=True)
-    # knn_df = pd.DataFrame(report).transpose()
-    # knn_df.to_csv('../data/knn_report.csv', float_format="%.3f")
-    #
+    (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
+    print("SECTION NEURAL NETWORK -----------------")
+    print(nn_acc)
+    print(confusion_matrix(y_test, nn_preds))
+    report = classification_report(y_test, nn_preds, output_dict=True)
+    nn_df = pd.DataFrame(report).transpose()
+    nn_df.to_csv('../data/nn_report.csv', float_format="%.3f")
+    print("END SECTION NEURAL NETWORK -----------------")
+
+
+    print("SECTION KNN -----------------")
+    (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
+    print(knn_acc)
+    print(confusion_matrix(y_test, knn_preds))
+    report = classification_report(y_test, knn_preds, output_dict=True)
+    knn_df = pd.DataFrame(report).transpose()
+    knn_df.to_csv('../data/knn_report.csv', float_format="%.3f")
+    print("END SECTION KNN -----------------")
+
+
+    # print("SECTION SVM -----------------")
     # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
     # print(svm_acc)
     # print(confusion_matrix(y_test, svm_preds))
@@ -199,23 +211,35 @@ if __name__ == "__main__":
     # svm_df = pd.DataFrame(report).transpose()
     # svm_df.to_csv('../data/svm_report.csv', float_format="%.3f")
     #
-    # (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-    # print(lda_acc)
-    # print(confusion_matrix(y_test, lda_preds))
-    # report = classification_report(y_test, lda_preds, output_dict=True)
-    # lda_df = pd.DataFrame(report).transpose()
-    # lda_df.to_csv('../data/lda_report.csv', float_format="%.3f")
-    #
-    # (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-    # print(qda_acc)
-    # print(confusion_matrix(y_test, qda_preds))
-    # report = classification_report(y_test, qda_preds, output_dict=True)
-    # qda_df = pd.DataFrame(report).transpose()
-    # qda_df.to_csv('../data/qda_report.csv', float_format="%.3f")
-    #
-    # (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
-    # print(combine_acc)
-    # print(confusion_matrix(y_test, combine_preds))
-    # report = classification_report(y_test, combine_preds, output_dict=True)
-    # combine_df = pd.DataFrame(report).transpose()
-    # combine_df.to_csv('../data/combine_report.csv', float_format="%.3f")
+    # print("END SECTION SVM -----------------")
+
+
+    print("SECTION LDA -----------------")
+    (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+    print(lda_acc)
+    print(confusion_matrix(y_test, lda_preds))
+    report = classification_report(y_test, lda_preds, output_dict=True)
+    lda_df = pd.DataFrame(report).transpose()
+    lda_df.to_csv('../data/lda_report.csv', float_format="%.3f")
+    print("END SECTION LDA -----------------")
+
+
+    print("SECTION QDA -----------------")
+    (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+    print(qda_acc)
+    print(confusion_matrix(y_test, qda_preds))
+    report = classification_report(y_test, qda_preds, output_dict=True)
+    qda_df = pd.DataFrame(report).transpose()
+    qda_df.to_csv('../data/qda_report.csv', float_format="%.3f")
+
+    print("END SECTION QDA -----------------")
+
+
+    print("SECTION AGGREGATE -----------------")
+    (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
+    print(combine_acc)
+    print(confusion_matrix(y_test, combine_preds))
+    report = classification_report(y_test, combine_preds, output_dict=True)
+    combine_df = pd.DataFrame(report).transpose()
+    combine_df.to_csv('../data/combine_report.csv', float_format="%.3f")
+    print("END SECTION AGGREGATE -----------------")

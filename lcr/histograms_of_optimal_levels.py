@@ -10,6 +10,7 @@ path_root = Path(__file__).parents[2]
 sys.path.append(str(path_root))
 
 import pandas as pd
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import lcr_global_vars
@@ -24,7 +25,7 @@ def omit_by(dct, predicate=lambda x: x==0):
 def hist_plotter(v, freq, csvfile, tags=True):
     df = pd.read_csv(csvfile)
     vdf = df[df["variable"]==v]
-    #vdf=df
+    vdf=df
 
     adf=df["best_alg"].to_list()
     ldf=df["best_level"].to_list()
@@ -49,12 +50,19 @@ def hist_plotter(v, freq, csvfile, tags=True):
     new_list = dict(sorted(new_list.items()))
 
     ratio_list = {}
+    n={}
+    rfloat = [float(x) for x in r]
     # yikes
     for i in range(0, len(adf)):
         ratio_list[f"{adf[i]} {ldf[i]}"] = 0
+        n[f"{a[i]} {l[i]}"] = 0
 
     for i in range(0, len(a)):
-        ratio_list[f"{a[i]} {l[i]}"] = r[i]
+        ratio_list[f"{a[i]} {l[i]}"] = ratio_list[f"{a[i]} {l[i]}"] + float(r[i])
+        n[f"{a[i]} {l[i]}"] = n[f"{a[i]} {l[i]}"]+1
+
+    for key in ratio_list.keys():
+        ratio_list[key] = str(ratio_list[key]/n[key])
 
     ratio_list = dict(sorted(ratio_list.items()))
 
@@ -135,11 +143,11 @@ def hist_plotter(v, freq, csvfile, tags=True):
 #    newdf.plot("algs", ["counts"], title=f"Best Compression Histogram for {v} ({freq})", ylabel="Count",
 #              xlabel="Compression Settings", ax=ax, kind='bar', legend=False, color=colors)
     plt.bar(x=list(newdf["compression"])[::-1], height=list(newdf["counts"])[::-1], color = list(newdf["color"])[::-1])
-    plt.title(f"Best Compression Histogram for {v} ({freq})")
+    plt.title(f"Best Compression Histogram for all Variables")
     plt.xlabel("Compression Settings")
     plt.xticks(plt.xticks()[0], labels=newdf["algs"][::-1])
     plt.ylabel("Count")
-    plt.ylim(top=30)
+    plt.ylim(top=15000)
 
     rects = ax.patches
 
@@ -176,7 +184,7 @@ def hist_plotter(v, freq, csvfile, tags=True):
         bar.set_hatch(hatch)
 
     #ax.legend(loc='upper right', ncol=1)
-    plt.savefig(f"../slice_hists/{v}{freq}")
+    plt.savefig(f"../slice_hists/daily")
     #plt.show()
 
 def save_labels(v, freq, csvfile, tags=True):
@@ -251,7 +259,7 @@ def save_labels(v, freq, csvfile, tags=True):
     newdf["ratios"] = r
     newdf["variable"] = v
     # At the moment it is assumed that the time slices are in order here.
-    newdf["times"] = list(range(0,24))
+    newdf["times"] = list(range(0,730))
 
     fileloc = f"../data/{freq}_labels.csv"
     file_exists = exists(fileloc)
@@ -266,18 +274,13 @@ if __name__ == "__main__":
     # for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
     #            "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
     #      hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
-    for v in ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
-               "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC",
-               "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF",
-               "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
-               "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
-               "WSPDSRFAV", "Z050", "Z500"]:
+    for v in ["bc_a1_SRF"]:
          hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
 
     # just save the dataframe as labels
     # for v in lcr_global_vars.monthly_vars:
     #     save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
 
-    # USE THIS FOR MAKING DAILY/MONTHLY LABELS
-    #for v in lcr_global_vars.daily_vars:
+    #USE THIS FOR MAKING DAILY/MONTHLY LABELS
+    # for v in lcr_global_vars.daily_vars:
     #    save_labels(v, "daily", "../data/daily_optimal_slices.csv")
