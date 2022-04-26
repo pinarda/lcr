@@ -132,7 +132,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
 
     levs = []
     for time in times:
-        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression, argv_var)
+        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression)
         levs.append(lev)
     return levs
 
