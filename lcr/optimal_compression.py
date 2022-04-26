@@ -205,7 +205,7 @@ def main_zfp(argv):
     argv_var = args.var
 
     for freq in ['daily']:
-        v = lcr_global_vars.varlist(f"../data/{argv_var}_calcs.csv")
+        v = lcr_global_vars.varlist(f"/glade/scratch/apinard/{argv_var}_calcs.csv")
 
         location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
@@ -228,7 +228,7 @@ def main_zfp(argv):
         for varname in v:
             print(f"current_var: {varname}")
             # levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
-            levelzfp = optimal_level_spread(f"../data/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq)
+            levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq)
             location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
