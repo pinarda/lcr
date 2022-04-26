@@ -229,7 +229,7 @@ def main_zfp(argv):
             print(f"current_var: {varname}")
             # levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             levelzfp = optimal_level_spread(f"../data/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq)
-            location = f"../data/{freq}_zfp_bg_sz_comp_slices.csv"
+            location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
                 fieldnames = [
