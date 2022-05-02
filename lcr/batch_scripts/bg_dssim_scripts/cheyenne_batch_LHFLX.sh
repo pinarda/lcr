@@ -13,7 +13,7 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/apinard/LHFLX_calcs.csv' -j 'LHFLX.json' -v -ld
+python ./compute_batch.py -o '/glade/scratch/apinard/LHFLX_calcs.csv' './batch_scripts/bg_dssim_scripts/LHFLX.json' -v -ld
 
 
 
