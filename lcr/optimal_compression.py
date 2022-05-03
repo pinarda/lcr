@@ -202,7 +202,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
 
     levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
 
-    return np.where(levs == levs.max()), max(levs)
+    return np.argmax(levs), max(levs)
 
 
 def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_var):
