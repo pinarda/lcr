@@ -344,6 +344,7 @@ def main_zfp(argv):
         for varname in v:
             print(f"current_var: {varname}")
             levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "bg", freq, argv_var)
+            print(f"level bg: {levelbg}")
             # levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
             location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
