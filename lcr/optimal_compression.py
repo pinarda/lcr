@@ -144,7 +144,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     prev_lev = None
     best_ks_p_lev = 100000
     for row in rows:
-        ks_p = 1-float(row[3])
+        ks_p = float(row[3])
         if ks_p >= ks_p_threshold:
             prev_lev=levels[i]
             i=i+1
@@ -159,7 +159,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     prev_lev = None
     best_spatial_err_lev = 100000
     for row in rows:
-        spatial_err = float(row[4])
+        spatial_err = 100-float(row[4])
         if spatial_err >= spatial_err_threshold:
             prev_lev = levels[i]
             i = i + 1
@@ -174,7 +174,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     prev_lev = None
     best_max_spatial_err_lev = 100000
     for row in rows:
-        max_spatial_err = float(row[4])
+        max_spatial_err = 1-float(row[5])
         if max_spatial_err >= max_spatial_err_threshold:
             prev_lev = levels[i]
             i = i + 1
@@ -189,7 +189,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     prev_lev = None
     best_pcc_lev = 100000
     for row in rows:
-        pcc = float(row[4])
+        pcc = float(row[6])
         if pcc >= pcc_threshold:
             prev_lev = levels[i]
             i = i + 1
@@ -223,7 +223,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_
 
     levs = []
     for time in times:
-        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
+        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
     min_level = min(levs)
     return min_level
@@ -248,7 +248,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
 
     levs = []
     for time in times:
-        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
+        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
     return levs
 
