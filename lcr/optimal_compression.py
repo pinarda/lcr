@@ -88,6 +88,122 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
                 return -1
     return levels[len(levels)-1]
 
+def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep: int,
+                                      dssim_threshold: float, ks_p_threshold: float,
+                                      spatial_err_threshold: float, max_spatial_err_threshold: float,
+                                      pcc_threshold: float, compression: str):
+    """
+    Finds the optimal compression level in a csv file assuming the levels are in the first
+    column with the format .*_LEVEL_.* the DSSIM/comparison values are in the third column, fourth, ... columns.
+    """
+    rows = search_csv(csvfilename, variable, timestep, compression)
+    if len(rows) == 0:
+        return 0
+    levels = []
+
+    # ensure unique variable/level/timeslice
+    rowids = []
+    for row in rows:
+        rowid = row[0] + row[1]
+        rowids.append(rowid)
+    rows = [rows[i] for i in np.unique(rowids, return_index=True)[1][::-1]]
+
+    # ensure list of levels is in descending order (i.e. least compressed first)
+
+    if compression not in ["sz1.4", "sz1ROn"]:
+        for row in rows:
+            m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+            levels.append(int(m.group("level")))
+            sort_index = np.argsort(levels)
+        rows = [rows[i] for i in sort_index[::-1]]
+        levels = [levels[i] for i in sort_index[::-1]]
+    if compression in ["sz1.4", "sz1ROn"]:
+        for row in rows:
+            m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+            levels.append(m.group("level"))
+        rows = rows[::-1]
+        levels = levels[::-1]
+
+    # compute optimal level based on dssim
+    i = 0
+    prev_lev = None
+    best_dssim_lev = 100000
+    for row in rows:
+        dssim = float(row[2])
+        if dssim >= dssim_threshold:
+            prev_lev=levels[i]
+            i=i+1
+            continue
+        if dssim < dssim_threshold:
+            if prev_lev is not None:
+                best_dssim_lev = prev_lev
+            else:
+                best_dssim_lev = -1
+
+    i = 0
+    prev_lev = None
+    best_ks_p_lev = 100000
+    for row in rows:
+        ks_p = float(row[3])
+        if ks_p >= ks_p_threshold:
+            prev_lev=levels[i]
+            i=i+1
+            continue
+        if ks_p < ks_p_threshold:
+            if prev_lev is not None:
+                best_ks_p_lev = prev_lev
+            else:
+                best_ks_p_lev = -1
+
+    i = 0
+    prev_lev = None
+    best_spatial_err_lev = 100000
+    for row in rows:
+        spatial_err = float(row[4])
+        if spatial_err >= spatial_err_threshold:
+            prev_lev = levels[i]
+            i = i + 1
+            continue
+        if spatial_err < spatial_err_threshold:
+            if prev_lev is not None:
+                best_spatial_err_lev = prev_lev
+            else:
+                best_spatial_err_lev = -1
+
+    i = 0
+    prev_lev = None
+    best_max_spatial_err_lev = 100000
+    for row in rows:
+        max_spatial_err = float(row[4])
+        if max_spatial_err >= max_spatial_err_threshold:
+            prev_lev = levels[i]
+            i = i + 1
+            continue
+        if max_spatial_err < max_spatial_err_threshold:
+            if prev_lev is not None:
+                best_max_spatial_err_lev = prev_lev
+            else:
+                best_max_spatial_err_lev = -1
+
+    i = 0
+    prev_lev = None
+    best_pcc_lev = 100000
+    for row in rows:
+        pcc = float(row[4])
+        if pcc >= pcc_threshold:
+            prev_lev = levels[i]
+            i = i + 1
+            continue
+        if pcc < pcc_threshold:
+            if prev_lev is not None:
+                best_pcc_lev = prev_lev
+            else:
+                best_pcc_lev = -1
+
+    levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
+
+    return np.where(levs == levs.min()), min(levs)
+
 
 def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_var):
     """
@@ -214,9 +330,9 @@ def main_zfp(argv):
                 'variable',
                 'frequency',
                 'timestep',
-                # 'bg_level',
-                # 'bg_size',
-                # 'bg_ratio',
+                'bg_level',
+                'bg_size',
+                'bg_ratio',
                 'zfp_level',
                 'zfp_size',
                 'zfp_ratio'
@@ -227,7 +343,7 @@ def main_zfp(argv):
 
         for varname in v:
             print(f"current_var: {varname}")
-            # levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
+            levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
             location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
@@ -236,9 +352,9 @@ def main_zfp(argv):
                     'variable',
                     'frequency',
                     'timestep',
-                    # 'bg_level',
-                    # 'bg_size',
-                    # 'bg_ratio',
+                    'bg_level',
+                    'bg_size',
+                    'bg_ratio',
                     'zfp_level',
                     'zfp_size',
                     'zfp_ratio'
@@ -248,20 +364,20 @@ def main_zfp(argv):
 
                 for i in range(0, 730):
                     fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
-                    # fbg = filesize(sizecsv, varname, levelbg[i], "bg")
+                    fbg = filesize(sizecsv, varname, levelbg[i], "bg")
                     if fzfp is not None:
                         sizezfp = float(fzfp)
-                        # sizebg = float(fbg)
+                        sizebg = float(fbg)
                         ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
-                        # ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
+                        ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
                     writer.writerow(
                         {
                             'variable': varname,
                             'frequency': freq,
                             'timestep': i,
-                            # 'bg_level': levelbg[i],
-                            # 'bg_size': sizebg,
-                            # 'bg_ratio': ratiobg,
+                            'bg_level': levelbg[i],
+                            'bg_size': sizebg,
+                            'bg_ratio': ratiobg,
                             'zfp_level': levelzfp[i],
                             'zfp_size': sizezfp,
                             'zfp_ratio': ratiozfp
