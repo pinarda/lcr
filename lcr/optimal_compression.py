@@ -138,13 +138,13 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             if prev_lev is not None:
                 best_dssim_lev = prev_lev
             else:
-                best_dssim_lev = -1
+                best_dssim_lev = 100000
 
     i = 0
     prev_lev = None
     best_ks_p_lev = 100000
     for row in rows:
-        ks_p = float(row[3])
+        ks_p = 1-float(row[3])
         if ks_p >= ks_p_threshold:
             prev_lev=levels[i]
             i=i+1
@@ -153,7 +153,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             if prev_lev is not None:
                 best_ks_p_lev = prev_lev
             else:
-                best_ks_p_lev = -1
+                best_ks_p_lev = 100000
 
     i = 0
     prev_lev = None
@@ -168,7 +168,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             if prev_lev is not None:
                 best_spatial_err_lev = prev_lev
             else:
-                best_spatial_err_lev = -1
+                best_spatial_err_lev = 100000
 
     i = 0
     prev_lev = None
@@ -183,7 +183,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             if prev_lev is not None:
                 best_max_spatial_err_lev = prev_lev
             else:
-                best_max_spatial_err_lev = -1
+                best_max_spatial_err_lev = 100000
 
     i = 0
     prev_lev = None
@@ -198,11 +198,11 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             if prev_lev is not None:
                 best_pcc_lev = prev_lev
             else:
-                best_pcc_lev = -1
+                best_pcc_lev = 100000
 
     levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
 
-    return np.where(levs == levs.min()), min(levs)
+    return np.where(levs == levs.max()), max(levs)
 
 
 def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_var):
@@ -223,7 +223,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_
 
     levs = []
     for time in times:
-        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
         levs.append(lev)
     min_level = min(levs)
     return min_level
@@ -248,7 +248,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
 
     levs = []
     for time in times:
-        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
         levs.append(lev)
     return levs
 
