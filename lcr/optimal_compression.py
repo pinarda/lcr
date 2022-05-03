@@ -223,7 +223,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_
 
     levs = []
     for time in times:
-        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
+        lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
         levs.append(lev)
     min_level = min(levs)
     return min_level
@@ -248,7 +248,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
 
     levs = []
     for time in times:
-        lev = optimal_level(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
+        lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 1-0.05, 0.05, 0.1, 0.99999, compression)
         levs.append(lev)
     return levs
 
