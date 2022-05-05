@@ -144,7 +144,7 @@ if __name__ == "__main__":
     # monthly_df = pd.read_csv('../data/monthly_compress_df.csv')
 
     # just look at a particular algorithm and try and guess the level for now
-    subset_daily = daily_df[daily_df["algs"] == "bg"]
+    subset_daily = daily_df[daily_df["algs"] == "zfp"]
     X = subset_daily[lcr_global_vars.features]
     subset_daily["levels"][subset_daily["levels"] == -1] = 26
     y = subset_daily[["levels"]]

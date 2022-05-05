@@ -5,7 +5,7 @@ import csv
 import regex as re
 
 if __name__ == "__main__":
-    with open('../data/daily_dssims.csv', 'w', newline='') as writefile:
+    with open('../data/tempdir/daily_dssims.csv', 'w', newline='') as writefile:
         writer = csv.writer(writefile, delimiter=',')
         with open("../data/batch_data/all_calcs.csv", newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')

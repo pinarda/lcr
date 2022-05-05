@@ -127,7 +127,7 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     # compute optimal level based on dssim
     i = 0
     prev_lev = None
-    best_dssim_lev = 100000
+    best_dssim_lev = -1
     for row in rows:
         dssim = float(row[2])
         if dssim >= dssim_threshold:
@@ -140,9 +140,12 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             else:
                 best_dssim_lev = 100000
 
+    if best_dssim_lev == -1:
+        best_dssim_lev = prev_lev
+
     i = 0
     prev_lev = None
-    best_ks_p_lev = 100000
+    best_ks_p_lev = -1
     for row in rows:
         ks_p = float(row[3])
         if ks_p >= ks_p_threshold:
@@ -155,9 +158,13 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             else:
                 best_ks_p_lev = 100000
 
+
+    if best_ks_p_lev == -1:
+        best_ks_p_lev = prev_lev
+
     i = 0
     prev_lev = None
-    best_spatial_err_lev = 100000
+    best_spatial_err_lev = -1
     for row in rows:
         spatial_err = 100-float(row[4])
         if spatial_err >= spatial_err_threshold:
@@ -170,9 +177,13 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             else:
                 best_spatial_err_lev = 100000
 
+
+    if best_spatial_err_lev == -1:
+        best_spatial_err_lev = prev_lev
+
     i = 0
     prev_lev = None
-    best_max_spatial_err_lev = 100000
+    best_max_spatial_err_lev = -1
     for row in rows:
         max_spatial_err = 1-float(row[5])
         if max_spatial_err >= max_spatial_err_threshold:
@@ -185,9 +196,12 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             else:
                 best_max_spatial_err_lev = 100000
 
+    if best_max_spatial_err_lev == -1:
+        best_max_spatial_err_lev = prev_lev
+
     i = 0
     prev_lev = None
-    best_pcc_lev = 100000
+    best_pcc_lev = -1
     for row in rows:
         pcc = float(row[6])
         if pcc >= pcc_threshold:
@@ -199,6 +213,9 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
                 best_pcc_lev = prev_lev
             else:
                 best_pcc_lev = 100000
+
+    if best_pcc_lev == -1:
+        best_pcc_lev = prev_lev
 
     levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
 
@@ -223,7 +240,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_
 
     levs = []
     for time in times:
-        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
+        index, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
     min_level = min(levs)
     return min_level
@@ -248,7 +265,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
 
     levs = []
     for time in times:
-        index, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
+        index, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
     return levs
 
@@ -317,13 +334,13 @@ def parseArguments():
 
 def main_zfp(argv):
     # Get command line stuff and store in a dictionary
-    args = parseArguments()
-    argv_var = args.var
+    # args = parseArguments()
+    # argv_var = args.var
 
     for freq in ['daily']:
-        v = lcr_global_vars.varlist(f"/glade/scratch/apinard/{argv_var}_calcs.csv")
+        v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 
-        location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
+        location = f"../data/test_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
             fieldnames = [
@@ -343,10 +360,10 @@ def main_zfp(argv):
 
         for varname in v:
             print(f"current_var: {varname}")
-            levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "bg", freq, argv_var)
+            levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq, 1)
             print(f"level bg: {levelbg}")
             # levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
-            location = f"../data/{argv_var}_zfp_bg_sz_comp_slices.csv"
+            location = f"../data/test_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
                 fieldnames = [
