@@ -334,8 +334,8 @@ def parseArguments():
 
 def main_zfp(argv):
     # Get command line stuff and store in a dictionary
-    # args = parseArguments()
-    # argv_var = args.var
+    args = parseArguments()
+    argv_var = args.var
 
     for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
@@ -349,10 +349,10 @@ def main_zfp(argv):
                 'timestep',
                 'bg_level',
                 'bg_size',
-                'bg_ratio'
-                # 'zfp_level',
-                # 'zfp_size',
-                # 'zfp_ratio'
+                'bg_ratio',
+                'zfp_level',
+                'zfp_size',
+                'zfp_ratio'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
@@ -360,9 +360,9 @@ def main_zfp(argv):
 
         for varname in v:
             print(f"current_var: {varname}")
-            levelbg = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq, 1)
+            levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "bg", freq, argv_var)
             print(f"level bg: {levelbg}")
-            # levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
+            levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
             location = f"../data/test_zfp_bg_sz_comp_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as csvfile:
@@ -372,21 +372,21 @@ def main_zfp(argv):
                     'timestep',
                     'bg_level',
                     'bg_size',
-                    'bg_ratio'
-                    # 'zfp_level',
-                    # 'zfp_size',
-                    # 'zfp_ratio'
+                    'bg_ratio',
+                    'zfp_level',
+                    'zfp_size',
+                    'zfp_ratio'
                 ]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 sizecsv = f"../data/{freq}_filesizes.csv"
 
                 for i in range(0, 730):
-                    # fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
+                    fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
                     fbg = filesize(sizecsv, varname, levelbg[i], "bg")
                     if fbg is not None:
-                        # sizezfp = float(fzfp)
+                        sizezfp = float(fzfp)
                         sizebg = float(fbg)
-                        # ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
+                        ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
                         ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
                     writer.writerow(
                         {
@@ -395,10 +395,10 @@ def main_zfp(argv):
                             'timestep': i,
                             'bg_level': levelbg[i],
                             'bg_size': sizebg,
-                            'bg_ratio': ratiobg
-                            # 'zfp_level': levelzfp[i],
-                            # 'zfp_size': sizezfp,
-                            # 'zfp_ratio': ratiozfp
+                            'bg_ratio': ratiobg,
+                            'zfp_level': levelzfp[i],
+                            'zfp_size': sizezfp,
+                            'zfp_ratio': ratiozfp
                         }
                     )
 
