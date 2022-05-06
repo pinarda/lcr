@@ -341,7 +341,7 @@ def main_zfp(argv):
     for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 
-        location = f"../data/test_zfp_bg_sz_comp_slices.csv"
+        location = f"../data/real_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
             fieldnames = [
