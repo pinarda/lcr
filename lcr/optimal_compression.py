@@ -336,6 +336,7 @@ def main_zfp(argv):
     # Get command line stuff and store in a dictionary
     args = parseArguments()
     argv_var = args.var
+    print(f"current_var: {argv_var}")
 
     for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
@@ -358,49 +359,49 @@ def main_zfp(argv):
             if not file_exists:
                 writer.writeheader()
 
-        for varname in v:
-            print(f"current_var: {varname}")
-            levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "bg", freq, argv_var)
-            print(f"level bg: {levelbg}")
-            levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", varname, 0.9995, "zfp_p", freq, argv_var)
-            location = f"../data/test_zfp_bg_sz_comp_slices.csv"
-            file_exists = os.path.isfile(location)
-            with open(location, 'a', newline='') as csvfile:
-                fieldnames = [
-                    'variable',
-                    'frequency',
-                    'timestep',
-                    'bg_level',
-                    'bg_size',
-                    'bg_ratio',
-                    'zfp_level',
-                    'zfp_size',
-                    'zfp_ratio'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                sizecsv = f"../data/{freq}_filesizes.csv"
+        # for varname in argv_var:
+        print(f"current_var: {argv_var}")
+        levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
+        print(f"level bg: {levelbg}")
+        levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
+        location = f"../data/zfp_bg_sz_comp_slices.csv"
+        file_exists = os.path.isfile(location)
+        with open(location, 'a', newline='') as csvfile:
+            fieldnames = [
+                'variable',
+                'frequency',
+                'timestep',
+                'bg_level',
+                'bg_size',
+                'bg_ratio',
+                'zfp_level',
+                'zfp_size',
+                'zfp_ratio'
+            ]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            sizecsv = f"../data/{freq}_filesizes.csv"
 
-                for i in range(0, 730):
-                    fzfp = filesize(sizecsv, varname, levelzfp[i], "zfp_p")
-                    fbg = filesize(sizecsv, varname, levelbg[i], "bg")
-                    if fbg is not None:
-                        sizezfp = float(fzfp)
-                        sizebg = float(fbg)
-                        ratiozfp = float(filesize(sizecsv, varname, "orig", "zfp_p")) / float(fzfp)
-                        ratiobg = float(filesize(sizecsv, varname, "orig", "bg")) / float(fbg)
-                    writer.writerow(
-                        {
-                            'variable': varname,
-                            'frequency': freq,
-                            'timestep': i,
-                            'bg_level': levelbg[i],
-                            'bg_size': sizebg,
-                            'bg_ratio': ratiobg,
-                            'zfp_level': levelzfp[i],
-                            'zfp_size': sizezfp,
-                            'zfp_ratio': ratiozfp
-                        }
-                    )
+            for i in range(0, 730):
+                fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp_p")
+                fbg = filesize(sizecsv, argv_var, levelbg[i], "bg")
+                if fbg is not None:
+                    sizezfp = float(fzfp)
+                    sizebg = float(fbg)
+                    ratiozfp = float(filesize(sizecsv, argv_var, "orig", "zfp_p")) / float(fzfp)
+                    ratiobg = float(filesize(sizecsv, argv_var, "orig", "bg")) / float(fbg)
+                writer.writerow(
+                    {
+                        'variable': argv_var,
+                        'frequency': freq,
+                        'timestep': i,
+                        'bg_level': levelbg[i],
+                        'bg_size': sizebg,
+                        'bg_ratio': ratiobg,
+                        'zfp_level': levelzfp[i],
+                        'zfp_size': sizezfp,
+                        'zfp_ratio': ratiozfp
+                    }
+                )
 
 
 if __name__ == "__main__":
