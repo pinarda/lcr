@@ -341,7 +341,7 @@ def main_zfp(argv):
     for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
 
-        location = f"../data/real_zfp_bg_sz_comp_slices.csv"
+        location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
             fieldnames = [
@@ -364,7 +364,7 @@ def main_zfp(argv):
         levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
         print(f"level bg: {levelbg}")
         levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
-        location = f"../data/zfp_bg_sz_comp_slices.csv"
+        location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
             fieldnames = [
