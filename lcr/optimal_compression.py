@@ -219,10 +219,10 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
 
     levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
 
-    return np.argmax(levs), max(levs)
+    return levs, max(levs)
 
 
-def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_var):
+def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_var):
     """
     Find the minimum of all the optimal compression levels for a specified variable
     over all time slices.
@@ -242,7 +242,7 @@ def optimal_level_min(csvfilename, variable, threshold, compression, freq, argv_
     for time in times:
         index, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
-    min_level = min(levs)
+    min_level = max(levs)
     return min_level
 
 def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var):
@@ -264,10 +264,12 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     times = np.unique(times)
 
     levs = []
+    all_levs = []
     for time in times:
-        index, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
-    return levs
+        all_levs.append
+    return all_levs, levs
 
 
 
@@ -287,7 +289,7 @@ def create_daily_monthly_freq_hist():
     for freq in ['daily', 'monthly']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         for varname in v:
-            level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
+            all_levs, level = optimal_level_spread(f"../data/{freq}_dssims.csv", varname, 0.9995, "bg", freq)
             bg_levels=[2, 3, 4, 5, 6, 7]
             hist = {}
             for l in bg_levels:
@@ -361,9 +363,9 @@ def main_zfp(argv):
 
         # for varname in argv_var:
         print(f"current_var: {argv_var}")
-        levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
+        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
         print(f"level bg: {levelbg}")
-        levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
+        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
@@ -376,7 +378,9 @@ def main_zfp(argv):
                 'bg_ratio',
                 'zfp_level',
                 'zfp_size',
-                'zfp_ratio'
+                'zfp_ratio',
+                "all_bg_levs",
+                "all_zfp_levs",
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             sizecsv = f"../data/{freq}_filesizes.csv"
@@ -399,7 +403,9 @@ def main_zfp(argv):
                         'bg_ratio': ratiobg,
                         'zfp_level': levelzfp[i],
                         'zfp_size': sizezfp,
-                        'zfp_ratio': ratiozfp
+                        'zfp_ratio': ratiozfp,
+                        "all_bg_levs": all_bg_levs[i],
+                        "all_zfp_levs": all_zfp_levs[i]
                     }
                 )
 
