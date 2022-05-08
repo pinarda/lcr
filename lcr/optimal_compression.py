@@ -268,7 +268,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     for time in times:
         all_lev, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.1, 0.99999, compression)
         levs.append(lev)
-        all_levs.append
+        all_levs.append(all_lev)
     return all_levs, levs
 
 
@@ -355,7 +355,9 @@ def main_zfp(argv):
                 'bg_ratio',
                 'zfp_level',
                 'zfp_size',
-                'zfp_ratio'
+                'zfp_ratio',
+                "all_bg_levs",
+                "all_zfp_levs"
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
@@ -363,6 +365,8 @@ def main_zfp(argv):
 
         # for varname in argv_var:
         print(f"current_var: {argv_var}")
+        # all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "bg", freq, argv_var)
+
         all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
         print(f"level bg: {levelbg}")
         all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
@@ -380,7 +384,7 @@ def main_zfp(argv):
                 'zfp_size',
                 'zfp_ratio',
                 "all_bg_levs",
-                "all_zfp_levs",
+                "all_zfp_levs"
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             sizecsv = f"../data/{freq}_filesizes.csv"

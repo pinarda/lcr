@@ -15,4 +15,4 @@ import numpy as np
 if __name__ == "__main__":
     test = []
     test.append([1, 2, 3, 4, 5,])
-    print(test)
+    print(test[0][0])

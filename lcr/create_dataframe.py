@@ -9,9 +9,9 @@ import pandas as pd
 from os.path import exists
 
 if __name__ == "__main__":
-    daily_label_df = pd.read_csv('../data/daily_labels.csv')
+    daily_label_df = pd.read_csv('../data/bg_only_dssim/daily_labels.csv')
     # monthly_label_df = pd.read_csv('../data/monthly_labels.csv')
-    daily_calc_df = pd.read_csv('../data/daily_calcs.csv')
+    daily_calc_df = pd.read_csv('../data/bg_only_dssim/daily_calcs.csv')
     # monthly_calc_df = pd.read_csv('../data/monthly_calcs.csv')
 
     daily_df = pd.DataFrame()
