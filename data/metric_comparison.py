@@ -7,13 +7,11 @@ mpl.use( 'tkagg' )
 
 if __name__ == "__main__":
     csvfilename = "../data/daily_zfp_bg_sz_comp_slices.csv"
-    dssim_csvfilename = "../data/daily_zfp_bg_sz_comp_slices_dssim.csv"
+    # csvfilename = "../data/daily_zfp_bg_sz_comp_slices_alternate.csv"
+    # dssim_csvfilename = "../data/daily_zfp_bg_sz_comp_slices_dssim.csv"
     with open(csvfilename, newline='') as csvfile:
-        with open(dssim_csvfilename, newline='') as dssim_csvfile:
             reader = csv.reader(csvfile)
-            dssim_reader = csv.reader(dssim_csvfile)
             reader.__next__()
-            dssim_reader.__next__()
             bg_diffs = []
             zfp_diffs = []
             v = []
@@ -21,13 +19,6 @@ if __name__ == "__main__":
             toughest_metric = []
             i=0
             for row in reader:
-                # print(row)
-                dssim_row = dssim_reader.__next__()
-                # print(dssim_row)
-
-
-
-
                 v.append(row[0])
                 time.append(row[2])
 
@@ -44,18 +35,21 @@ if __name__ == "__main__":
 
                 ideal_bg = ast.literal_eval(row[9])
                 bg_diffs.append(max(ideal_bg) - ideal_bg[0])
-                bg_index = ideal_bg.index(max(ideal_bg))
+                max_ideal_bg = max(ideal_bg)
+                maxes = [i for i, j in enumerate(ideal_bg) if j == max_ideal_bg]
 
-                if bg_index == 0:
-                    toughest_metric.append("DSSIM")
-                elif bg_index == 1:
-                    toughest_metric.append("KS P-value")
-                elif bg_index == 2:
-                    toughest_metric.append("Spatial Relative Error")
-                elif bg_index == 3:
-                    toughest_metric.append("Max Relative Error")
-                elif bg_index == 4:
-                    toughest_metric.append("Pearson Correlation Coefficient")
+                toughest = []
+                if 0 in maxes:
+                    toughest.append("DSSIM")
+                if 1 in maxes:
+                    toughest.append("KS P-value")
+                if 2 in maxes:
+                    toughest.append("Spatial Relative Error")
+                if 3 in maxes:
+                    toughest.append("Max Relative Error")
+                if 4 in maxes:
+                    toughest.append("Pearson Correlation Coefficient")
+                toughest_metric.append(toughest)
 
                 ideal_zfp = ast.literal_eval(row[10])
                 i=i+1
@@ -83,16 +77,23 @@ if __name__ == "__main__":
     # newdf.hist(["bg_diff", "zfp_diff"], bins=[-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5])
     # plt.show()
 
-    newdf.bg_diff.value_counts().sort_index().plot.bar(title=f"Increase in compression level using all metrics")
-    plt.ylim(top=15000)
-    plt.show()
-
-    newdf.zfp_diff.value_counts().sort_index().plot.bar(title=f"Increase in compression level using all metrics")
-    plt.ylim(top=15000)
-    plt.show()
-
-    newdf.toughest.value_counts().plot.bar(title=f"Increase in compression level using all metrics")
+    newdf.bg_diff.value_counts().sort_index().plot.bar(title=f"Increase in bg compression level using all metrics")
     plt.ylim(top=25000)
+    plt.show()
+
+    newdf.zfp_diff.value_counts().sort_index().plot.bar(title=f"Increase in zfp compression level using all metrics")
+    plt.ylim(top=25000)
+    plt.show()
+
+    anothernewdf = pd.DataFrame()
+    toughest_list = []
+    for i in range(0, len(newdf)):
+        for j in range(0, len(newdf.toughest[i])):
+            toughest_list.append(newdf.toughest[i][j])
+    anothernewdf["toughest"] = toughest_list
+    anothernewdf.toughest.value_counts().plot.bar(title=f"Metric(s) requiring most conservative threshold")
+    plt.ylim(top=25000)
+    plt.xticks(rotation=0)
     plt.show()
 
 
