@@ -266,7 +266,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     levs = []
     all_levs = []
     for time in times:
-        all_lev, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.01, 100-10, 1-0.1, 0.9999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
         levs.append(lev)
         all_levs.append(all_lev)
     return all_levs, levs
@@ -367,9 +367,9 @@ def main_zfp(argv):
         print(f"current_var: {argv_var}")
         # all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "bg", freq, argv_var)
 
-        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.99995, "bg", freq, argv_var)
+        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
         print(f"level bg: {levelbg}")
-        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.99995, "zfp_p", freq, argv_var)
+        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
