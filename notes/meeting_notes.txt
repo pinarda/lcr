@@ -1,18 +1,29 @@
 ******************
+May 9 Meeting
+******************
+
+Figure out why the Figure citations in the latex doc are messed up.
+Check allison's entropy equation
+maybe find a way to show how often the optimal algorithm changes/which metrics are responsible
+DONE - stick new plots in report
+DONE - update histograms in report
+DONE - run models and add to report
+
+******************
 April 26 Meeting
 ******************
 
-need to move the zfp -1 over to the right
-get results for other metrics, not just zfp
-significant diigits needs to be truncated
-make the test slightly bigger
+DONE - need to move the zfp -1 over to the right
+DONE - get results for other metrics, not just zfp
+DONE - significant diigits needs to be truncated
+DONE - make the test slightly bigger
 
 There's a 538 matplotlib style, can also use seaborn-talk to make text bigger, etc.
 
 
-gathering bitgrooming
-create a histogram of how different the hists are using just dssim/all metrics
-make a decision on how to present the list of cases in the report
+DONE - gathering bitgrooming
+DONE - create a histogram of how different the hists are using just dssim/all metrics
+USE HISTOGRAM - TOO MANY TO LIST? make a decision on how to present the list of cases in the report
 
 CESM workshop on the 13-16th of june, the software one is on June 15th
 

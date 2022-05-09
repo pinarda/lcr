@@ -17,6 +17,12 @@ import lcr_global_vars
 from os.path import exists
 mpl.use( 'tkagg' )
 
+font = {'family' : 'normal',
+        'weight' : 'normal',
+        'size'   : 22}
+
+mpl.rc('font', **font)
+
 def omit_by(dct, predicate=lambda x: x==0):
     return {k: v for k, v in dct.items() if not predicate(v)}
 
@@ -27,8 +33,8 @@ def hist_plotter(v, freq, csvfile, tags=True):
     vdf = df[df["variable"]==v]
     #vdf=df
 
-    adf=vdf["best_alg"].to_list()
-    ldf=vdf["best_level"].to_list()
+    adf=df["best_alg"].to_list()
+    ldf=df["best_level"].to_list()
     a=vdf["best_alg"].to_list()
     l=vdf["best_level"].to_list()
     r=vdf["best_ratio"].to_list()
@@ -55,14 +61,17 @@ def hist_plotter(v, freq, csvfile, tags=True):
     # yikes
     for i in range(0, len(adf)):
         ratio_list[f"{adf[i]} {ldf[i]}"] = 0
-        n[f"{a[i]} {l[i]}"] = 0
+        n[f"{adf[i]} {ldf[i]}"] = 0
 
     for i in range(0, len(a)):
         ratio_list[f"{a[i]} {l[i]}"] = ratio_list[f"{a[i]} {l[i]}"] + float(r[i])
         n[f"{a[i]} {l[i]}"] = n[f"{a[i]} {l[i]}"]+1
 
     for key in ratio_list.keys():
-        ratio_list[key] = str(ratio_list[key]/n[key])
+        if n[key] == 0:
+            ratio_list[key] = str(1)
+        else:
+            ratio_list[key] = str(ratio_list[key]/n[key])
 
     ratio_list = dict(sorted(ratio_list.items()))
 
@@ -132,6 +141,12 @@ def hist_plotter(v, freq, csvfile, tags=True):
         idx = list(newdf.index[0:index]) + [len(newdf)-1] + list(newdf.index[index:len(newdf)-1])
         newdf = newdf.reindex(idx)
 
+    #moves lossless to end
+    copydf = newdf
+    copydf.compression[copydf.compression == "zfp 100000"] = 'Lossless'
+    posindex = copydf.index[copydf.compression == "Lossless"].to_list()
+    negindex = copydf.index[copydf.compression != "Lossless"].to_list()
+    copydf = copydf.reindex(posindex + negindex)
 
 
     ax = plt.figure(figsize=(16, 10)).add_subplot(111)
@@ -142,8 +157,8 @@ def hist_plotter(v, freq, csvfile, tags=True):
 
 #    newdf.plot("algs", ["counts"], title=f"Best Compression Histogram for {v} ({freq})", ylabel="Count",
 #              xlabel="Compression Settings", ax=ax, kind='bar', legend=False, color=colors)
-    plt.bar(x=list(newdf["compression"])[::-1], height=list(newdf["counts"])[::-1], color = list(newdf["color"])[::-1])
-    plt.title(f"Best Compression Histogram for {v} ({freq})")
+    plt.bar(x=list(copydf["compression"])[::-1], height=list(copydf["counts"])[::-1], color = list(copydf["color"])[::-1])
+    plt.title(f"Best Compression Histogram for all Variables")
     plt.xlabel("Compression Settings")
     plt.xticks(plt.xticks()[0], labels=newdf["algs"][::-1])
     plt.ylabel("Count")
@@ -153,8 +168,10 @@ def hist_plotter(v, freq, csvfile, tags=True):
 
     # Make some labels
     labels = []
-    for i in newdf["compression"][::-1]:
-        if i in list(actual_t.keys()):
+    for i in copydf["compression"][::-1]:
+        if i == "Lossless" and int(copydf.loc[copydf['compression'] == "Lossless"].counts) != 0:
+            labels.append(f"Lossless")
+        elif i in list(actual_t.keys()):
             labels.append(f"Lev: {level_list[i]} Ratio: {float(ratio_list[i]):.1f}")
         #elif i:
         #    labels.append(f"Lev: {level_list[i]} Ratio: N/A")
@@ -168,7 +185,7 @@ def hist_plotter(v, freq, csvfile, tags=True):
         )
 
     hatches = ''
-    for color in list(newdf["color"][::-1]):
+    for color in list(copydf["color"][::-1]):
         if color == "blue":
             hatches = hatches + "x"
         elif color == "red":
