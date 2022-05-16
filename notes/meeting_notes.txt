@@ -6,13 +6,13 @@ DONE - reply to committe mehmet
 Check for artifacts in Olga's stuff
 look at conferences DUE SUNDAY
 DONE - give hayden feedback by wednesday night on his technote
-start abstract in dropbox folder for CESM workshop
+DONE - start abstract in dropbox folder for CESM workshop
 The hypothesis for figure 18 is that in most regions, there is nothing going on, but in a few small regions the values differ significantly
 recreate the histograms for alternate thresholds
 Inrepret what is going on in figures 10, 11
 use an alternate theshold of 10^-3 for the spatial relative error
 Investigate whether the spatial relative errors are locally concentrated or more spread out
-Figure out why the Figure citations in the latex doc are messed up.
+DONE - Figure out why the Figure citations in the latex doc are messed up.
 DONE - Check allison's entropy equation BY TOMORROW AFTERNOON
 maybe find a way to show how often the optimal algorithm changes/which metrics are responsible
 DONE - stick new plots in report

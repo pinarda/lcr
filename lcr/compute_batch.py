@@ -234,7 +234,8 @@ def simple_diff_calcs(
         ds[varname].sel(collection=set1).isel(time=time),
         ds[varname].sel(collection=set2).isel(time=time),
         data_type,
-        agg_dims
+        agg_dims,
+        spre_tol=0.001
     )
 
     calc_dict = {}
