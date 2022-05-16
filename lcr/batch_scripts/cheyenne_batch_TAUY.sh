@@ -13,7 +13,7 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/apinard/TAUY_calcs.csv' -j 'TAUY.json' -v -ld
+python ./compute_batch.py -o '/glade/scratch/apinard/TAUY_calcs.csv' -j './batch_scripts/TAUY.json' -v -ld
 
 
 
