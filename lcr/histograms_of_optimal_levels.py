@@ -31,7 +31,7 @@ def omit_by(dct, predicate=lambda x: x==0):
 def hist_plotter(v, freq, csvfile, tags=True):
     df = pd.read_csv(csvfile)
     vdf = df[df["variable"]==v]
-    #vdf=df
+    vdf=df
 
     adf=df["best_alg"].to_list()
     ldf=df["best_level"].to_list()
@@ -158,11 +158,11 @@ def hist_plotter(v, freq, csvfile, tags=True):
 #    newdf.plot("algs", ["counts"], title=f"Best Compression Histogram for {v} ({freq})", ylabel="Count",
 #              xlabel="Compression Settings", ax=ax, kind='bar', legend=False, color=colors)
     plt.bar(x=list(copydf["compression"])[::-1], height=list(copydf["counts"])[::-1], color = list(copydf["color"])[::-1])
-    plt.title(f"Best Compression Histogram for all Variables")
+    plt.title(f"Best Compression Histogram for All Variables")
     plt.xlabel("Compression Settings")
     plt.xticks(plt.xticks()[0], labels=newdf["algs"][::-1])
     plt.ylabel("Count")
-    plt.ylim(top=800)
+    plt.ylim(top=10000)
 
     rects = ax.patches
 
@@ -201,7 +201,7 @@ def hist_plotter(v, freq, csvfile, tags=True):
         bar.set_hatch(hatch)
 
     #ax.legend(loc='upper right', ncol=1)
-    plt.savefig(f"../slice_hists/{v}{freq}")
+    plt.savefig(f"../slice_hists/daily")
     #plt.show()
 
 def save_labels(v, freq, csvfile, tags=True):
@@ -291,13 +291,13 @@ if __name__ == "__main__":
     # for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
     #            "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
     #      hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
-    # for v in lcr_global_vars.daily_vars:
-    #      hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
+    for v in lcr_global_vars.daily_vars:
+         hist_plotter(v, "daily", "../data/daily_optimal_slices.csv")
 
     # just save the dataframe as labels
     # for v in lcr_global_vars.monthly_vars:
     #     save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
 
     #USE THIS FOR MAKING DAILY/MONTHLY LABELS
-    for v in lcr_global_vars.daily_vars:
-       save_labels(v, "daily", "../data/daily_optimal_slices.csv")
+    # for v in lcr_global_vars.daily_vars:
+    #    save_labels(v, "daily", "../data/daily_optimal_slices.csv")
