@@ -34,21 +34,28 @@ def csv_to_netcdf(f, value_col, lats, lons, days, filename):
     return ds.to_netcdf(path=f"../data/methane/{filename}.nc")
 
 if __name__ == "__main__":
-    csvfilename = "/Users/alex/Downloads/Daily/2021/Permian/Permian_res_0.5_2021_12.csv"
-    values = "mean.methane"
-    filename = "Permian_res_0.5_2021_12"
+    for i in range(1, 13):
+        year=2021
+        filename = f"Bakken_res_0.5_{year}_{i}"
+        csvfilename = f"/Users/alex/Downloads/Daily/{year}/Bakken/{filename}.csv"
+        values = "mean.methane"
 
-    # have to pass in the ranges right now, could be simplified by reading these from the csv though.
-    lon_range = {min:-106.75, max:-100.25}
-    lat_range = {min:30.25, max:34.75}
-    day_range = {min:1, max:30}
-    step = 0.5
+        # have to pass in the ranges right now, could be simplified by reading these from the csv though.
+        # Permian
+        # lon_range = {min:-106.75, max:-100.25}
+        # lat_range = {min:30.25, max:34.75}
 
-    lon_length = lon_range[max] - lon_range[min]
-    lat_length = lat_range[max] - lat_range[min]
+        #Bakken
+        lon_range = {min: -104.75, max: -101.25}
+        lat_range = {min:46.25, max:49.75}
+        day_range = {min:1, max:31}
+        step = 0.5
 
-    lon_seq = np.linspace(0, lon_length, int(lon_length/step) + 1) + lon_range[min]
-    lat_seq = np.linspace(0, lat_length, int(lat_length/step) + 1) + lat_range[min]
-    day_seq = range(1, 31)
+        lon_length = lon_range[max] - lon_range[min]
+        lat_length = lat_range[max] - lat_range[min]
 
-    netcdf_data = csv_to_netcdf(csvfilename, values, lat_seq, lon_seq, day_seq, filename)
+        lon_seq = np.linspace(0, lon_length, int(lon_length/step) + 1) + lon_range[min]
+        lat_seq = np.linspace(0, lat_length, int(lat_length/step) + 1) + lat_range[min]
+        day_seq = range(1, 32)
+
+        netcdf_data = csv_to_netcdf(csvfilename, values, lat_seq, lon_seq, day_seq, filename)

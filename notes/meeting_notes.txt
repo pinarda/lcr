@@ -5,7 +5,7 @@ May 16 Meeting
 Write paragraph about bg/zfp algorithm in hayden's technote
 Give hayden feedback before thursday
 send dorit a note in slack to remind her about presenting my signal processing report
-go to cesm co-chairs meeting on tuesday
+BUSY - go to cesm co-chairs meeting on tuesday
 
 DONE - ask lisa if I need to submit hours for the curriculum thing
 
@@ -22,7 +22,7 @@ May 9 Meeting
 ******************
 
 DONE - reply to committe mehmet
-Check for artifacts in Olga's data
+DONE - Check for artifacts in Olga's data
 DONE - give hayden feedback by wednesday night on his technote
 DONE - start abstract in dropbox folder for CESM workshop
 DONE  - The hypothesis for figure 18 is that in most regions, there is nothing going on, but in a few small regions the values differ significantly
