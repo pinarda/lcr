@@ -13,7 +13,7 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./compute_batch.py -o '/glade/scratch/apinard/3D/FSNS_calcs.csv' -j './batch_scripts/3d_dssim_scripts/FSNS.json' -v -ld
+python ./compute_batch.py -o '/glade/scratch/apinard/3D/FSNS_calcs.csv' -j './batch_scripts/3d_dssim_scripts/FSNS.json' -ts 0 -tt 15 -v -ld
 
 
 
