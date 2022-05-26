@@ -3,18 +3,20 @@ May 16 Meeting
 ******************
 
 Write paragraph about bg/zfp algorithm in hayden's technote
-Give hayden feedback before thursday
-send dorit a note in slack to remind her about presenting my signal processing report
-BUSY - go to cesm co-chairs meeting on tuesday
+Give hayden feedback on Friday
+By next week - separate 561 class curriculum into 8 sections
+read bit grooming paper - see allison's email (5/25, 10:24am)
+
+    "I just heard this guy (Kouznetsov) talk and he may have already looked
+     into the issue of converting bit information by Milan to decimal digits
+      with bit grooming (and decided it won't work?). Here is his paper (I
+      have not read it yet - I'm still listening to talks)"
 
 DONE - ask lisa if I need to submit hours for the curriculum thing
 
 
 for documentation, want to have a json or yaml file or something to setup the dataset
 want to have a third data type that is specific for less structured data "minimal" maybe
-
-ensure that the data does not come from vastly different time steps
-
 
 
 ******************
