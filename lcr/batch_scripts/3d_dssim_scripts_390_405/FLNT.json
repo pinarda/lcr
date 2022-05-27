@@ -1,7 +1,7 @@
 {
     "VarList":  ["FLNT"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
     "FilenamePost": ".200601-201012.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/orig_nocomp/",
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/zfp_hdf5/",
