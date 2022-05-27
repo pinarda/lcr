@@ -7,7 +7,3 @@ foreach x ($arrname)
 @ y = $x + 15
 ./all_batches_3d_$x\_$y.sh
 end
-./all_batches.sh
-./all_batches_modified.sh
-./all_batches_modified_2.sh
-./all_batches_modified_3.sh
