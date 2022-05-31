@@ -381,7 +381,7 @@ def main_zfp(argv):
         #levelsz = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
         #all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
-        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/sz/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
+        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
