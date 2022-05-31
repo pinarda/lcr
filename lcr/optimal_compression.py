@@ -241,7 +241,7 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     levs = []
     for time in times:
         #index, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.01, 100-10, 1-0.1, 0.9999, compression)
-        lev = optimal_level(f"../data/{freq}_dssims.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
         levs.append(lev)
     min_level = max(levs)
     return min_level
@@ -265,13 +265,13 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     times = np.unique(times)
 
     levs = []
-    #all_levs = []
+    all_levs = []
     for time in times:
-        #all_lev, lev = optimal_level_multiple_comparison(f"../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
-        lev = optimal_level(f"../data/{freq}_dssims.csv", variable, time, threshold, compression)
+        all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
         levs.append(lev)
-        #all_levs.append(all_lev)
-    return levs
+        all_levs.append(all_lev)
+    return all_levs, levs
 
 
 
@@ -378,10 +378,10 @@ def main_zfp(argv):
         #print(f"level bg: {levelbg}")
         #all_zfp_levs,
         #levelzfp = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "zfp5_p", freq, argv_var)
-        levelsz = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
+        #levelsz = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
         #all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
-        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
+        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/sz/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
