@@ -27,14 +27,22 @@ def search_csv(csvfilename: str, variable: str, timestep: int, compression:str):
     match_rows = []
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
+
         for row in reader:
             if len(row) == 0:
                 continue
-            m = re.search('(?P<compression>.*?)_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
-            time = row[1]
-            if(m is not None):
-                if (m.group("varname") == variable and str(timestep) == time and m.group("compression") == compression):
-                    match_rows.append(row)
+            if compression != "sz3":
+                m = re.search('(?P<compression>.*?)_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+                time = row[1]
+                if(m is not None):
+                    if (m.group("varname") == variable and str(timestep) == time and m.group("compression") == compression):
+                        match_rows.append(row)
+            else:
+                m = re.compile(r'(?P<level>[510][^_]*)_(?P<varname>.*)').findall(row[0])
+                time = row[1]
+                if(len(m) > 0):
+                    if (m[0][1] == variable and str(timestep) == time):
+                        match_rows.append(row)
     return match_rows
 
 
@@ -57,14 +65,14 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
 
     # ensure list of levels is in descending order (i.e. least compressed first)
 
-    if compression not in ["sz1.4", "sz1ROn"]:
+    if compression not in ["sz1.4", "sz1ROn", "sz3"]:
         for row in rows:
             m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
             levels.append(int(m.group("level")))
             sort_index = np.argsort(levels)
         rows = [rows[i] for i in sort_index[::-1]]
         levels = [levels[i] for i in sort_index[::-1]]
-    if compression in ["sz1.4", "sz1ROn"]:
+    if compression in ["sz1.4", "sz1ROn", "sz3"]:
         for row in rows:
             m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
             levels.append(m.group("level"))
@@ -118,11 +126,19 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
         rows = [rows[i] for i in sort_index[::-1]]
         levels = [levels[i] for i in sort_index[::-1]]
     if compression in ["sz1.4", "sz1ROn", "sz3"]:
-        for row in rows:
-            m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
-            levels.append(m.group("level"))
-        rows = rows[::-1]
-        levels = levels[::-1]
+        if compression == "sz3":
+            for row in rows:
+                m = re.compile(r'(?P<level>[510][^_]*)_(?P<varname>.*)').findall(row[0])
+                level = m[0][0]
+                levels.append(level)
+            rows = rows[::-1]
+            levels = levels[::-1]
+        else:
+            for row in rows:
+                m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+                levels.append(m.group("level"))
+            rows = rows[::-1]
+            levels = levels[::-1]
 
     # compute optimal level based on dssim
     i = 0
@@ -217,8 +233,10 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
     if best_pcc_lev == -1:
         best_pcc_lev = prev_lev
 
-    levs = [best_dssim_lev, best_ks_p_lev, best_spatial_err_lev, best_max_spatial_err_lev, best_pcc_lev]
+    levs = [float(best_dssim_lev), float(best_ks_p_lev), float(best_spatial_err_lev), float(best_max_spatial_err_lev), float(best_pcc_lev)]
 
+    if compression == "sz3":
+        return levs, min(levs)
     return levs, max(levs)
 
 
@@ -231,11 +249,18 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
-            time = row[1]
-            if(m is not None):
-                if (m.group("varname") == variable):
-                    times.append(time)
+            if compression != "sz3":
+                m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+                time = row[1]
+                if (m is not None):
+                    if (m.group("varname") == variable):
+                        times.append(time)
+            else:
+                m = re.compile(r'(?P<level>[510][^_]*)_(?P<varname>.*)').findall(row[0])
+                time = row[1]
+                if (len(m) > 0):
+                    if (m[0][1] == variable):
+                        times.append(time)
     times = np.unique(times)
 
     levs = []
@@ -257,18 +282,28 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
         for row in reader:
             if len(row) == 0:
                 continue
-            m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
-            time = row[1]
-            if(m is not None):
-                if (m.group("varname") == variable):
-                    times.append(time)
+            if compression != "sz3":
+                m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
+                time = row[1]
+                if(m is not None):
+                    if (m.group("varname") == variable):
+                        times.append(time)
+            else:
+                m = re.compile(r'(?P<level>[510][^_]*)_(?P<varname>.*)').findall(row[0])
+                time = row[1]
+                if (len(m) > 0):
+                    if (m[0][1] == variable):
+                        times.append(time)
+
     times = np.unique(times)
 
     levs = []
     all_levs = []
     for time in times:
         all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
-        lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
+
+        #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
+
         levs.append(lev)
         all_levs.append(all_lev)
     return all_levs, levs
