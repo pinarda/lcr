@@ -452,7 +452,8 @@ def main_zfp(argv):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             sizecsv = f"../data/{freq}_filesizes.csv"
 
-            for i in range(0, 60):
+            for i in range(0, 730):
+                print(f"{i}")
                 #fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp5_p")
                 #fbg = filesize(sizecsv, argv_var, levelbg[i], "bg")
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
