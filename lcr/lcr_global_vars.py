@@ -25,16 +25,16 @@ def varlist(csvfilename):
 # daily_vars = ["FLUT", "LHFLX", "PRECT", "TAUX", "TS", "Z500"]
 
 # variables automatically specified based on available dssim calcs
-monthly_vars = varlist(f"../data/monthly_dssims.csv")
-#daily_vars = varlist(f"../data/daily_dssims.csv")
+#monthly_vars = varlist(f"../data/monthly_dssims.csv")
+daily_vars = varlist(f"../data/daily_dssims.csv")
 
 # array of the name prefixes for each compression algorithm
 # used in most csv files and most other places in the python code
-alg_prefixes = ["zfp", "bg", "sz", "sz1ROn", "zfp5"]
+alg_prefixes = ["zfp", "bg", "sz", "sz1ROn", "zfp5", "sz3_ROn"]
 # array of the names of each compression algorothm
 # used in hist_plotter as x-axis, dataframe in create_dataframe.py
 # also monthly_labels.csv and daily_labels.csv
-algs = ["zfp", "bg", "sz", "sz1413", "z_hdf5"]
+algs = ["zfp", "bg", "sz", "sz1413", "z_hdf5", "sz3"]
 
 # list of single-value features being used by the models
 features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile"]
