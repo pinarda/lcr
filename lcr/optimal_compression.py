@@ -110,14 +110,14 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
 
     # ensure list of levels is in descending order (i.e. least compressed first)
 
-    if compression not in ["sz1.4", "sz1ROn"]:
+    if compression not in ["sz1.4", "sz1ROn", "sz3"]:
         for row in rows:
             m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
             levels.append(int(m.group("level")))
             sort_index = np.argsort(levels)
         rows = [rows[i] for i in sort_index[::-1]]
         levels = [levels[i] for i in sort_index[::-1]]
-    if compression in ["sz1.4", "sz1ROn"]:
+    if compression in ["sz1.4", "sz1ROn", "sz3"]:
         for row in rows:
             m = re.search('.*?_(?P<level>[0-9]+?)_(?P<varname>.*)', row[0])
             levels.append(m.group("level"))
