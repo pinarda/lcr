@@ -342,7 +342,7 @@ def main_zfp(argv):
     argv_var = args.var
     print(f"current_var: {argv_var}")
 
-    for freq in ['monthly']:
+    for freq in ['daily']:
         v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         #for argv_var in v:
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
