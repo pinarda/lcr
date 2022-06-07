@@ -2,9 +2,9 @@
 May 16 Meeting
 ******************
 
-Write paragraph about bg/zfp algorithm in hayden's technote
-Give hayden feedback on Friday
-By next week - separate 561 class curriculum into 8 sections
+ALLISON - Write paragraph about bg/zfp algorithm in hayden's technote
+DONE - Give hayden feedback on Friday
+DONE - By next week - separate 561 class curriculum into 8 sections
 read bit grooming paper - see allison's email (5/25, 10:24am)
 
     "I just heard this guy (Kouznetsov) talk and he may have already looked
