@@ -5,8 +5,15 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC
-import lcr_global_vars
+
+import os
+import sys
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
+
+import data_gathering.lcr_global_vars as lcr_global_vars
 import tensorflow as tf
 import tensorflow.keras as keras
 from sklearn.neighbors import KNeighborsClassifier
@@ -128,12 +135,12 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     y_pred = []
     for i in range(0,len(y_test)):
-        y_pred.append(statistics.mode([rf_preds[i],
+        y_pred.append(max([p[0] for p in statistics._counts([rf_preds[i],
                                        nn_preds[i],
                                        knn_preds[i],
                                        # svm_preds[i],
                                        lda_preds[i],
-                                       qda_preds[i]]))
+                                       qda_preds[i]])]))
 
     return(y_pred, sum(np.array(y_pred)==np.array(y_test)) / len(np.array(y_test)))
 
@@ -170,7 +177,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, rf_preds))
     report = classification_report(y_test, rf_preds, output_dict=True)
     rf_df = pd.DataFrame(report).transpose()
-    rf_df.to_csv('../data/rf_report.csv', float_format="%.3f")
+    rf_df.to_csv('../../data/rf_report.csv', float_format="%.3f")
     print("END SECTION RANDOM FOREST -----------------")
 
     (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
@@ -179,7 +186,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, boost_preds))
     report = classification_report(y_test, boost_preds, output_dict=True)
     boost_df = pd.DataFrame(report).transpose()
-    boost_df.to_csv('../data/boost_report.csv', float_format="%.3f")
+    boost_df.to_csv('../../data/boost_report.csv', float_format="%.3f")
     print("END SECTION ADABOOST -----------------")
 
     (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
@@ -188,7 +195,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, nn_preds))
     report = classification_report(y_test, nn_preds, output_dict=True)
     nn_df = pd.DataFrame(report).transpose()
-    nn_df.to_csv('../data/nn_report.csv', float_format="%.3f")
+    nn_df.to_csv('../../data/nn_report.csv', float_format="%.3f")
     print("END SECTION NEURAL NETWORK -----------------")
 
 
@@ -198,7 +205,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, knn_preds))
     report = classification_report(y_test, knn_preds, output_dict=True)
     knn_df = pd.DataFrame(report).transpose()
-    knn_df.to_csv('../data/knn_report.csv', float_format="%.3f")
+    knn_df.to_csv('../../data/knn_report.csv', float_format="%.3f")
     print("END SECTION KNN -----------------")
 
 
@@ -219,7 +226,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, lda_preds))
     report = classification_report(y_test, lda_preds, output_dict=True)
     lda_df = pd.DataFrame(report).transpose()
-    lda_df.to_csv('../data/lda_report.csv', float_format="%.3f")
+    lda_df.to_csv('../../data/lda_report.csv', float_format="%.3f")
     print("END SECTION LDA -----------------")
 
 
@@ -229,7 +236,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, qda_preds))
     report = classification_report(y_test, qda_preds, output_dict=True)
     qda_df = pd.DataFrame(report).transpose()
-    qda_df.to_csv('../data/qda_report.csv', float_format="%.3f")
+    qda_df.to_csv('../../data/qda_report.csv', float_format="%.3f")
 
     print("END SECTION QDA -----------------")
 
@@ -240,5 +247,5 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, combine_preds))
     report = classification_report(y_test, combine_preds, output_dict=True)
     combine_df = pd.DataFrame(report).transpose()
-    combine_df.to_csv('../data/combine_report.csv', float_format="%.3f")
+    combine_df.to_csv('../../data/combine_report.csv', float_format="%.3f")
     print("END SECTION AGGREGATE -----------------")
