@@ -7,6 +7,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 
 import os
+import matplotlib.pyplot as plt
 import sys
 import inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -19,6 +20,7 @@ import tensorflow.keras as keras
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn import tree
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import statistics
 
@@ -46,9 +48,19 @@ def random_forest(X_train, X_test, y_train, y_test):
         "max_depth": [2, 5],
         "random_state": [0]
     }
-    clf = GridSearchCV(estimator=RandomForestClassifier(), param_grid=params, scoring="accuracy", cv=10)
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
+    # clf = GridSearchCV(estimator=RandomForestClassifier(), param_grid=params, scoring="accuracy", cv=10)
+    # clf.fit(X_train, y_train)
+
+    rf = RandomForestClassifier(n_estimators=100,
+                                random_state=0, max_depth=5)
+    rf.fit(X_train, y_train)
+
+    # fn = data.feature_names
+    # cn = data.target_names
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(4, 4), dpi=800)
+    tree.plot_tree(rf.estimators_[0], ax=axes, filled=True);
+    fig.savefig('rf_individualtree.png')
+    y_pred = rf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     return (y_pred, accuracy)
 
@@ -135,6 +147,7 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
     y_pred = []
     for i in range(0,len(y_test)):
+        # ERROR??? _counts not working???
         y_pred.append(max([p[0] for p in statistics._counts([rf_preds[i],
                                        nn_preds[i],
                                        knn_preds[i],
@@ -151,9 +164,12 @@ if __name__ == "__main__":
 
     # just look at a particular algorithm and try and guess the level for now
     subset_daily = daily_df[daily_df["algs"] == "zfp"]
+    #subset_daily = daily_df
     X = subset_daily[lcr_global_vars.features]
     subset_daily["levels"][subset_daily["levels"] == -1] = 26
     y = subset_daily[["levels"]]
+    #y = subset_daily[["algs"]]
+    #y = np.where(y == "zfp", 0, np.where(y == "sz", 1, 2))
     y = np.array(y).ravel()
     y = np.unique(y, return_inverse=True)[1]
 

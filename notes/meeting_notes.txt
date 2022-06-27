@@ -1,3 +1,7 @@
+We are trying to detect something beyond the raw features of the image.
+Talk about the whole training, caliudation and test set, and msake it clear that we are trying to capture generla features
+of the data. S
+
 ******************
 May 16 Meeting
 ******************

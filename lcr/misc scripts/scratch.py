@@ -1,1 +1,1 @@
-# A convolutional neural network that 
+# Open ../data/
