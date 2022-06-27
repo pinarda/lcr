@@ -510,18 +510,18 @@ if __name__ == "__main__":
                     size = float(filesize(monthly_sizecsv, varname, level, "bg"))
                     ratio = float(filesize(monthly_sizecsv, varname, "orig", "bg")) / float(filesize(monthly_sizecsv, varname, level, "bg"))
 
-                zfp_level = optimal_level_max(f"../../data/by_var/{argv_var}_calcs.csv", varname, num, "zfp_p", freq, varname)
-                if freq == "daily":
-                    f = filesize(daily_sizecsv, varname, zfp_level, "zfp")
-                elif freq == "monthly":
-                    f = filesize(monthly_sizecsv, varname, zfp_level, "zfp")
-                if f is not None:
-                    zfp_size = float(f)
-                    zfp_ratio = float(filesize(monthly_sizecsv, varname, "orig", "zfp")) / float(f)
-                else:
-                    zfp_size = float(filesize(monthly_sizecsv, varname, zfp_level, "zfp"))
-                    zfp_ratio = float(filesize(monthly_sizecsv, varname, "orig", "zfp")) / float(
-                        filesize(monthly_sizecsv, varname, zfp_level, "zfp"))
+                # zfp_level = optimal_level_max(f"../../data/by_var/{argv_var}_calcs.csv", varname, num, "zfp_p", freq, varname)
+                # if freq == "daily":
+                #     f = filesize(daily_sizecsv, varname, zfp_level, "zfp")
+                # elif freq == "monthly":
+                #     f = filesize(monthly_sizecsv, varname, zfp_level, "zfp")
+                # if f is not None:
+                #     zfp_size = float(f)
+                #     zfp_ratio = float(filesize(monthly_sizecsv, varname, "orig", "zfp")) / float(f)
+                # else:
+                #     zfp_size = float(filesize(monthly_sizecsv, varname, zfp_level, "zfp"))
+                #     zfp_ratio = float(filesize(monthly_sizecsv, varname, "orig", "zfp")) / float(
+                #         filesize(monthly_sizecsv, varname, zfp_level, "zfp"))
 
                 # sz_level = optimal_level_max(f"../data/test_set/{freq}_dssims.csv", varname, 0.9995, "sz1.4", freq)
                 # f = filesize(daily_sizecsv, varname, sz_level, "sz1.4")
@@ -541,9 +541,9 @@ if __name__ == "__main__":
                         'bg_level',
                         'bg_size',
                         'bg_ratio',
-                        'zfp_level',
-                        'zfp_size',
-                        'zfp_ratio',
+                        # 'zfp_level',
+                        # 'zfp_size',
+                        # 'zfp_ratio',
                         #'sz_level',
                         #'sz_size',
                         #'sz_ratio'
@@ -558,9 +558,9 @@ if __name__ == "__main__":
                             'bg_level': level,
                             'bg_size': size,
                             'bg_ratio' : ratio,
-                            'zfp_level': zfp_level,
-                            'zfp_size': zfp_size,
-                            'zfp_ratio': zfp_ratio,
+                            # 'zfp_level': zfp_level,
+                            # 'zfp_size': zfp_size,
+                            # 'zfp_ratio': zfp_ratio,
                             #'sz_level': sz_level,
                             #'sz_size': sz_size,
                             #'sz_ratio': sz_ratio
