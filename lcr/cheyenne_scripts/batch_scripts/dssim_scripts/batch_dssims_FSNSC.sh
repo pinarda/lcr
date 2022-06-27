@@ -13,4 +13,4 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python ./optimal_compression.py --var 'FSNSC'
+python /glade/u/home/apinard/lcr/lcr/data_gathering/optimal_compression.py --var 'FSNSC'
