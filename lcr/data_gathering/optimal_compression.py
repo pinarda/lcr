@@ -265,7 +265,7 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     levs = []
     for time in times:
         #index, lev = optimal_level_multiple_comparison(f"../../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
-        lev = optimal_level(f"../data/by_var/{argv_var}_calcs.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"../../data/by_var/{argv_var}_calcs.csv", variable, time, threshold, compression)
         levs.append(lev)
     min_level = max(levs)
     return min_level
