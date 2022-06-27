@@ -499,7 +499,7 @@ if __name__ == "__main__":
             v = lcr_global_vars.varlist(f"../../data/{freq}_dssims.csv")
             v = [argv_var]
             for varname in v:
-                level = optimal_level_max(f"../data/by_var/{argv_var}_calcs.csv", varname, num, "bg", freq, varname)
+                level = optimal_level_max(f"../../data/by_var/{argv_var}_calcs.csv", varname, num, "bg", freq, varname)
                 #level = optimal_level_max(f"../../data/{freq}_dssims.csv", varname, num, "bg", freq, varname)
 
                 f = filesize(monthly_sizecsv, varname, level, "bg")
@@ -510,7 +510,7 @@ if __name__ == "__main__":
                     size = float(filesize(monthly_sizecsv, varname, level, "bg"))
                     ratio = float(filesize(monthly_sizecsv, varname, "orig", "bg")) / float(filesize(monthly_sizecsv, varname, level, "bg"))
 
-                zfp_level = optimal_level_max(f"../data/by_var/{argv_var}_calcs.csv", varname, num, "zfp5_p", freq, varname)
+                zfp_level = optimal_level_max(f"../../data/by_var/{argv_var}_calcs.csv", varname, num, "zfp5_p", freq, varname)
                 if freq == "daily":
                     f = filesize(daily_sizecsv, varname, zfp_level, "zfp5")
                 elif freq == "monthly":
