@@ -15,4 +15,4 @@ mkdir -p $TMPDIR
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 
-python ./compute_batch.py -o '/glade/scratch/apinard/AQRAIN.csv' -j 'AQRAIN.json' -tt 1 -ld
+python ../data_gathering/compute_batch.py -o '/glade/scratch/apinard/AQRAIN.csv' -j 'AQRAIN.json' -tt 1 -ld
