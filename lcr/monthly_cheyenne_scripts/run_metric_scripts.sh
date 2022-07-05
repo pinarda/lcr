@@ -5,3 +5,5 @@ foreach x ($arrname)
   qsub zfp/$x.sh
 end
 
+sleep 10
+ls
