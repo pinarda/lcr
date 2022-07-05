@@ -2,3 +2,4 @@ set arrname = (ABSORB ANRAIN ANSNOW AODABS AODDUST1 AODDUST2 AODDUST3 AODVIS AQR
 foreach x ($arrname)
   qsub zfp/$x.sh
 end
+

@@ -15,4 +15,4 @@ mkdir -p $TMPDIR
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 
-python ./compute_batch.py -o '/glade/scratch/apinard/$x.csv' -j 'MATCHME.json' -tt 1 -ld
+python ./compute_batch.py -o '/glade/scratch/apinard/TSMN.csv' -j 'TSMN.json' -tt 1 -ld
