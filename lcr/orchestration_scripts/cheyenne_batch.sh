@@ -17,5 +17,5 @@ python ./compute_batch.py -o '/glade/scratch/abaker/chey_bg_daily.csv' -j 'bg_da
 
 
 
- 
+
 

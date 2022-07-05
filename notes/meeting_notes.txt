@@ -1,6 +1,15 @@
-We are trying to detect something beyond the raw features of the image.
-Talk about the whole training, caliudation and test set, and msake it clear that we are trying to capture generla features
-of the data. S
+******************
+June 30 Meeting
+******************
+
+Things I am currently attempting
+only use a single metric for classification
+try other data transformations
+increase the number of variables
+
+First look at the accuracy of the variables where the most stringent metric is X (random variable), then we can decide if a separate model for a single metric is better
+
+We may want to settle on the middle threshold (2 9's)
 
 ******************
 May 16 Meeting
