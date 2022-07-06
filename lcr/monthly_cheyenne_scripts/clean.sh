@@ -4,7 +4,5 @@ rm -f testb*
 rm -f /glade/scratch/apinard/*.csv
 
 output=$(qstat -u apinard | tail -n +4 | cut -d '.' -f 1)
-set -A arr $output
-foreach x ($arr)
-  qdel $x.chadmin1.ib0.cheyenne.ucar.edu
-end
+arr=($line)
+for i in "${arr[@]}"; do qdel $i.chadmin1.ib0.cheyenne.ucar.edu; done
