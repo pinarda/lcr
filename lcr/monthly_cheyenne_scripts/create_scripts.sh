@@ -8,4 +8,6 @@ foreach x ($arrname)
   cat sample_sz_diff_config.json | sed "s/MATCHME/$x/" > sz/$x.json
   cat batch_script_br_template.sh | sed "s/MATCHME.csv/$x.csv/" | sed "s/MATCHME.json/$x.json/" > br/$x.sh
   cat sample_br_diff_config.json | sed "s/MATCHME/$x/" > br/$x.json
+  cat batch_script_orig_template.sh | sed "s/MATCHME.csv/$x.csv/" | sed "s/MATCHME.json/$x.json/" > orig/$x.sh
+  cat sample_orig_calcs_config.json | sed "s/MATCHME/$x/" > orig/$x.json
 end
