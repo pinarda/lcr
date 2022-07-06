@@ -297,7 +297,7 @@ def simple_orig_calcs(
 def parseArguments():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", help="json input file that describes the calculation to perform.", type=str, default="./sample.json")
+    parser.add_argument("-j", "--json", help="json input file that describes the calculation to perform.", type=str, default="./sample_diff_config.json")
     parser.add_argument("-o", "--outfile", help="csv file to store output (if file exists, then data will append).", type=str, default="./sample.csv")
     parser.add_argument("-oo", "--origoutfile", help="csv file to store original data output (if file exists, then data will append).", type=str, default="./origsample.csv")
 
