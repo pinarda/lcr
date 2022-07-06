@@ -1,9 +1,9 @@
-#!/bin/tcsh
+#!/bin/bash
 
 rm -f testb*
-rm /glade/scratch/apinard/*.csv
+rm -f /glade/scratch/apinard/*.csv
 
-set output=$(qstat -u apinard | tail -n +4 | cut -d '.' -f 1)
+output=$(qstat -u apinard | tail -n +4 | cut -d '.' -f 1)
 foreach x ($output)
   qdel $x.chadmin1.ib0.cheyenne.ucar.edu
 end
