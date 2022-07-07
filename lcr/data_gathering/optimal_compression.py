@@ -419,7 +419,6 @@ def main_zfp(argv):
 
         all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "br", freq, argv_var)
         print(f"level bg: {levelbg}")
-        all_zfp_levs,
         # levelzfp = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         # levelsz = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
