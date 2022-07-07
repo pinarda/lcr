@@ -427,6 +427,7 @@ def main_zfp(argv):
         all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
         levelzfp = [int(i) for i in levelzfp]
         levelsz = [int(i) for i in levelsz]
+        print(f"level bg: {levelbg}")
 
         location = f"../../data/monthly/zfp_bg_sz_comp_slices.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
@@ -461,6 +462,7 @@ def main_zfp(argv):
                 print(fzfp)
                 fbg = filesize(sizecsv, argv_var, levelbg[i], "br")
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
+                print(fsz)
                 if fsz is not None:
                     sizesz = float(fsz)
                     sizebg = float(fbg)
