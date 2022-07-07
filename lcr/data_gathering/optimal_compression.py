@@ -299,7 +299,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     levs = []
     all_levs = []
     for time in times:
-        all_lev, lev = optimal_level_multiple_comparison(f"../data/sz3/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(f"../../data/monthly/{argv_var}_calcs.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
 
@@ -387,8 +387,8 @@ def main_zfp(argv):
     print(f"current_var: {argv_var}")
 
     for freq in ['monthly']:
-        #v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
-        #for argv_var in v:
+        # v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
+        # for argv_var in v:
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
@@ -397,34 +397,33 @@ def main_zfp(argv):
                 'variable',
                 'frequency',
                 'timestep',
-                #'bg_level',
-                #'bg_size',
-                #'bg_ratio',
-                #'zfp_level',
-                #'zfp_size',
-                #'zfp_ratio',
+                'br_level',
+                'br_size',
+                'br_ratio',
+                'zfp_level',
+                'zfp_size',
+                'zfp_ratio',
                 'sz_level',
                 'sz_size',
                 'sz_ratio',
-                #"all_bg_levs",
-                #"all_zfp_levs",
+                "all_br_levs",
+                "all_zfp_levs",
                 'all_sz_levs'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
 
-        # for varname in argv_var:
-        #print(f"current_var: {argv_var}")
-        #all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "bg", freq, argv_var)
+        print(f"current_var: {argv_var}")
+        all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "br", freq, argv_var)
 
-        #all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "bg", freq, argv_var)
-        #print(f"level bg: {levelbg}")
-        #all_zfp_levs,
-        #levelzfp = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "zfp5_p", freq, argv_var)
-        #levelsz = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
+        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "br", freq, argv_var)
+        print(f"level bg: {levelbg}")
+        all_zfp_levs,
+        levelzfp = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
+        levelsz = optimal_level_spread(f"../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
-        #all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
+        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         all_sz_levs, levelsz = optimal_level_spread(f"../data/sz3/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
         location = f"../data/2real_zfp_bg_sz_comp_slices.csv"
@@ -435,45 +434,47 @@ def main_zfp(argv):
                 'variable',
                 'frequency',
                 'timestep',
-                #'bg_level',
-                #'bg_size',
-                #'bg_ratio',
-                #'zfp_level',
-                #'zfp_size',
-                #'zfp_ratio',
+                'br_level',
+                'br_size',
+                'br_ratio',
+                'zfp_level',
+                'zfp_size',
+                'zfp_ratio',
                 'sz_level',
                 'sz_size',
                 'sz_ratio',
-                #"all_bg_levs",
-                #"all_zfp_levs",
+                "all_br_levs",
+                "all_zfp_levs",
                 'all_sz_levs'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             sizecsv = f"../data/{freq}_filesizes.csv"
 
-            for i in range(0, 730):
+            for i in range(0, 100):
                 print(f"{i}")
-                #fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp5_p")
-                #fbg = filesize(sizecsv, argv_var, levelbg[i], "bg")
+                fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp_p")
+                fbg = filesize(sizecsv, argv_var, levelbg[i], "br")
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
                 if fsz is not None:
                     sizesz = float(fsz)
-                    #sizebg = float(fbg)
-                    ratiosz = float(filesize(sizecsv, argv_var, "orig", "zfp5_p")) / float(fsz)
-                    #ratiobg = float(filesize(sizecsv, argv_var, "orig", "bg")) / float(fbg)
+                    sizebg = float(fbg)
+                    sizezfp = float(fzfp)
+                    ratiosz = float(filesize(sizecsv, argv_var, "orig", "sz3")) / float(fsz)
+                    ratiobg = float(filesize(sizecsv, argv_var, "orig", "br")) / float(fbg)
+                    ratiozfp = float(filesize(sizecsv, argv_var, "orig", "zfp")) / float(fzfp)
                 writer.writerow(
                     {
                         'variable': argv_var,
                         'frequency': freq,
                         'timestep': i,
-                        #'bg_level': levelbg[i],
-                        #'bg_size': sizebg,
-                        #'bg_ratio': ratiobg,
-                        # 'zfp_level': levelzfp[i],
-                        # 'zfp_size': sizezfp,
-                        # 'zfp_ratio': ratiozfp,
-                        #"all_bg_levs": all_bg_levs[i],
-                        #"all_zfp_levs": all_zfp_levs[i],
+                        'br_level': levelbg[i],
+                        'br_size': sizebg,
+                        'br_ratio': ratiobg,
+                        "all_br_levs": all_bg_levs[i],
+                        'zfp_level': levelzfp[i],
+                        'zfp_size': sizezfp,
+                        'zfp_ratio': ratiozfp,
+                        "all_zfp_levs": all_zfp_levs[i],
                         'sz_level': levelsz[i],
                         'sz_size': sizesz,
                         'sz_ratio': ratiosz,
