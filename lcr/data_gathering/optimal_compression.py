@@ -454,7 +454,11 @@ def main_zfp(argv):
 
             for i in range(0, 100):
                 print(f"{i}")
+                print(sizecsv)
+                print(argv_var)
+                print(levelzfp[i])
                 fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp_p")
+                print(fzfp)
                 fbg = filesize(sizecsv, argv_var, levelbg[i], "br")
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
                 if fsz is not None:
