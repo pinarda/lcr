@@ -426,6 +426,8 @@ def main_zfp(argv):
         all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/{argv_var}_calcs.csv", argv_var, 0.9995, "sz3", freq, argv_var)
         levelzfp = [int(i) for i in levelzfp]
+
+        print(f"level sz: {levelsz}")
         levelsz = [int(i) for i in levelsz]
         print(f"level sz: {levelsz}")
 
