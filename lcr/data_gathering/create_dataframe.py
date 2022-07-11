@@ -9,9 +9,9 @@ import pandas as pd
 from os.path import exists
 
 if __name__ == "__main__":
-    daily_label_df = pd.read_csv('../../data/daily_labels.csv')
+    daily_label_df = pd.read_csv('../../data/monthly/monthly_labels.csv')
     # monthly_label_df = pd.read_csv('../data/monthly_labels.csv')
-    daily_calc_df = pd.read_csv('../../data/everything/daily_calcs.csv')
+    daily_calc_df = pd.read_csv('../../data/monthly/monthly_calcs.csv')
     # monthly_calc_df = pd.read_csv('../data/monthly_calcs.csv')
 
     daily_df = pd.DataFrame()
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # monthly_df["ratios"] = monthly_label_df["ratios"]
     # monthly_df["variable"] = monthly_label_df["variable"]
 
-    d_fileloc = f"../data/daily_compress_df.csv"
+    d_fileloc = f"../../data/monthly/monthly_compress_df.csv"
     # m_fileloc = f"../data/monthly_compress_df.csv"
     dfile_exists = exists(d_fileloc)
     # mfile_exists = exists(m_fileloc)

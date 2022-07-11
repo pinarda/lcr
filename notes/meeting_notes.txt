@@ -1,4 +1,19 @@
 ******************
+July 7 Meeting
+******************
+
+Things to note: large compression ratio for sz3, some of the tigher compressions are larger than the lossless compression - spot check these to make sure it is all right
+    How to partition the data into train, validate, test sets?
+    how should we deal with the 3D variables - For now, we are just going to use 2D variables
+    where can we get more data? - First we want to get results for the current data, then revisit this
+
+Try running the 3D vars on a high-memory node
+Create a schematic for the metric/calculation workflow
+spot check the sz compression ratios to make sure they look correct
+
+Allison will compress the first level of the 3D vars, just use them as 2D variables for compression
+
+******************
 June 30 Meeting
 ******************
 
