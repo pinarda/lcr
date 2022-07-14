@@ -20,7 +20,7 @@ for filename in os.listdir(indir):
             bgdir = "bg_" + str(i)
             infile = indir + "/" + filename
             outfile = outdir + "/" + bgdir + "/" + filename
-            bg_command = "ncks  --ppc " + vname + "=" + str(i) + " -baa 8 " + infile + " " + outfile
+            bg_command = "ncks --ppc " + vname + "=" + str(i) + " --baa 8 " + infile + " " + outfile
             print(bg_command)
 
             os.system(bg_command)
