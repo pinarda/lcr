@@ -1,4 +1,22 @@
 ******************
+July 12 Meeting (Hayden)
+******************
+
+Try running Hayden's code so we can eventually incorporate into the package
+try clarifying the language used in sections 1-4 (esp. 1.2)
+
+Want to be able to plot the real information content - level on y axis, real-information content on x-axis
+Use the driving metric (most selective) as an extra input to the model
+
+Think about the DSSIM paper
+
+prioritize getting the br for the daily vars, and the 3d monthly stuff to add to the model, and running on a large memory node
+
+read Meng's paper by Thursday (automatic differentiation, collocation vs. training data [see note 1 in the paper])
+sampling strategies (space-filling Latin Hypercube)
+Runge-Kutta
+
+******************
 July 7 Meeting
 ******************
 
