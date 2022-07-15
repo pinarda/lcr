@@ -3,7 +3,7 @@ import os
 
 # use  nco/5.0.3 or greater!
 indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig"
-outdir = "~/glade/scratch/apinard/daily_br"
+outdir = "/glade/scratch/apinard/daily_br"
 
 print(indir)
 print(outdir)
