@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import os
 
-# use  nco/5.0.3 or greater!
+# use  nco/5.0.5 or greater!
 indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig"
 outdir = "/glade/scratch/apinard/daily_br"
 
@@ -23,5 +23,7 @@ for filename in os.listdir(indir):
             bg_command = "ncks --ppc " + vname + "=" + str(i) + " --baa 8 " + infile + " " + outfile
             print(bg_command)
 
-            os.system("mkdir " + f"/glade/scratch/apinard/daily_br/{bgdir}")
+            d_cmd = "mkdir /glade/scratch/apinard/daily_br/" + bgdir
+
+            os.system(d_cmd)
             os.system(bg_command)
