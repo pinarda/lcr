@@ -23,4 +23,5 @@ for filename in os.listdir(indir):
             bg_command = "ncks --ppc " + vname + "=" + str(i) + " --baa 8 " + infile + " " + outfile
             print(bg_command)
 
+            os.system("mkdir " + f"/glade/scratch/apinard/daily_br/{bgdir}")
             os.system(bg_command)
