@@ -16,4 +16,4 @@ mkdir -p $TMPDIR
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 
-python ../data_gathering/compute_batch.py -o '/glade/scratch/apinard/AODDUST3.csv' -j 'zfp/AODDUST3.json' -ld
+python ../data_gathering/compute_batch.py -o '/glade/scratch/apinard/monthlyAODDUST3.csv' -j 'zfp/AODDUST3.json' -ld
