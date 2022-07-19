@@ -3,10 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import ast
+import numpy as np
 mpl.use( 'tkagg' )
 
 if __name__ == "__main__":
-    csvfilename = "../data/daily_zfp_bg_sz_comp_slices.csv"
+    csvfilename = "../../data/daily_zfp_bg_sz_comp_slices.csv"
     # csvfilename = "../data/daily_zfp_bg_sz_comp_slices_alternate.csv"
     # dssim_csvfilename = "../data/daily_zfp_bg_sz_comp_slices_dssim.csv"
     with open(csvfilename, newline='') as csvfile:
@@ -223,6 +224,9 @@ if __name__ == "__main__":
     # newdf.hist(["bg_diff", "zfp_diff"], bins=[-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5])
     # plt.show()
 
+    np.save("../../data/toughest_bg.npy", newdf["toughest"])
+    np.save("../../data/toughest_zfp.npy", newdf["toughest_zfp"])
+    np.save("../../data/toughest_sz.npy", newdf["toughest_sz"])
 
     large_diff_df = newdf[newdf["bg_diff"]>=2]
 
