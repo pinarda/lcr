@@ -77,6 +77,10 @@ def main(argv):
         #now create collection for this variable    
         #add dask later
         list_var = [var]
+        print("data_type = ", data_type)
+        print("list_var = ", list_var)
+        print("files = ", files[var])
+        print("labels = ", labels[var])
         cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var])
 
     #create/open csv file and add computations 
