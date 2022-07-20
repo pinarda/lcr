@@ -8,7 +8,7 @@ foreach x ($arrname)
   qsub zfp/$x.sh
   qsub sz/$x.sh
   qsub br/$x.sh
-  qsub orig/$x.sh
+#  qsub orig/$x.sh
 end
 
 sleep 15
