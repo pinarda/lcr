@@ -305,6 +305,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
         print(compression)
         print(freq)
         print(argv_var)
+        print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
         all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
