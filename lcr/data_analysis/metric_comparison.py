@@ -224,9 +224,9 @@ if __name__ == "__main__":
     # newdf.hist(["bg_diff", "zfp_diff"], bins=[-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5])
     # plt.show()
 
-    np.save("../../data/toughest_bg.npy", newdf["toughest"])
-    np.save("../../data/toughest_zfp.npy", newdf["toughest_zfp"])
-    np.save("../../data/toughest_sz.npy", newdf["toughest_sz"])
+    np.save("../../data/daily/toughest_bg.npy", newdf["toughest"])
+    np.save("../../data/daily/toughest_zfp.npy", newdf["toughest_zfp"])
+    np.save("../../data/daily/toughest_sz.npy", newdf["toughest_sz"])
 
     large_diff_df = newdf[newdf["bg_diff"]>=2]
 

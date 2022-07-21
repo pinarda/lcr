@@ -159,7 +159,7 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    daily_df = pd.read_csv('../../data/daily_compress_df.csv')
+    daily_df = pd.read_csv('../../data/daily/daily_compress_df.csv')
     # monthly_df = pd.read_csv('../data/monthly_compress_df.csv')
 
     # just look at a particular algorithm and try and guess the level for now

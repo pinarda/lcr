@@ -274,9 +274,9 @@ def save_labels(v, freq, csvfile, tags=True):
     newdf["ratios"] = r
     newdf["variable"] = v
     # At the moment it is assumed that the time slices are in order here.
-    newdf["times"] = list(range(0,100))
+    newdf["times"] = list(range(0,360))
 
-    fileloc = f"../../data/monthly/{freq}_labels.csv"
+    fileloc = f"../../data/{freq}_labels.csv"
     file_exists = exists(fileloc)
     if file_exists:
         newdf.to_csv(fileloc, mode="a", header=False, index=False)
@@ -297,19 +297,6 @@ if __name__ == "__main__":
     #     save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
 
     #USE THIS FOR MAKING DAILY/MONTHLY LABELS
-    for v in ["PRECSL","TAUY","soa_a2_SRF","TAUX","CDNUMC","TGCLDLWP",
-                     "PRECL","soa_a1_SRF","SHFLX","dst_a3_SRF","pom_a1_SRF",
-                     "bc_a1_SRF","TGCLDIWP","dst_a1_SRF","LHFLX","QFLX","LWCF",
-                     "so4_a2_SRF","WGUSTD","so4_a3_SRF","CLDMED","so4_a1_SRF",
-                     "PBLH","CLDHGH","BURDENSEASALT","SFCO2","FLNS","BURDENDUST",
-                     "U10","SWCF","CLDTOT","WSPDSRFMX","CLDLOW","BURDENPOM",
-                     "BURDENBC","AODDUST3","BURDENSO4","BURDENSOA","AODVIS",
-                     "TMQ","FSNS","AODABS","AODDUST1","FLNSC","FSDS","SRFRAD",
-                     "FSNT","FSNTOA","FLDS","FLNT","FLUT","PRECC","FSNSC",
-                     "TROP_P","FLNTC","FLUTC","FSNTC","FSNTOAC","SFCO2_OCN",
-                     "TREFHTMN","TSMN","TSMX","TREFHTMX","TMCO2","TS","TMCO2_FFF",
-                     "TREFHT","PS","TMCO2_LND","TROP_T","SFCO2_FFF","PSL","PHIS",
-                     "SOLIN","SFCO2_LND","OCNFRAC","SNOWHLND","SNOWHICE","PRECSC",
-                     "ICEFRAC","LANDFRAC"]:
+    for v in ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT", "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]:
         print(v)
-        save_labels(v, "monthly", "../../data/monthly/monthly_optimal_slices.csv")
+        save_labels(v, "monthly", "../../data/monthly_optimal_slices.csv")

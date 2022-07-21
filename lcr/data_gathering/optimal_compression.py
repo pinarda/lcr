@@ -474,7 +474,7 @@ def main_zfp(argv):
                 print(levelsz[i])
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
                 print(fsz)
-                if fsz is not None:
+                if fsz is not None or fbg is not None or fzfp is not None:
                     sizesz = float(fsz)
                     sizebg = float(fbg)
                     sizezfp = float(fzfp)
