@@ -323,7 +323,9 @@ def filesize(csvfilename, variable, level, compression):
             for row in reader:
                 if len(row) == 0:
                     return -1
-                if level == "orig" or level == 100000:
+                print(f"rpw: {row[0]}")
+                print(f"rp1w: {int(level)}")
+                if level == "orig" or int(level) == 100000:
                     if row[0] == variable and row[1] == f"orig":
                         return row[2]
                 if row[0] == variable and row[1] == f"{compression}_ROn{level}":
@@ -332,7 +334,7 @@ def filesize(csvfilename, variable, level, compression):
             for row in reader:
                 if len(row) == 0:
                     return -1
-                if level == "orig" or level == 100000:
+                if level == "orig" or int(level) == 100000:
                     if row[0] == variable and row[1] == f"orig":
                         return row[2]
                 if row[0] == variable and row[1] == f"{compression}_{level}":
@@ -469,6 +471,9 @@ def main_zfp(argv):
                 fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp_p")
                 print(fzfp)
                 fbg = filesize(sizecsv, argv_var, levelbg[i], "br")
+                print(sizecsv)
+                print(argv_var)
+                print(levelsz[i])
                 fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
                 print(fsz)
                 if fsz is not None:
