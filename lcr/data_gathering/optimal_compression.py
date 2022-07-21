@@ -299,13 +299,13 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
     levs = []
     all_levs = []
     for time in times:
-        print(variable)
-        print(time)
-        print(threshold)
-        print(compression)
-        print(freq)
-        print(argv_var)
-        print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
+        # print(variable)
+        # print(time)
+        # print(threshold)
+        # print(compression)
+        # print(freq)
+        # print(argv_var)
+        # print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
         all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
@@ -432,6 +432,7 @@ def main_zfp(argv):
 
         all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/monthly{argv_var}.csv", argv_var, 0.995, "zfp_p", freq, argv_var)
         all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/monthly{argv_var}.csv", argv_var, 0.995, "sz3", freq, argv_var)
+        print(levelsz)
         levelzfp = [int(i) for i in levelzfp]
 
         levelsz = [str(i) for i in levelsz]
@@ -460,7 +461,7 @@ def main_zfp(argv):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             sizecsv = f"../../data/monthly/{freq}_filesizes.csv"
 
-            for i in range(0, 100):
+            for i in range(0, 360):
                 print(f"{i}")
                 print(sizecsv)
                 print(argv_var)
