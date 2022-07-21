@@ -323,9 +323,7 @@ def filesize(csvfilename, variable, level, compression):
             for row in reader:
                 if len(row) == 0:
                     return -1
-                print(f"rpw: {row[0]}")
-                print(f"rp1w: {int(float(level))}")
-                if level == "orig" or int(float(level)) == 100000:
+                if level == "orig" or level == 100000:
                     if row[0] == variable and row[1] == f"orig":
                         return row[2]
                 if row[0] == variable and row[1] == f"{compression}_ROn{level}":
