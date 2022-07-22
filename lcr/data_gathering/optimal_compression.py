@@ -510,12 +510,12 @@ if __name__ == "__main__":
 # if __name__ == "__main__":
 #     args = parseArguments()
 #     argv_var = args.var
-#     #daily_sizecsv = "../data/daily_filesizes.csv"
+#     #daily_sizecsv = "../data/daily_filesizes_bg.csv"
 #    # varname = "TS"
 #     # sz_level = optimal_level_max(f"../data/daily_dssims.csv", "TS", 0.9995, "sz1.4", "daily")
 #     # f = filesize(daily_sizecsv, varname, sz_level, "sz1.4")
-#     monthly_sizecsv = "../../data/daily_filesizes.csv"
-#     daily_sizecsv = "../../data/daily_filesizes.csv"
+#     monthly_sizecsv = "../../data/daily_filesizes_bg.csv"
+#     daily_sizecsv = "../../data/daily_filesizes_bg.csv"
 #     for num in [0.95, 0.995, 0.9995]:
 #         for freq in ['daily']:
 #             v = lcr_global_vars.varlist(f"../../data/{freq}_dssims.csv")
