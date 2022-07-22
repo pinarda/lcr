@@ -382,6 +382,8 @@ def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--var", help="csv file to store output (if file exists, then data will append).",
                         type=str, default="./sample.csv")
+    parser.add_argument("-f", "--freq", help="frequency (daily/monthly)",
+                        type=str, default="monthly")
     args = parser.parse_args()
 
     return args
@@ -393,7 +395,7 @@ def main_zfp(argv):
     argv_var = args.var
     print(f"current_var: {argv_var}")
 
-    for freq in ['monthly']:
+    for freq in ['daily']:
         # v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         # for argv_var in v:
         location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices12345.csv"

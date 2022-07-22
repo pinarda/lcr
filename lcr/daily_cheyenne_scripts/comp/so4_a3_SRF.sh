@@ -13,4 +13,4 @@ conda activate ldcpy_env
 setenv TMPDIR /glade/scratch/$USER/temp
 mkdir -p $TMPDIR
 
-python /glade/u/home/apinard/lcr/lcr/data_gathering/optimal_compression.py --var 'so4_a3_SRF'
+python /glade/u/home/apinard/lcr/lcr/data_gathering/optimal_compression.py --var 'so4_a3_SRF' --freq 'daily'
