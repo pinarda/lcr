@@ -7,17 +7,19 @@ This script creates daily_compress_df and monthly_compress_df. (used by models.p
 
 import pandas as pd
 from os.path import exists
+import numpy as np
 
 if __name__ == "__main__":
-    daily_label_df = pd.read_csv('../../data/monthly_labels.csv')
+    freq = "daily"
+    daily_label_df = pd.read_csv(f'../../data/{freq}/{freq}_labels.csv')
     # monthly_label_df = pd.read_csv('../data/monthly_labels.csv')
-    daily_calc_df = pd.read_csv('../../data/monthly_calcs.csv')
+    daily_calc_df = pd.read_csv(f'../../data/{freq}/{freq}_calcs.csv')
     # monthly_calc_df = pd.read_csv('../data/monthly_calcs.csv')
 
-    daily_df = pd.DataFrame()
-    daily_df = daily_calc_df
+    daily_df2 = daily_calc_df.loc[daily_calc_df['time'] < 360].copy()
+    daily_df = daily_df2.reset_index()
     # lazy, for now just assuming the variables and timesteps are in identical order
-    daily_df["levels"] = daily_label_df["levels"]
+    daily_df["levels"] = daily_label_df["levels"].copy()
     daily_df["algs"] = daily_label_df["algs"]
     daily_df["ratios"] = daily_label_df["ratios"]
     daily_df["variable"] = daily_label_df["variable"]
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     # monthly_df["ratios"] = monthly_label_df["ratios"]
     # monthly_df["variable"] = monthly_label_df["variable"]
 
-    d_fileloc = f"../../data/monthly_compress_df.csv"
+    d_fileloc = f"../../data/{freq}/{freq}_compress_df.csv"
     # m_fileloc = f"../data/monthly_compress_df.csv"
     dfile_exists = exists(d_fileloc)
     # mfile_exists = exists(m_fileloc)
