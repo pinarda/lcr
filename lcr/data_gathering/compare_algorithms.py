@@ -8,9 +8,9 @@ import numpy as np
 import os
 
 def optimal_per_slice():
-    freqs = ["monthly"]
+    freqs = ["daily"]
     for freq in freqs:
-        csvfilename = f"../../data/{freq}_zfp_bg_sz_comp_slices.csv"
+        csvfilename = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices.csv"
         with open(csvfilename, newline='') as csvfile:
             content = csvfile.readlines()
         rowstrings = content[1:]
@@ -32,7 +32,7 @@ def optimal_per_slice():
                 best_alg = "sz1413"
             elif np_ratios.argmax(0) == 4:
                 best_alg = "z_hdf5"
-            location = f"../../data/{freq}_optimal_slices.csv"
+            location = f"../../data/{freq}/{freq}_optimal_slices.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
                 fieldnames = ["variable", "best_alg", "best_ratio", "best_size", "best_level"]
@@ -51,9 +51,9 @@ def optimal_per_slice():
                 )
 
 def optimal_over_var():
-    freqs = ["monthly"]
+    freqs = ["daily"]
     for freq in freqs:
-        csvfilename = f"../../data/{freq}_zfp_bg_sz_comp_slices.csv"
+        csvfilename = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices.csv"
         with open(csvfilename, newline='') as csvfile:
             content = csvfile.readlines()
         rowstrings = content[1:]
@@ -76,7 +76,7 @@ def optimal_over_var():
                 best_alg = "sz1413"
             elif np_ratios.argmax(0) == 4:
                 best_alg = "z_hdf5"
-            location = f"../../data/monthly/{freq}_optimal_over_var.csv"
+            location = f"../../data/{freq}/{freq}_optimal_over_var.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
                 fieldnames = ["variable", "best_alg", "best_ratio", "best_size", "best_level"]

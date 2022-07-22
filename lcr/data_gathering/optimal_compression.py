@@ -426,14 +426,14 @@ def main_zfp(argv):
         print(f"current_var: {argv_var}")
         # all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "br", freq, argv_var)
 
-        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/monthly{argv_var}.csv", argv_var, 0.995, "br", freq, argv_var)
+        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "br", freq, argv_var)
         print(f"level bg: {levelbg}")
         levelbg = [int(i) for i in levelbg]
         # levelzfp = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
         # levelsz = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
 
-        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/monthly{argv_var}.csv", argv_var, 0.995, "zfp_p", freq, argv_var)
-        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/monthly{argv_var}.csv", argv_var, 0.995, "sz3", freq, argv_var)
+        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "zfp_p", freq, argv_var)
+        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "sz3", freq, argv_var)
         print(levelsz)
         levelzfp = [int(i) for i in levelzfp]
 

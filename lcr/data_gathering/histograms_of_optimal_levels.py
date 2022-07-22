@@ -29,7 +29,7 @@ def omit_by(dct, predicate=lambda x: x==0):
 def hist_plotter(v, freq, csvfile, tags=True):
     df = pd.read_csv(csvfile)
     vdf = df[df["variable"]==v]
-    vdf=df
+    #vdf=df
 
     adf=df["best_alg"].to_list()
     ldf=df["best_level"].to_list()
@@ -274,9 +274,9 @@ def save_labels(v, freq, csvfile, tags=True):
     newdf["ratios"] = r
     newdf["variable"] = v
     # At the moment it is assumed that the time slices are in order here.
-    newdf["times"] = list(range(0,360))
+    newdf["times"] = list(range(0,720))
 
-    fileloc = f"../../data/{freq}_labels.csv"
+    fileloc = f"../../data/{freq}/{freq}_labels.csv"
     file_exists = exists(fileloc)
     if file_exists:
         newdf.to_csv(fileloc, mode="a", header=False, index=False)
@@ -288,15 +288,15 @@ if __name__ == "__main__":
     # create histograms
     # for v in ["FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
     #            "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS"]:
-    #      hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
-    for v in ["bc_a1_SRF"]:
-         hist_plotter(v, "daily", "../../data/daily_optimal_slices.csv")
+    # #      hist_plotter(v, "monthly", "../data/monthly_optimal_slices.csv")
+    # for v in ["bc_a1_SRF"]:
+    #      hist_plotter(v, "daily", "../../data/daily_optimal_slices.csv")
 
     # #just save the dataframe as labels
     # for v in lcr_global_vars.monthly_vars:
     #     save_labels(v, "monthly", "../data/monthly_optimal_slices.csv")
 
     #USE THIS FOR MAKING DAILY/MONTHLY LABELS
-    # for v in ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT", "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]:
-    #     print(v)
-    #     save_labels(v, "monthly", "../../data/monthly_optimal_slices.csv")
+    for v in ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT", "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]:
+        print(v)
+        save_labels(v, "daily", "../../data/daily/daily_optimal_slices.csv")

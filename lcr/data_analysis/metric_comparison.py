@@ -7,7 +7,7 @@ import numpy as np
 mpl.use( 'tkagg' )
 
 if __name__ == "__main__":
-    csvfilename = "../../data/daily_zfp_bg_sz_comp_slices.csv"
+    csvfilename = "../../data/daily_zfp_bg_sz_comp_slices_bg.csv"
     # csvfilename = "../data/daily_zfp_bg_sz_comp_slices_alternate.csv"
     # dssim_csvfilename = "../data/daily_zfp_bg_sz_comp_slices_dssim.csv"
     with open(csvfilename, newline='') as csvfile:
@@ -224,9 +224,9 @@ if __name__ == "__main__":
     # newdf.hist(["bg_diff", "zfp_diff"], bins=[-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5])
     # plt.show()
 
-    np.save("../../data/daily/toughest_bg.npy", newdf["toughest"])
-    np.save("../../data/daily/toughest_zfp.npy", newdf["toughest_zfp"])
-    np.save("../../data/daily/toughest_sz.npy", newdf["toughest_sz"])
+    np.save("../../data/daily/daily_bg/toughest_bg.npy", newdf["toughest"])
+    np.save("../../data/daily/daily_bg/toughest_zfp.npy", newdf["toughest_zfp"])
+    np.save("../../data/daily/daily_bg/toughest_sz.npy", newdf["toughest_sz"])
 
     large_diff_df = newdf[newdf["bg_diff"]>=2]
 

@@ -124,7 +124,7 @@ monthly_test_vars = ["SOLIN","SFCO2_LND","OCNFRAC","SNOWHLND","SNOWHICE","PRECSC
                      "ICEFRAC","LANDFRAC"]
 
 
-daily_df = pd.read_csv('../../data/daily/daily_compress_df.csv')
+daily_df = pd.read_csv('../../data/daily/daily_bg/daily_compress_df.csv')
 monthly_df = pd.read_csv('../../data/monthly/monthly_compress_df.csv')
 
 
@@ -201,7 +201,7 @@ nlat = 192
 nlon = 288
 
 indices = indices[1:]
-daily_df = pd.read_csv('../../data/daily/daily_compress_df.csv')
+daily_df = pd.read_csv('../../data/daily/daily_bg/daily_compress_df.csv')
 
 y = y[1:]
 
