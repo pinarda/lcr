@@ -1,4 +1,14 @@
 ******************
+July 21 Meeting
+******************
+
+get an idea of the distribution of algorithm, parameter settings for each of the ~40 classes
+start looking at one particular algorithm, and see how it performs on the data (zfp)
+try using ordered classes
+run the explicig model code
+update the technote with new info, and note what I did with the CNN
+
+******************
 July 12 Meeting (Hayden)
 ******************
 

@@ -265,7 +265,7 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     levs = []
     for time in times:
         #index, lev = optimal_level_multiple_comparison(f"../../data/{freq}_dssims.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
-        lev = optimal_level(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, compression)
+        lev = optimal_level(f"/glade/scratch/apinard/{freq}{argv_var}.csv", variable, time, threshold, compression)
         levs.append(lev)
     min_level = max(levs)
     return min_level
@@ -306,7 +306,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
         # print(freq)
         # print(argv_var)
         # print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
-        all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{freq}{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
 
@@ -396,7 +396,7 @@ def main_zfp(argv):
     for freq in ['monthly']:
         # v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         # for argv_var in v:
-        location = f"../../data/monthly/monthly_zfp_bg_sz_comp_slices12345.csv"
+        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices12345.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
@@ -437,7 +437,7 @@ def main_zfp(argv):
 
         levelsz = [str(i) for i in levelsz]
 
-        location = f"../../data/monthly/monthly_zfp_bg_sz_comp_slices12345.csv"
+        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices12345.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
@@ -459,7 +459,7 @@ def main_zfp(argv):
                 'all_sz_levs'
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            sizecsv = f"../../data/monthly/{freq}_filesizes.csv"
+            sizecsv = f"../../data/{freq}/{freq}_filesizes.csv"
 
             for i in range(0, 360):
                 print(f"{i}")
