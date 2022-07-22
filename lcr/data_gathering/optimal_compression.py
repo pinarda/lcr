@@ -398,7 +398,7 @@ def main_zfp(argv):
     for freq in ['daily']:
         # v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         # for argv_var in v:
-        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices12345.csv"
+        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices111.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
@@ -439,7 +439,7 @@ def main_zfp(argv):
 
         levelsz = [str(i) for i in levelsz]
 
-        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices12345.csv"
+        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices111.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
