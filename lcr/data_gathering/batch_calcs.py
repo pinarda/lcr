@@ -62,6 +62,10 @@ def batch_calcs(
             ['lat', 'lon'],
         )
 
+    # add fft2
+    d = ldcpy.Datasetcalcs(ds[varname].sel(collection=set1), "cam-fv", ['time'])
+
+
     metrics = ldcpy.Datasetcalcs(ds[varname].sel(collection=set1).isel(time=time), "cam-fv", ['lat', 'lon'])
 
     calc_dict = {}

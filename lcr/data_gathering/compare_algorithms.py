@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 def optimal_per_slice():
-    freqs = ["daily"]
+    freqs = ["daily", "monthly"]
     for freq in freqs:
         csvfilename = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices.csv"
         with open(csvfilename, newline='') as csvfile:
@@ -18,9 +18,13 @@ def optimal_per_slice():
             row = rowstring.strip().split(",")
             variable = row[0]
             ratios = [row[5], row[8], row[11]] #, row[14], row[17]]
+            # only look at zfp
+            ratios = [0, float(row[8]), 0]
             np_ratios = np.array(ratios)
             best_ratio = max(ratios)
             best_size = min(row[4], row[7], row[10])#, row[13], row[16])
+            # only look at zfp
+            best_size = min(9999999999999999, float(row[7]), 9999999999999999)
             best_level = row[3 + np_ratios.argmax(0) * 3]
             if np_ratios.argmax(0) == 0:
                 best_alg = "bg"
@@ -32,7 +36,7 @@ def optimal_per_slice():
                 best_alg = "sz1413"
             elif np_ratios.argmax(0) == 4:
                 best_alg = "z_hdf5"
-            location = f"../../data/{freq}/{freq}_optimal_slices.csv"
+            location = f"../../data/{freq}/{freq}_optimal_slices_zfp.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
                 fieldnames = ["variable", "best_alg", "best_ratio", "best_size", "best_level"]

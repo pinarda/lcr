@@ -3,8 +3,9 @@ monthly_compress_df.csv (see create_dataframe.py) (using levels as target for cl
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn import svm
 
 import os
 import matplotlib.pyplot as plt
@@ -32,16 +33,64 @@ all_vars = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
             "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC",
             "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF",
             "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
-            "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
+            "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850",
+            "UBOT", "V200", "V500", "V850", "VBOT",
             "WSPDSRFAV", "Z050", "Z500"]
-train_vars = ["bc_a1_SRF", "dst_a1_SRF", "FLNS", "FLNSC", "pom_a1_SRF", "PRECL", "PRECSC",
-              "PRECSL", "Q200", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF",
-              "TAUX", "TAUY", "TMQ", "T010", "T200", "T500", "T850", "TREFHT",  "U200", "U500",
-              "VBOT", "PSL", "FLUT"]
-validate_vars = ["ICEFRAC", "LHFLX", "PRECT", "Q500", "TREFHTMN", "TS", "U850", "WSPDSRFAV", "Z500",
-                 "FSNSC"]
-test_vars = ["dst_a3_SRF",  "FSNS", "FSNTOA", "Q850", "TREFHTMX", "Z050", "U010", "PRECTMX"]
+train_vars = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
+            "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "pom_a1_SRF", "PRECL", "PRECSC",
+            "PRECSL", "PRECT", "PRECTMX", "Q200", "Q500", "Q850", "so4_a1_SRF",
+            "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
+              "TREFHT", "TREFHTMN", "TREFHTMX", "U010", "U200", "U500", "U850"]
+validate_vars = ["LHFLX", "QBOT", "TAUX", "TMQ", "UBOT", "V850", "VBOT", "WSPDSRFAV"]
+test_vars = ["PSL", "SHFLX", "TAUY", "TS", "V200", "V500", "Z050", "Z500"]
 
+monthly_vars = ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1",
+                "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW",
+                "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC",
+                "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4",
+                "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE",
+                "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD",
+                "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ",
+                "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT",
+                "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT",
+                "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC",
+                "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC",
+                "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC",
+                "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC",
+                "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC",
+                "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL",
+                "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN",
+                "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF",
+                "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD",
+                "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2",
+                "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU",
+                "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS",
+                "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ",
+                "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]
+monthly_train_vars = ["AODDUST1",
+                "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC",
+                "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4",
+                "BURDENSOA", "CLDHGH", "CLDICE",
+                "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "DCQ",
+                "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT",
+                "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT",
+                "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC",
+                "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "PBLH", "PHIS", "pom_a1_SRF", "PRECC",
+                "PRECL", "PRECSC", "PRECSL", "Q", "QFLX", "QRL",
+                "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF",
+                "so4_a3_SRF", "soa_a1_SRF", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2",
+                "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS",
+                "TSMN", "TSMX", "V", "VD01", "VQ",
+                "VT", "VU", "VV"]
+
+monthly_validate_vars = ["ABSORB", "ANRAIN", "AREI", "CCN3", "CO2", "CO2_FFF", "ICEFRAC", "ICIMR", "ICWMR", "IWC", "LANDFRAC", "OMEGA", "PS", "SOLIN", "SRFRAD", "TOT_CLD_VISTAU", "U10", "U", "WGUSTD", "WSPDSRFMX"]
+
+monthly_test_vars = ["ANSNOW", "AODABS", "AREL", "CDNUMC", "CO2_LND", "CO2_OCN", "ICLDIWP", "ICLDTWP", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGAT", "PSL", "soa_a2_SRF", "UQ", "UU", "WSUB", "Z3"]
+
+# train_vars, validate_vars = train_test_split(all_vars, test_size=0.2, random_state=3)
+# monthly_train_vars, monthly_validate_vars = train_test_split(monthly_vars, test_size=0.2, random_state=3)
+# train_vars, test_vars, = train_test_split(train_vars, test_size=0.25, random_state=3)  # 0.25 x 0.8 = 0.2
+# monthly_train_vars, monthly_test_vars = train_test_split(monthly_train_vars, test_size=0.25, random_state=3)  # 0.25 x 0.8 = 0.2
 
 def random_forest(X_train, X_test, y_train, y_test):
     params = {
@@ -109,7 +158,7 @@ def SVM(X_train, X_test, y_train, y_test):
         "random_state": [0],
         "gamma": ["auto"]
     }
-    clf = GridSearchCV(estimator=SVC(), param_grid=params, scoring="accuracy", cv=10)
+    clf = GridSearchCV(estimator=svm.SVC(), param_grid=params, scoring="accuracy", cv=10)
 
     clf.fit(X_train, y_train)
     acc = clf.score(X_test, y_test)
@@ -137,6 +186,10 @@ def QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test):
     y_pred = clf.predict(X_test)
     return(y_pred, acc)
 
+def count(element,seq):
+    """Counts how often an element occurs
+    ...in a sequence"""
+    return sum(1 for i in seq if i == element)
 
 def PredMostFrequent(X_train, X_test, y_train, y_test):
     (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
@@ -148,30 +201,39 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     y_pred = []
     for i in range(0,len(y_test)):
         # ERROR??? _counts not working???
-        y_pred.append(max([p[0] for p in statistics._counts([rf_preds[i],
+        y_pred.append(statistics.mode([rf_preds[i],
                                        nn_preds[i],
                                        knn_preds[i],
-                                       # svm_preds[i],
+                                       svm_preds[i],
                                        lda_preds[i],
-                                       qda_preds[i]])]))
+                                       qda_preds[i]]))
 
     return(y_pred, sum(np.array(y_pred)==np.array(y_test)) / len(np.array(y_test)))
 
 
 if __name__ == "__main__":
-    daily_df = pd.read_csv('../../data/monthly_compress_df.csv')
-    #monthly_df = pd.read_csv('../../data/monthly_compress_df.csv')
+    count = 5
+    daily_df = pd.read_csv('../../data/daily/daily_compress_df_zfp.csv')
+    monthly_df = pd.read_csv('../../data/monthly/monthly_compress_df_zfp.csv')
 
     # just look at a particular algorithm and try and guess the level for now
     subset_daily = daily_df[daily_df["algs"] == "zfp"]
+    subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
+    subset_daily = daily_df[daily_df["levels"] != 100000]
+    subset_monthly = monthly_df[monthly_df["levels"] != 100000]
     #subset_daily = daily_df
-    X = subset_daily[lcr_global_vars.features]
-    subset_daily["levels"][subset_daily["levels"] == -1] = 26
-    y = subset_daily[["levels"]]
+    X1 = subset_daily[lcr_global_vars.features]
+    X2 = subset_monthly[lcr_global_vars.features]
+    subset_daily["levels"][subset_daily["levels"] == 100000] = 28
+    subset_monthly["levels"][subset_monthly["levels"] == 100000] = 28
+    y1 = subset_daily[["levels"]]
+    y2 = subset_monthly[["levels"]]
     #y = subset_daily[["algs"]]
     #y = np.where(y == "zfp", 0, np.where(y == "sz", 1, 2))
-    y = np.array(y).ravel()
-    y = np.unique(y, return_inverse=True)[1]
+    y1 = np.array(y1).ravel()
+    y2 = np.array(y2).ravel()
+    y1 = np.unique(y1, return_inverse=True)[1]
+    y2 = np.unique(y2, return_inverse=True)[1]
 
     # create train-test split at random
     # X_train, X_test, y_train, y_test = train_test_split(X,
@@ -179,13 +241,29 @@ if __name__ == "__main__":
     #                                                     test_size = 0.33, random_state = 42)
 
     # create train-test split by selecting variables
-    X_train = X[subset_daily["variable"].isin(train_vars)]
-    X_validate = X[subset_daily["variable"].isin(validate_vars)]
-    X_test = X[subset_daily["variable"].isin(test_vars)]
+    X1_train = X1[subset_daily["variable"].isin(monthly_train_vars)]
+    X1_validate = X1[subset_daily["variable"].isin(monthly_validate_vars)]
+    X1_test = X1[subset_daily["variable"].isin(monthly_test_vars)]
 
-    y_train = y[subset_daily["variable"].isin(train_vars)]
-    y_validate = y[subset_daily["variable"].isin(validate_vars)]
-    y_test = y[subset_daily["variable"].isin(test_vars)]
+    X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
+    X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
+    X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
+
+    y1_train = y1[subset_daily["variable"].isin(monthly_train_vars)]
+    y1_validate = y1[subset_daily["variable"].isin(monthly_validate_vars)]
+    y1_test = y1[subset_daily["variable"].isin(monthly_test_vars)]
+
+    y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
+    y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
+    y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
+
+    X_train = X1_train.append(X2_train)
+    X_validate = X1_validate.append(X2_validate)
+    X_test = X1_test.append(X2_test)
+
+    y_train = np.concatenate((y1_train, y2_train))
+    y_validate = np.concatenate((y1_validate, y2_validate))
+    y_test = np.concatenate((y1_test, y2_test))
 
     (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
     print("SECTION RANDOM FOREST -----------------")
@@ -193,7 +271,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, rf_preds))
     report = classification_report(y_test, rf_preds, output_dict=True)
     rf_df = pd.DataFrame(report).transpose()
-    rf_df.to_csv('../../data/rf_report.csv', float_format="%.3f")
+    rf_df.to_csv(f'../../data/rf_report_{count}.csv', float_format="%.3f")
     print("END SECTION RANDOM FOREST -----------------")
 
     (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
@@ -202,7 +280,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, boost_preds))
     report = classification_report(y_test, boost_preds, output_dict=True)
     boost_df = pd.DataFrame(report).transpose()
-    boost_df.to_csv('../../data/boost_report.csv', float_format="%.3f")
+    boost_df.to_csv(f'../../data/boost_report_{count}.csv', float_format="%.3f")
     print("END SECTION ADABOOST -----------------")
 
     (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
@@ -211,7 +289,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, nn_preds))
     report = classification_report(y_test, nn_preds, output_dict=True)
     nn_df = pd.DataFrame(report).transpose()
-    nn_df.to_csv('../../data/nn_report.csv', float_format="%.3f")
+    nn_df.to_csv(f'../../data/nn_report_{count}.csv', float_format="%.3f")
     print("END SECTION NEURAL NETWORK -----------------")
 
 
@@ -221,19 +299,19 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, knn_preds))
     report = classification_report(y_test, knn_preds, output_dict=True)
     knn_df = pd.DataFrame(report).transpose()
-    knn_df.to_csv('../../data/knn_report.csv', float_format="%.3f")
+    knn_df.to_csv(f'../../data/knn_report_{count}.csv', float_format="%.3f")
     print("END SECTION KNN -----------------")
 
 
-    # print("SECTION SVM -----------------")
-    # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
-    # print(svm_acc)
-    # print(confusion_matrix(y_test, svm_preds))
-    # report = classification_report(y_test, svm_preds, output_dict=True)
-    # svm_df = pd.DataFrame(report).transpose()
-    # svm_df.to_csv('../data/svm_report.csv', float_format="%.3f")
-    #
-    # print("END SECTION SVM -----------------")
+    print("SECTION SVM -----------------")
+    (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
+    print(svm_acc)
+    print(confusion_matrix(y_test, svm_preds))
+    report = classification_report(y_test, svm_preds, output_dict=True)
+    svm_df = pd.DataFrame(report).transpose()
+    svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
+
+    print("END SECTION SVM -----------------")
 
 
     print("SECTION LDA -----------------")
@@ -242,7 +320,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, lda_preds))
     report = classification_report(y_test, lda_preds, output_dict=True)
     lda_df = pd.DataFrame(report).transpose()
-    lda_df.to_csv('../../data/lda_report.csv', float_format="%.3f")
+    lda_df.to_csv(f'../../data/lda_report_{count}.csv', float_format="%.3f")
     print("END SECTION LDA -----------------")
 
 
@@ -252,7 +330,7 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, qda_preds))
     report = classification_report(y_test, qda_preds, output_dict=True)
     qda_df = pd.DataFrame(report).transpose()
-    qda_df.to_csv('../../data/qda_report.csv', float_format="%.3f")
+    qda_df.to_csv(f'../../data/qda_report_{count}.csv', float_format="%.3f")
 
     print("END SECTION QDA -----------------")
 
@@ -263,5 +341,5 @@ if __name__ == "__main__":
     print(confusion_matrix(y_test, combine_preds))
     report = classification_report(y_test, combine_preds, output_dict=True)
     combine_df = pd.DataFrame(report).transpose()
-    combine_df.to_csv('../../data/combine_report.csv', float_format="%.3f")
+    combine_df.to_csv(f'../../data/combine_report_{count}.csv', float_format="%.3f")
     print("END SECTION AGGREGATE -----------------")

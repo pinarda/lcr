@@ -1,4 +1,14 @@
 ******************
+July 27 Meeting
+******************
+Want to look at classes of variable - they might behave differently in the models
+Spectral features of the data
+putting presentation together
+
+for a given variable - can we get the features that are relevant
+Ask allison where the full data is
+
+******************
 July 21 Meeting
 ******************
 
