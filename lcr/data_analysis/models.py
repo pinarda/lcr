@@ -41,8 +41,8 @@ train_vars = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
             "PRECSL", "PRECT", "PRECTMX", "Q200", "Q500", "Q850", "so4_a1_SRF",
             "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
               "TREFHT", "TREFHTMN", "TREFHTMX", "U010", "U200", "U500", "U850"]
-validate_vars = ["LHFLX", "QBOT", "TAUX", "TMQ", "UBOT", "V850", "VBOT", "WSPDSRFAV"]
-test_vars = ["PSL", "SHFLX", "TAUY", "TS", "V200", "V500", "Z050", "Z500"]
+test_vars = ["LHFLX", "QBOT", "TAUX", "TMQ", "UBOT", "V850", "VBOT", "WSPDSRFAV"]
+validate_vars = ["PSL", "SHFLX", "TAUY", "TS", "V200", "V500", "Z050", "Z500"]
 
 monthly_vars = ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1",
                 "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW",
@@ -83,9 +83,9 @@ monthly_train_vars = ["AODDUST1",
                 "TSMN", "TSMX", "V", "VD01", "VQ",
                 "VT", "VU", "VV"]
 
-monthly_validate_vars = ["ABSORB", "ANRAIN", "AREI", "CCN3", "CO2", "CO2_FFF", "ICEFRAC", "ICIMR", "ICWMR", "IWC", "LANDFRAC", "OMEGA", "PS", "SOLIN", "SRFRAD", "TOT_CLD_VISTAU", "U10", "U", "WGUSTD", "WSPDSRFMX"]
+monthly_test_vars = ["ABSORB", "ANRAIN", "AREI", "CCN3", "CO2", "CO2_FFF", "ICEFRAC", "ICIMR", "ICWMR", "IWC", "LANDFRAC", "OMEGA", "PS", "SOLIN", "SRFRAD", "TOT_CLD_VISTAU", "U10", "U", "WGUSTD", "WSPDSRFMX"]
 
-monthly_test_vars = ["ANSNOW", "AODABS", "AREL", "CDNUMC", "CO2_LND", "CO2_OCN", "ICLDIWP", "ICLDTWP", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGAT", "PSL", "soa_a2_SRF", "UQ", "UU", "WSUB", "Z3"]
+monthly_validate_vars = ["ANSNOW", "AODABS", "AREL", "CDNUMC", "CO2_LND", "CO2_OCN", "ICLDIWP", "ICLDTWP", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGAT", "PSL", "soa_a2_SRF", "UQ", "UU", "WSUB", "Z3"]
 
 # train_vars, validate_vars = train_test_split(all_vars, test_size=0.2, random_state=3)
 # monthly_train_vars, monthly_validate_vars = train_test_split(monthly_vars, test_size=0.2, random_state=3)
