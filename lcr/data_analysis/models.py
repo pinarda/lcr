@@ -204,7 +204,6 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
         y_pred.append(statistics.mode([rf_preds[i],
                                        nn_preds[i],
                                        knn_preds[i],
-                                       svm_preds[i],
                                        lda_preds[i],
                                        qda_preds[i]]))
 
@@ -304,12 +303,12 @@ if __name__ == "__main__":
 
 
     print("SECTION SVM -----------------")
-    (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
-    print(svm_acc)
-    print(confusion_matrix(y_test, svm_preds))
-    report = classification_report(y_test, svm_preds, output_dict=True)
-    svm_df = pd.DataFrame(report).transpose()
-    svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
+    # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
+    # print(svm_acc)
+    # print(confusion_matrix(y_test, svm_preds))
+    # report = classification_report(y_test, svm_preds, output_dict=True)
+    # svm_df = pd.DataFrame(report).transpose()
+    # svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
 
     print("END SECTION SVM -----------------")
 

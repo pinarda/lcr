@@ -1,4 +1,4 @@
-levels,algs,ratios,variable,times
+levels,algs,ratios,variable,time
 100000,zfp,1.00,bc_a1_SRF,0
 20,zfp,1.59,bc_a1_SRF,1
 22,zfp,1.42,bc_a1_SRF,2

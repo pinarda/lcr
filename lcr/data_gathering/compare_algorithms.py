@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 def optimal_per_slice():
-    freqs = ["daily", "monthly"]
+    freqs = ["daily"]
     for freq in freqs:
         csvfilename = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices.csv"
         with open(csvfilename, newline='') as csvfile:
