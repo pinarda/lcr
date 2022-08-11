@@ -1,0 +1,11 @@
+{
+    "VarList":  ["WGUSTD"],
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
+    "FilenamePost": ".200601-203512.nc",
+    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/",
+    "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_br/",
+    "DiffCalcs": ["ssim_fp", "ks_p_value", "spatial_rel_error", "max_spatial_rel_error", "pearson_correlation_coefficient"],
+    "VarLabel": ["br_1", "br_2", "br_3", "br_4", "br_5", "br_6", "br_7", "br_8", "br_9", "br_10", "br_11", "br_12", "br_13", "br_14", "br_15", "br_16"],
+    "CompDirs": ["br_1", "br_2", "br_3", "br_4", "br_5", "br_6", "br_7", "br_8", "br_9", "br_10", "br_11", "br_12", "br_13", "br_14", "br_15", "br_16"],
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
+}

@@ -1,0 +1,6 @@
+#!/bin/tcsh
+
+set arrname = ( `seq 0 116` )
+foreach x ($arrname)
+  qsub scripts/$x.sh
+end

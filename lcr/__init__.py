@@ -3,8 +3,7 @@
 """ Top-level module for lcr. """
 from pkg_resources import DistributionNotFound, get_distribution
 
-from .batch_calcs import batch_calcs
-from .lcr_global_vars import *
+from .data_gathering.lcr_global_vars import *
 
 try:
     __version__ = get_distribution(__name__).version
