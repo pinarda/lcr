@@ -81,7 +81,7 @@ def main(argv):
         print("list_var = ", list_var)
         print("files = ", files[var])
         print("labels = ", labels[var])
-        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var])
+        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var], weights=False)
 
     #create/open csv file and add computations 
 
@@ -139,7 +139,7 @@ def main(argv):
 
 
         orig_file_exists = os.path.isfile(origoutfile)
-        with open(origoutfile, 'a', newline='') as origcsvfile:
+        with open(origoutfile, 'a+', newline='') as origcsvfile:
             fieldnames = [
                              'set',
                              'time'
@@ -284,7 +284,8 @@ def simple_orig_calcs(
     diff_metrics = ldcpy.Datasetcalcs(
         ds[varname].sel(collection=set1).isel(time=time),
         data_type,
-        []
+        [],
+        weighted=False
     )
 
     # HERE, compute 2D FFT first
