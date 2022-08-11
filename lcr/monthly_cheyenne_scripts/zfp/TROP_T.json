@@ -1,0 +1,11 @@
+{
+    "VarList":  ["TROP_T"],
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
+    "FilenamePost": ".200601-203512.nc",
+    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/",
+    "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_zfp_hdf5/",
+    "DiffCalcs": ["ssim_fp", "ks_p_value", "spatial_rel_error", "max_spatial_rel_error", "pearson_correlation_coefficient"],
+    "VarLabel": ["zfp_p_6", "zfp_p_8", "zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20","zfp_p_22", "zfp_p_24", "zfp_p_26"],
+    "CompDirs": ["zfp_p_6", "zfp_p_8", "zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20","zfp_p_22", "zfp_p_24", "zfp_p_26"],
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
+}

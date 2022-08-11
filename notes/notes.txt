@@ -3,7 +3,47 @@ Alex todo:
 technically should list orig as optimal level if none pass the dssim theshold, currently just uses lowest compression level which is equivalent to lossless in most cases
 
 read NCAR presentations for Peter, Frank, AI/ML talks
-Finish investigations notebook
-grade for 438/538
-do signals homework
-resume/apply to summer things
+
+Spearmint for Bayesian Optimization fo CNN hyperparameters
+
+Try a SOM for trivia scores data
+Is it possible to plot the trivia rounds in the PCA space?
+https://towardsdatascience.com/3-lines-of-python-code-to-create-an-interactive-playable-covid-19-bubble-map-74807939e887
+Could use the above plotting capability to plot round categories/other information (think of adjacent bubbles for each round, time series that lights up bubble when we have a round with that category)
+
+COuld try using a GAN to distinguish between original and compressed images
+
+Try NIN (is this still state of the art?)
+TRIED - compute the saliency map over the whole variable and average them
+can compute more monthly data/data from differently ensembles
+TRIED - try decreasing the number of time slices
+use dask for that
+DJ will have tips like what nn library we should use, what nodes to use (casper?)
+
+want to include features identified in 561 to increase explicit models to some (~10%) degree?
+restricted boltzmann machine for feature learning? (or GAN/variational autoencoder - more modern)
+look into siamese networks
+TRIED - 3 - try increasing the amount of data using rotation, translation, scaling, noise
+TRIED - 2 - increase resolution of input - perhaps the salient features exist on a smaller scale than the downscaled image
+1 - think about training for something else - predicting just DSSIM or another metric instead of all of them, for example. (maybe each of these is simple to model individually, but too complex when done together.
+4 - Try spearmint for Bayesian hyperparameter optimization of CNN
+TRIED - Think about input transforms (Sobel kernel, Dirichlet/SDFT), maybe fourier transform the input?
+UNTESTED - 3 - What about taking the mean of all labels for each timeslice and using that as the overall label for the variable?
+center data values on zero instead of normalizing between 0 and 1 - alexnet, but googlenet scales from -1 to 1 in v1
+"Training data augmentation should probably involve random rescaling, horizontal flips, perturbations to brightness, contrast, and color, as well as random cropping." (can we make this work with compression? can at least flip images)
+test-time augmentation - average multiple predictions (original and flipped vertical/horizontal) for final output prediction
+4 - "One approach described involved first training a model with a fixed but smaller image size, retaining the model weights, then using them as a starting point for training a new model with a larger but still fixed-sized image. This approach was designed in an effort to speed up the training of the larger (second) model."
+try using googlenet, alexnet etc.
+
+Arora et al. [2].   Their main result states that if the probability distribution ofthe data-set is representable by a large, very sparse deep neural network, then the optimal networktopology can be constructed layer by layer by analyzing the correlation statistics of the activationsof the last layer and clustering neurons with highly correlated outputs
+
+ideas for additional metrics:
+distributional similarity (chi-sq test (whole distribution, rest are only center), permutation test(??), mann-whitney u test (vs brunner-Munzel), SMD (vs t-test vs welch's t-test)
+lillefors vs ks-test (lillefors is less conservative) vs anderson-darling and cramer-von mises (integrate over distribution instead of at single point)
+ANOVA?
+
+document everythign I am doing for my thesis (already have a dissertaiton file,?? just dump it in there)
+Talk to DJ
+
+
+prioritize implementing RealInformation inside of ldcpy

@@ -1,0 +1,11 @@
+{
+    "VarList":  ["TS", "LHFLX"],
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
+    "FilenamePost": ".20060101-20071231.nc",
+    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/", 
+    "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/bg/",
+    "DiffCalcs": ["ssim_fp"],
+    "VarLabel": ["bg_2", "bg_3", "bg_4", "bg_5", "bg_6", "bg_7"],
+    "CompDirs": ["bg_2", "bg_3", "bg_4", "bg_5", "bg_6", "bg_7"],
+    "OptLdcpyDevPath": "/glade/u/home/abaker/repos/ldcpy"
+}
