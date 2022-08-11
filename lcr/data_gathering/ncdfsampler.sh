@@ -11,7 +11,7 @@ set compressDirs= (10 12 14 16 18 20 22 24 26)
 foreach x ($arrDay)
   ncks -O -v $x,lat,lon -d time,1,365,365 /glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.${x}.20060101-20801231.nc /glade/scratch/apinard/minidata/minidata_daily_${x}.nc
   foreach y ($compressDirs)
-    ncks -O -v $x,lat,lon -d time,1,365,365 /glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/zfp_p_${y}/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.${x}.20060101-20071231.nc /glade/home/apinard/lcr/data/minidata/compressed/zfp/zfp_p_${y}/minidata_daily_${x}.nc
+    ncks -O -v $x,lat,lon -d time,1,365,365 /glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/zfp_p_${y}/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.${x}.20060101-20071231.nc /glade/u/home/apinard/lcr/data/minidata/compressed/zfp/zfp_p_${y}/minidata_daily_${x}.nc
   end
 end
 
