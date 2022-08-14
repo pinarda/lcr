@@ -12,11 +12,9 @@
     "FilenamePre":"minidata_daily_",
     "FilenamePost": ".nc",
     "OrigPath": "/Users/alex/git/lcr/data/minidata/",
-
     "CompPath":"/Users/alex/git/lcr/data/minidata/compressed/zfp/",
-    "VarLabel": ["sz3_ROn0.05", "sz3_ROn1e-05", "sz3_ROn5e-05"],
-    "CompDirs": ["sz3_ROn0.05", "sz3_ROn1e-05", "sz3_ROn5e-05"],
-
+    "VarLabel": ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24", "zfp_p_26"],
+    "CompDirs": ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24", "zfp_p_26"],
     "DiffCalcs": ["ssim_fp", "ks_p_value", "spatial_rel_error", "max_spatial_rel_error", "pearson_correlation_coefficient"],
     "OptLdcpyDevPath": "/Users/alex/git/ldcpy"
 }

@@ -9,3 +9,4 @@
 #end
 
 python ~/git/lcr/lcr/data_gathering/compute_batch.py -oo ~/git/lcr/data/minidata_calcs/minidata_daily_calcs.csv -j sample_minidata_calcs.json -ld
+python ~/git/lcr/lcr/data_gathering/compute_batch.py -o ~/git/lcr/data/minidata_calcs/minidata_daily_metrics.csv -j sample_minidata_diff.json -ld
