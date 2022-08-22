@@ -13,8 +13,8 @@
 
 set prefix=TS
 
-mkdir ../../data/$prefix
-mkdir ../../data/$prefix_calcs
+mkdir ../../data/${prefix}
+mkdir ../../data/${prefix}_calcs
 #mkdir ../../data/$prefix_calcs/reports
 
 set arrDay= (TS)
@@ -22,23 +22,23 @@ set arrDay= (TS)
 #remote mutiple files
 foreach x ($arrDay)
 #  echo $x
-  python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/$prefix/$prefix_daily_calcs_${x}.csv -j $prefix_calcs.json -ld -tt 100
-  python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/$prefix/$prefix_daily_metrics_${x}.csv -j $prefix_diff.json -ld -tt 100
+  python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}/${prefix}_daily_calcs_${x}.csv -j ${prefix}_calcs.json -ld -tt 100
+  python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}/${prefix}_daily_metrics_${x}.csv -j ${prefix}_diff.json -ld -tt 100
 end
 
 # local single file
-# python ~/git/lcr/lcr/data_gathering/compute_batch.py -oo ~/git/lcr/data/$prefix_calcs/$prefix_daily_calcs.csv -j $prefix_calcs.json -ld
-# python ~/git/lcr/lcr/data_gathering/compute_batch.py -o ~/git/lcr/data/$prefix_calcs/$prefix_daily_metrics.csv -j $prefix_diff.json -ld
+# python ~/git/lcr/lcr/data_gathering/compute_batch.py -oo ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld
+# python ~/git/lcr/lcr/data_gathering/compute_batch.py -o ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_metrics.csv -j ${prefix}_diff.json -ld
 
 foreach x ($arrDay)
-  python optimal_compression.py -l ../../data/$prefix_calcs/$prefix_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/$prefix_calcs/$prefix_daily_metrics.csv -a zfp
+  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp
 end
 
-python compare_algorithms.py -a zfp -v TS -l ../../data/$prefix_calcs/$prefix_daily_optim.csv -o ../../data/$prefix_calcs/$prefix_daily_optim_algs.csv
+python compare_algorithms.py -a zfp -v TS -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -o ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
 
 foreach x ($arrDay)
-  python histograms_of_optimal_levels.py -l ../../data/$prefix_calcs/$prefix_daily_optim_algs.csv -o ../../data/$prefix_calcs/$prefix_daily_labels.csv -v $x
+  python histograms_of_optimal_levels.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -v $x
 end
 
-python create_dataframe.py -l ../../data/$prefix_calcs/$prefix_daily_labels.csv -c ../../data/$prefix_calcs/$prefix_daily_calcs.csv -o ../../data/$prefix_calcs/$prefix_daily_df.csv
-python ../data_analysis/models.py -d ../../data/$prefix_calcs/$prefix_daily_df.csv -e rf nn
+python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -c ../../data/${prefix}_calcs/${prefix}_daily_calcs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_df.csv
+python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf nn
