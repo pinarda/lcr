@@ -6,9 +6,9 @@
 
 set prefix=TS
 
-mkdir -f ../../data/$prefix
-mkdir -f ../../data/$prefix_calcs
-#mkdir -f ../../data/$prefix_calcs/reports
+mkdir ../../data/$prefix
+mkdir ../../data/$prefix_calcs
+#mkdir ../../data/$prefix_calcs/reports
 
 set arrDay= (TS)
 
