@@ -42,6 +42,9 @@ def main(argv):
         orig_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/"
         ldcpy_dev_path = ""
 
+
+    print("   ldcpydevpath = ", ldcpy_dev_path)
+
     #TODO: add checks : e.g.,  that varlist and label list are the same length
 
     if ldc:
