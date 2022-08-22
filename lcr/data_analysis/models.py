@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score
 from sklearn import svm
 
 import os
+import argparse
 import matplotlib.pyplot as plt
 import sys
 import inspect
@@ -210,29 +211,58 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
     return(y_pred, sum(np.array(y_pred)==np.array(y_test)) / len(np.array(y_test)))
 
 
+def parseArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dailyloc", help="location of optimal csv file",
+                        type=str, default=None)
+    parser.add_argument("-m", "--monthlyloc", help="location of monthly csv file",
+                        type=str, default=None)
+    parser.add_argument("-o", "--output", help="location of output csv file",
+                        type=str, default=f"../../data/minidata_calcs/results.csv")
+    parser.add_argument("-e", "--models", help="array of models to run",
+                        nargs='+', required=True)
+    args = parser.parse_args()
+
+    return args
+
 if __name__ == "__main__":
+    args = parseArguments()
+    argv_dailyloc = args.dailyloc
+    argv_monthlyloc = args.monthlyloc
+    argv_output = args.output
+    argv_models = args.models
+
     count = 5
-    daily_df = pd.read_csv('../../data/daily/daily_compress_df_zfp.csv')
-    monthly_df = pd.read_csv('../../data/monthly/monthly_compress_df_zfp.csv')
+    daily_df = pd.read_csv(argv_dailyloc)
+    if argv_monthlyloc is not None:
+        monthly_df = pd.read_csv(argv_monthlyloc)
 
     # just look at a particular algorithm and try and guess the level for now
     subset_daily = daily_df[daily_df["algs"] == "zfp"]
-    subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
+    if argv_monthlyloc is not None:
+        subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
     subset_daily = daily_df[daily_df["levels"] != 100000]
-    subset_monthly = monthly_df[monthly_df["levels"] != 100000]
+    if argv_monthlyloc is not None:
+        subset_monthly = monthly_df[monthly_df["levels"] != 100000]
     #subset_daily = daily_df
     X1 = subset_daily[lcr_global_vars.features]
-    X2 = subset_monthly[lcr_global_vars.features]
+
+    if argv_monthlyloc is not None:
+        X2 = subset_monthly[lcr_global_vars.features]
     subset_daily["levels"][subset_daily["levels"] == 100000] = 28
-    subset_monthly["levels"][subset_monthly["levels"] == 100000] = 28
+    if argv_monthlyloc is not None:
+        subset_monthly["levels"][subset_monthly["levels"] == 100000] = 28
     y1 = subset_daily[["levels"]]
-    y2 = subset_monthly[["levels"]]
+    if argv_monthlyloc is not None:
+        y2 = subset_monthly[["levels"]]
     #y = subset_daily[["algs"]]
     #y = np.where(y == "zfp", 0, np.where(y == "sz", 1, 2))
     y1 = np.array(y1).ravel()
-    y2 = np.array(y2).ravel()
+    if argv_monthlyloc is not None:
+        y2 = np.array(y2).ravel()
     y1 = np.unique(y1, return_inverse=True)[1]
-    y2 = np.unique(y2, return_inverse=True)[1]
+    if argv_monthlyloc is not None:
+        y2 = np.unique(y2, return_inverse=True)[1]
 
     # create train-test split at random
     # X_train, X_test, y_train, y_test = train_test_split(X,
@@ -240,105 +270,119 @@ if __name__ == "__main__":
     #                                                     test_size = 0.33, random_state = 42)
 
     # create train-test split by selecting variables
-    X1_train = X1[subset_daily["variable"].isin(monthly_train_vars)]
-    X1_validate = X1[subset_daily["variable"].isin(monthly_validate_vars)]
-    X1_test = X1[subset_daily["variable"].isin(monthly_test_vars)]
+    X1_train = X1[subset_daily["variable"].isin(train_vars)]
+    X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
+    X1_test = X1[subset_daily["variable"].isin(test_vars)]
 
-    X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
-    X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
-    X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
+    if argv_monthlyloc is not None:
+        X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
+        X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
+        X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
 
-    y1_train = y1[subset_daily["variable"].isin(monthly_train_vars)]
-    y1_validate = y1[subset_daily["variable"].isin(monthly_validate_vars)]
-    y1_test = y1[subset_daily["variable"].isin(monthly_test_vars)]
+    y1_train = y1[subset_daily["variable"].isin(train_vars)]
+    y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
+    y1_test = y1[subset_daily["variable"].isin(test_vars)]
 
-    y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
-    y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
-    y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
+    if argv_monthlyloc is not None:
+        y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
+        y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
+        y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
 
-    X_train = X1_train.append(X2_train)
-    X_validate = X1_validate.append(X2_validate)
-    X_test = X1_test.append(X2_test)
+    if argv_monthlyloc is not None:
+        X_train = X1_train.append(X2_train)
+        X_validate = X1_validate.append(X2_validate)
+        X_test = X1_test.append(X2_test)
 
-    y_train = np.concatenate((y1_train, y2_train))
-    y_validate = np.concatenate((y1_validate, y2_validate))
-    y_test = np.concatenate((y1_test, y2_test))
+        y_train = np.concatenate((y1_train, y2_train))
+        y_validate = np.concatenate((y1_validate, y2_validate))
+        y_test = np.concatenate((y1_test, y2_test))
+    else:
+        X_train = X1_train
+        X_validate = X1_validate
+        X_test = X1_test
 
-    (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
-    print("SECTION RANDOM FOREST -----------------")
-    print(rf_acc)
-    print(confusion_matrix(y_test, rf_preds))
-    report = classification_report(y_test, rf_preds, output_dict=True)
-    rf_df = pd.DataFrame(report).transpose()
-    rf_df.to_csv(f'../../data/rf_report_{count}.csv', float_format="%.3f")
-    print("END SECTION RANDOM FOREST -----------------")
+        y_train = y1_train
+        y_validate = y1_validate
+        y_test = y1_test
 
-    (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
-    print("SECTION ADABOOST -----------------")
-    print(boost_acc)
-    print(confusion_matrix(y_test, boost_preds))
-    report = classification_report(y_test, boost_preds, output_dict=True)
-    boost_df = pd.DataFrame(report).transpose()
-    boost_df.to_csv(f'../../data/boost_report_{count}.csv', float_format="%.3f")
-    print("END SECTION ADABOOST -----------------")
+    if "rf" in argv_models:
+        (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
+        print("SECTION RANDOM FOREST -----------------")
+        print(rf_acc)
+        print(confusion_matrix(y_test, rf_preds))
+        report = classification_report(y_test, rf_preds, output_dict=True)
+        rf_df = pd.DataFrame(report).transpose()
+        rf_df.to_csv(f'../../data/minidata_calcs/reports/rf_report_{count}.csv', float_format="%.3f")
+        print("END SECTION RANDOM FOREST -----------------")
 
-    (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
-    print("SECTION NEURAL NETWORK -----------------")
-    print(nn_acc)
-    print(confusion_matrix(y_test, nn_preds))
-    report = classification_report(y_test, nn_preds, output_dict=True)
-    nn_df = pd.DataFrame(report).transpose()
-    nn_df.to_csv(f'../../data/nn_report_{count}.csv', float_format="%.3f")
-    print("END SECTION NEURAL NETWORK -----------------")
+    if "ada" in argv_models:
+        (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
+        print("SECTION ADABOOST -----------------")
+        print(boost_acc)
+        print(confusion_matrix(y_test, boost_preds))
+        report = classification_report(y_test, boost_preds, output_dict=True)
+        boost_df = pd.DataFrame(report).transpose()
+        boost_df.to_csv(f'../../data/minidata_calcs/reports/boost_report_{count}.csv', float_format="%.3f")
+        print("END SECTION ADABOOST -----------------")
 
+    if "nn" in argv_models:
+        (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
+        print("SECTION NEURAL NETWORK -----------------")
+        print(nn_acc)
+        print(confusion_matrix(y_test, nn_preds))
+        report = classification_report(y_test, nn_preds, output_dict=True)
+        nn_df = pd.DataFrame(report).transpose()
+        nn_df.to_csv(f'../../data/minidata_calcs/reports/nn_report_{count}.csv', float_format="%.3f")
+        print("END SECTION NEURAL NETWORK -----------------")
 
-    print("SECTION KNN -----------------")
-    (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
-    print(knn_acc)
-    print(confusion_matrix(y_test, knn_preds))
-    report = classification_report(y_test, knn_preds, output_dict=True)
-    knn_df = pd.DataFrame(report).transpose()
-    knn_df.to_csv(f'../../data/knn_report_{count}.csv', float_format="%.3f")
-    print("END SECTION KNN -----------------")
+    if "knn" in argv_models:
+        print("SECTION KNN -----------------")
+        (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
+        print(knn_acc)
+        print(confusion_matrix(y_test, knn_preds))
+        report = classification_report(y_test, knn_preds, output_dict=True)
+        knn_df = pd.DataFrame(report).transpose()
+        knn_df.to_csv(f'../../data/minidata_calcs/reports/knn_report_{count}.csv', float_format="%.3f")
+        print("END SECTION KNN -----------------")
 
+    if "svm" in argv_models:
+        print("SECTION SVM -----------------")
+        (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
+        print(svm_acc)
+        print(confusion_matrix(y_test, svm_preds))
+        report = classification_report(y_test, svm_preds, output_dict=True)
+        svm_df = pd.DataFrame(report).transpose()
+        svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
 
-    print("SECTION SVM -----------------")
-    # (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
-    # print(svm_acc)
-    # print(confusion_matrix(y_test, svm_preds))
-    # report = classification_report(y_test, svm_preds, output_dict=True)
-    # svm_df = pd.DataFrame(report).transpose()
-    # svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
+        print("END SECTION SVM -----------------")
 
-    print("END SECTION SVM -----------------")
+    if "lda" in argv_models:
+        print("SECTION LDA -----------------")
+        (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+        print(lda_acc)
+        print(confusion_matrix(y_test, lda_preds))
+        report = classification_report(y_test, lda_preds, output_dict=True)
+        lda_df = pd.DataFrame(report).transpose()
+        lda_df.to_csv(f'../../data/minidata_calcs/reports/lda_report_{count}.csv', float_format="%.3f")
+        print("END SECTION LDA -----------------")
 
+    if "qda" in argv_models:
+        print("SECTION QDA -----------------")
+        (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+        print(qda_acc)
+        print(confusion_matrix(y_test, qda_preds))
+        report = classification_report(y_test, qda_preds, output_dict=True)
+        qda_df = pd.DataFrame(report).transpose()
+        qda_df.to_csv(f'../../data/minidata_calcs/reports/qda_report_{count}.csv', float_format="%.3f")
 
-    print("SECTION LDA -----------------")
-    (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-    print(lda_acc)
-    print(confusion_matrix(y_test, lda_preds))
-    report = classification_report(y_test, lda_preds, output_dict=True)
-    lda_df = pd.DataFrame(report).transpose()
-    lda_df.to_csv(f'../../data/lda_report_{count}.csv', float_format="%.3f")
-    print("END SECTION LDA -----------------")
+        print("END SECTION QDA -----------------")
 
-
-    print("SECTION QDA -----------------")
-    (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-    print(qda_acc)
-    print(confusion_matrix(y_test, qda_preds))
-    report = classification_report(y_test, qda_preds, output_dict=True)
-    qda_df = pd.DataFrame(report).transpose()
-    qda_df.to_csv(f'../../data/qda_report_{count}.csv', float_format="%.3f")
-
-    print("END SECTION QDA -----------------")
-
-
-    print("SECTION AGGREGATE -----------------")
-    (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
-    print(combine_acc)
-    print(confusion_matrix(y_test, combine_preds))
-    report = classification_report(y_test, combine_preds, output_dict=True)
-    combine_df = pd.DataFrame(report).transpose()
-    combine_df.to_csv(f'../../data/combine_report_{count}.csv', float_format="%.3f")
-    print("END SECTION AGGREGATE -----------------")
+    if "agg" in argv_models:
+        print("SECTION AGGREGATE -----------------")
+        (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
+        print(combine_acc)
+        print(confusion_matrix(y_test, combine_preds))
+        report = classification_report(y_test, combine_preds, output_dict=True)
+        combine_df = pd.DataFrame(report).transpose()
+        combine_df.to_csv(f'../../data/minidata_calcs/reports/combine_report_{count}.csv', float_format="%.3f")
+        print("END SECTION AGGREGATE -----------------")

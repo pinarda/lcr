@@ -1,4 +1,12 @@
 ******************
+August 19 Meeting
+******************
+Review the wording for the real information technote by monday
+review the 2-page abstract (see flagged email)
+get grading finished by sunday
+finish updating the code (need monthly/3d stuff to work) and test it by getting all TS stuff on cheyenne and predict
+
+******************
 July 27 Meeting
 ******************
 Want to look at classes of variable - they might behave differently in the models

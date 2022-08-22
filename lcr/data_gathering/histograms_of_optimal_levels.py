@@ -13,6 +13,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import lcr_global_vars
 from os.path import exists
+import argparse
 mpl.use( 'tkagg' )
 
 font = {'family' : 'normal',
@@ -24,7 +25,17 @@ mpl.rc('font', **font)
 def omit_by(dct, predicate=lambda x: x==0):
     return {k: v for k, v in dct.items() if not predicate(v)}
 
+def parseArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--var", help="variable name",
+                        type=str, default="TS")
+    parser.add_argument("-l", "--loc", help="location of optimal csv file",
+                        type=str, default=f"../../data/daily/daily_optim_algs.csv")
+    parser.add_argument("-o", "--output", help="location of output csv file",
+                        type=str, default=f"../../data/daily/daily_labels.csv")
+    args = parser.parse_args()
 
+    return args
 
 def hist_plotter(v, freq, csvfile, tags=True):
     df = pd.read_csv(csvfile)
@@ -202,8 +213,13 @@ def hist_plotter(v, freq, csvfile, tags=True):
     plt.savefig(f"../../slice_hists/{v}{freq}day.png")
     #plt.show()
 
-def save_labels(v, freq, csvfile, tags=True):
-    df = pd.read_csv(csvfile)
+def save_labels():
+    args = parseArguments()
+    v = args.var
+    argv_loc = args.loc
+    argv_output = args.output
+
+    df = pd.read_csv(argv_loc)
     vdf = df[df["variable"]==v]
     #vdf=df
 
@@ -274,9 +290,9 @@ def save_labels(v, freq, csvfile, tags=True):
     newdf["ratios"] = r
     newdf["variable"] = v
     # At the moment it is assumed that the time slices are in order here.
-    newdf["times"] = list(range(0,len(newdf)))
+    newdf["time"] = list(range(0,len(newdf)))
 
-    fileloc = f"../../data/{freq}/{freq}_labels_zfp.csv"
+    fileloc = argv_output
     file_exists = exists(fileloc)
     if file_exists:
         newdf.to_csv(fileloc, mode="a", header=False, index=False)
@@ -298,16 +314,16 @@ if __name__ == "__main__":
 
     #USE THIS FOR MAKING DAILY/MONTHLY LABELS
    #for v in ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT", "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]:
-    for v in ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
-               "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC",
-               "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF",
-               "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
-               "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
-               "WSPDSRFAV", "Z050", "Z500"]:
-        # missing - PRECL, T500, PSL
-
-        print(v)
-        save_labels(v, "daily", "../../data/daily/daily_optimal_slices_zfp.csv")
+    # for v in ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
+    #            "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC",
+    #            "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF",
+    #            "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850",
+    #            "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
+    #            "WSPDSRFAV", "Z050", "Z500"]:
+    #     # missing - PRECL, T500, PSL
+    #
+    #     print(v)
+    save_labels()
 
     # for v in ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3", "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF", "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA", "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT", "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF", "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT", "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC", "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP", "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA", "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS", "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP", "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU", "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10", "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]:
     #     print(v)

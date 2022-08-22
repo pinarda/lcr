@@ -17,12 +17,23 @@ import lcr_global_vars
 import sys
 import argparse
 
+def translate_alg_to_prefix(compression:str):
+    if compression == "zfp":
+        return "zfp_p"
+    elif compression == "sz":
+        return "sz3"
+    elif compression == "bg":
+        return "bg"
+    return None
 
-def search_csv(csvfilename: str, variable: str, timestep: int, compression:str):
+
+def search_csv(csvfilename: str, variable: str, timestep: int, c:str):
     """
     Searches csv file for an entry with the given variable in the first column
     in the format .*_\d+_VARIABLE, and timestep given in the second column.
     """
+    compression = translate_alg_to_prefix(c)
+
     match_rows = []
     with open(csvfilename, newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -270,7 +281,7 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     min_level = max(levs)
     return min_level
 
-def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var):
+def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var, argv_metricloc):
     """
     Find the minimum of all the optimal compression levels for a specified variable
     over all time slices.
@@ -306,7 +317,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
         # print(freq)
         # print(argv_var)
         # print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
-        all_lev, lev = optimal_level_multiple_comparison(f"/glade/scratch/apinard/{freq}{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(argv_metricloc, variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
 
@@ -384,128 +395,110 @@ def parseArguments():
                         type=str, default="./sample.csv")
     parser.add_argument("-f", "--freq", help="frequency (daily/monthly)",
                         type=str, default="monthly")
+    parser.add_argument("-l", "--loc", help="output location",
+                        type=str, default=f"../../data/daily/daily_zfp_bg_sz_comp_slices111.csv")
+    parser.add_argument("-z", "--sizeloc", help="location of filesize csv",
+                        type=str, default=f"../../data/daily/daily_filesizes.csv")
+    parser.add_argument("-m", "--metricloc", help="location of metrics csv",
+                        type=str, default=f"/glade/scratch/apinard/dailyTS.csv")
+    parser.add_argument("-a", "--algs", help="compression algorithms",
+                        type=str, nargs='+', required=True)
+    parser.add_argument("-d", "--dssim", help="dssim threshold",
+                        type=float, default=0.995)
     args = parser.parse_args()
 
     return args
 
 
-def main_zfp(argv):
+def main():
+    # Why is this iterating over all timeslices instead of just one?
+
     # Get command line stuff and store in a dictionary
     args = parseArguments()
     argv_var = args.var
+    argv_freq = args.freq
+    argv_loc = args.loc
+    argv_sizeloc = args.sizeloc
+    argv_metricloc = args.metricloc
+    argv_algs = args.algs
+    argv_dssim = args.dssim
+
     print(f"current_var: {argv_var}")
 
-    for freq in ['daily']:
+    for freq in [argv_freq]:
         # v = lcr_global_vars.varlist(f"../data/{freq}_dssims.csv")
         # for argv_var in v:
-        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices111.csv"
+        location = argv_loc
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
         with open(location, 'a', newline='') as csvfile:
             fieldnames = [
                 'variable',
                 'frequency',
-                'timestep',
-                'br_level',
-                'br_size',
-                'br_ratio',
-                'zfp_level',
-                'zfp_size',
-                'zfp_ratio',
-                'sz_level',
-                'sz_size',
-                'sz_ratio',
-                "all_br_levs",
-                "all_zfp_levs",
-                'all_sz_levs'
+                'timestep'
             ]
+            for alg in argv_algs:
+                fieldnames = fieldnames + [f"{alg}_level", f"{alg}_size", f"{alg}_ratio", f"all_{alg}_levs"]
+
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
 
-        print(f"current_var: {argv_var}")
-        # all_bg_levs, levelbg = optimal_level_spread(f"../data/daily_dssims.csv", argv_var, 0.9995, "br", freq, argv_var)
-
-        all_bg_levs, levelbg = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "br", freq, argv_var)
-        print(f"level bg: {levelbg}")
-        levelbg = [int(i) for i in levelbg]
-        # levelzfp = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "zfp_p", freq, argv_var)
-        # levelsz = optimal_level_spread(f"../../data/monthly_dssims.csv", argv_var, 0.9995, "sz3", freq, argv_var)
-
-        all_zfp_levs, levelzfp = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "zfp_p", freq, argv_var)
-        all_sz_levs, levelsz = optimal_level_spread(f"/glade/scratch/apinard/{freq}{argv_var}.csv", argv_var, 0.995, "sz3", freq, argv_var)
-        print(levelsz)
-        levelzfp = [int(i) for i in levelzfp]
-
-        levelsz = [str(i) for i in levelsz]
-
-        location = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices111.csv"
         #location = f"../data/monthly_zfp_bg_sz_comp_slices.csv"
         file_exists = os.path.isfile(location)
-        with open(location, 'a', newline='') as csvfile:
+        with open(argv_loc, 'a', newline='') as csvfile:
             fieldnames = [
                 'variable',
                 'frequency',
-                'timestep',
-                'br_level',
-                'br_size',
-                'br_ratio',
-                'zfp_level',
-                'zfp_size',
-                'zfp_ratio',
-                'sz_level',
-                'sz_size',
-                'sz_ratio',
-                "all_br_levs",
-                "all_zfp_levs",
-                'all_sz_levs'
+                'timestep'
             ]
+            for alg in argv_algs:
+                fieldnames = fieldnames + [f"{alg}_level", f"{alg}_size", f"{alg}_ratio", f"all_{alg}_levs"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            sizecsv = f"../../data/{freq}/{freq}_filesizes.csv"
+        sizecsv = argv_sizeloc
 
-            for i in range(0, 360):
-                print(f"{i}")
-                print(sizecsv)
-                print(argv_var)
-                print(levelzfp[i])
-                fzfp = filesize(sizecsv, argv_var, levelzfp[i], "zfp_p")
-                print(fzfp)
-                fbg = filesize(sizecsv, argv_var, levelbg[i], "br")
-                print(sizecsv)
-                print(argv_var)
-                print(levelsz[i])
-                fsz = filesize(sizecsv, argv_var, levelsz[i], "sz3")
-                print(fsz)
-                if fsz is not None or fbg is not None or fzfp is not None:
-                    sizesz = float(fsz)
-                    sizebg = float(fbg)
-                    sizezfp = float(fzfp)
-                    ratiosz = float(filesize(sizecsv, argv_var, "orig", "sz3")) / float(fsz)
-                    ratiobg = float(filesize(sizecsv, argv_var, "orig", "br")) / float(fbg)
-                    ratiozfp = float(filesize(sizecsv, argv_var, "orig", "zfp")) / float(fzfp)
-                writer.writerow(
-                    {
-                        'variable': argv_var,
-                        'frequency': freq,
-                        'timestep': i,
-                        'br_level': levelbg[i],
-                        'br_size': sizebg,
-                        'br_ratio': ratiobg,
-                        "all_br_levs": all_bg_levs[i],
-                        'zfp_level': levelzfp[i],
-                        'zfp_size': sizezfp,
-                        'zfp_ratio': ratiozfp,
-                        "all_zfp_levs": all_zfp_levs[i],
-                        'sz_level': levelsz[i],
-                        'sz_size': sizesz,
-                        'sz_ratio': ratiosz,
-                        'all_sz_levs': all_sz_levs[i]
-                    }
-                )
+        row = {}
+        for alg in argv_algs:
+            all_levs, level = optimal_level_spread(argv_metricloc, argv_var, argv_dssim, alg, freq, argv_var, argv_metricloc)
+            for j in range(0, len(all_levs)):
+                row[f"all_{alg}_levs"] = all_levs[j]
+                if alg == "sz":
+                    row[f"{alg}_level"] = [str(i) for i in level][j]
+                else:
+                    row[f"{alg}_level"] = [int(i) for i in level][j]
+        # all_bg_levs, levelbg = optimal_level_spread(argv_metricloc, argv_var, 0.995, "br", freq, argv_var)
+        # levelbg = [int(i) for i in levelbg]
+        # all_zfp_levs, levelzfp = optimal_level_spread(argv_metricloc, argv_var, 0.995, "zfp_p", freq, argv_var)
+        # all_sz_levs, levelsz = optimal_level_spread(argv_metricloc, argv_var, 0.995, "sz3", freq, argv_var)
+        # print(levelsz)
+        # levelzfp = [int(i) for i in levelzfp]
+        #
+        # levelsz = [str(i) for i in levelsz]
+
+
+
+
+                alg_prefix = translate_alg_to_prefix(alg)
+                f = filesize(sizecsv, argv_var, row[f"{alg}_level"], alg_prefix)
+                if f is not None:
+                    size = float(f)
+                    row[f"{alg}_size"] = size
+                    ratio = float(filesize(sizecsv, argv_var, "orig", alg)) / float(f)
+                    row[f"{alg}_ratio"] = float(ratio)
+
+                row["variable"] = argv_var
+                row["frequency"] = freq
+                row["timestep"] = j
+
+                with open(argv_loc, 'a', newline='') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    writer.writerow(
+                         row
+                     )
 
 
 if __name__ == "__main__":
-    main_zfp(sys.argv[1:])
+    main()
 
 # if __name__ == "__main__":
 #     args = parseArguments()
