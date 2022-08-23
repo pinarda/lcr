@@ -4,5 +4,5 @@
     "FilenamePost": ".20060101-20801231.nc",
     "OrigPath": "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily",
     "OrigCalcs": ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio"],
-    "OptLdcpyDevPath": "~/newldcpy/ldcpy/ldcpy/"
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
 }
