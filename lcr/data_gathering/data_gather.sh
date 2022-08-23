@@ -22,8 +22,8 @@ set arrDay= (TS)
 #remote mutiple files
 foreach x ($arrDay)
 #  echo $x
-  python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}/${prefix}_daily_calcs_${x}.csv -j ${prefix}_calcs.json -ld -tt 100 -v
-  python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}/${prefix}_daily_metrics_${x}.csv -j ${prefix}_diff.json -ld -tt 100 -v
+  python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}/${prefix}_daily_calcs_${x}.csv -j ${prefix}_calcs.json -ld -tt 10 -v
+  python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}/${prefix}_daily_metrics_${x}.csv -j ${prefix}_diff.json -ld -tt 10 -v
 end
 
 # local single file
