@@ -38,7 +38,7 @@ for filename in os.listdir(indir):
     else:
         chunk = chunk_2d
 
-    if filename.endswith(".nc"):
+    if filename.endswith("TS.20810101-21001231.nc"):
         for i in range(10,27,2):
             zfpdir = "zfp_p_" + str(i)
             infile = indir + "/" + filename
