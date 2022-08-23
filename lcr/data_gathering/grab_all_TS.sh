@@ -10,7 +10,7 @@ print("indir = ",indir)
 print("outdir = ", outdir)
 
 #later we may want to use NetDCF4py to resd in # of dims (and lev vs. ilev)
-vars_3d = ["TS"]
+vars_3d = ["CLOUD", "CCN3", "U"]
 
 #make sure environment is properly set
 #zfp, precision mode -F ,varname>,32013,2,<precision>
