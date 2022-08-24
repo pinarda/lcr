@@ -221,6 +221,8 @@ def parseArguments():
                         type=str, default=f"../../data/minidata_calcs/results.csv")
     parser.add_argument("-e", "--models", help="array of models to run",
                         nargs='+', required=True)
+    parser.add_argument("-t", "--train", help="argument to train (if 0, use train set or variables, if 1, randomize)",
+                        type=int, default=0)
     args = parser.parse_args()
 
     return args
