@@ -28,10 +28,11 @@ foreach x ($arrDay)
 end
 
 while (1)
+  echo "waiting"
   set out = qstat id
   if ($out == "") then
     break
-  echo "waiting"
+  endif
   sleep 5
 end
 
