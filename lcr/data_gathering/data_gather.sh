@@ -29,7 +29,7 @@ end
 
 while (1)
   echo "waiting"
-  set out = qstat id
+  set out = qstat $id
   if ($out == "") then
     break
   endif
