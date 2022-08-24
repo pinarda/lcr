@@ -31,7 +31,7 @@ set split = ($id:as/./ /)
 
 while (1)
   echo "waiting"
-  set out = qstat $split[1]
+  set out = `qstat $split[1]`
   if ($out == "") then
     break
   endif
