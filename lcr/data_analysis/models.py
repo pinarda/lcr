@@ -233,6 +233,7 @@ if __name__ == "__main__":
     argv_monthlyloc = args.monthlyloc
     argv_output = args.output
     argv_models = args.models
+    argv_train = args.train
 
     count = 5
     daily_df = pd.read_csv(argv_dailyloc)
@@ -272,23 +273,30 @@ if __name__ == "__main__":
     #                                                     test_size = 0.33, random_state = 42)
 
     # create train-test split by selecting variables
-    X1_train = X1[subset_daily["variable"].isin(train_vars)]
-    X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
-    X1_test = X1[subset_daily["variable"].isin(test_vars)]
+    if argv_train == 0:
+        X1_train = X1[subset_daily["variable"].isin(train_vars)]
+        X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
+        X1_test = X1[subset_daily["variable"].isin(test_vars)]
 
-    if argv_monthlyloc is not None:
-        X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
-        X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
-        X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
+        if argv_monthlyloc is not None:
+            X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
+            X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
+            X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
 
-    y1_train = y1[subset_daily["variable"].isin(train_vars)]
-    y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
-    y1_test = y1[subset_daily["variable"].isin(test_vars)]
+        y1_train = y1[subset_daily["variable"].isin(train_vars)]
+        y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
+        y1_test = y1[subset_daily["variable"].isin(test_vars)]
 
-    if argv_monthlyloc is not None:
-        y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
-        y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
-        y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
+        if argv_monthlyloc is not None:
+            y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
+            y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
+            y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
+    elif argv_train == 1:
+        X1_train, X1_test, y1_train, y1_test = train_test_split(X1,y1,test_size = 0.2, random_state = 42)
+        X1_train, X1_validate, y1_train, y1_validate = train_test_split(X1_train, y1_train, test_size=0.25, random_state=42)
+        if argv_monthlyloc is not None:
+            X2_train, X2_test, y2_train, y2_test = train_test_split(X2,y2,test_size = 0.2, random_state = 42)
+            X2_train, X2_validate, y2_train, y2_validate = train_test_split(X2_train, y2_train, test_size=0.25, random_state=42)
 
     if argv_monthlyloc is not None:
         X_train = X1_train.append(X2_train)
