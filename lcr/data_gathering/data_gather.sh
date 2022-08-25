@@ -33,10 +33,10 @@ echo $split
 echo $split[1]
 echo qstat $split[1]
 echo `qstat $split[1]`
-
+sleep 30
 
 while (1)
-  sleep 15
+  sleep 10
   echo "waiting"
   set out = `qstat $split[1]`
   echo $out
