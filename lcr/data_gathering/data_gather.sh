@@ -38,7 +38,7 @@ echo `qstat $split[1]`
 while (1)
   sleep 5
   echo "waiting"
-  set out = `qstat $split[1]`
+  set out = qstat $split[1]
   echo $out
   if ($out == "") then
     break
