@@ -16,7 +16,7 @@ set prefix = TS
 
 mkdir ../../data/${prefix}
 mkdir ../../data/${prefix}_calcs
-mkdir ../../data/$prefix_calcs/reports
+mkdir ../../data/${prefix}_calcs/reports
 
 set arrDay= (TS)
 
