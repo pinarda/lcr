@@ -27,7 +27,10 @@ foreach x ($arrDay)
 #  set id2 = printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
 end
 
+echo $id
 set split = ($id:as/./ /)
+echo $split
+echo $split[1]
 
 while (1)
   sleep 5
