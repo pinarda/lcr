@@ -35,8 +35,11 @@ sleep 30
 echo `qstat $split[1]`
 echo `qstat $split2[1]`
 
+set notnow = `date +%s`
 while (1)
-  echo "waiting"
+  set now = `date +%s`
+  @ diff = $now - $notnow
+  echo $diff
   set out = `qstat $split[1]`
   set out2 = `qstat $split2[1]`
   if ("$out" == "" && "$out2" == "") then
