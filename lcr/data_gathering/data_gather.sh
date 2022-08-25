@@ -30,12 +30,12 @@ end
 set split = ($id:as/./ /)
 
 while (1)
+  sleep 5
   echo "waiting"
   set out = `qstat $split[1]`
   if ($out == "") then
     break
   endif
-  sleep 5
 end
 
 echo "done"
