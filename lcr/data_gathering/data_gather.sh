@@ -29,7 +29,7 @@ end
 
 echo $id
 set split = ($id:as/./ /)
-set split2 = ($id:as/./ /)
+set split2 = ($id2:as/./ /)
 
 sleep 30
 echo `qstat $split[1]`
