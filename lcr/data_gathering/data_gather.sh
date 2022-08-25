@@ -34,13 +34,13 @@ sleep 30
 echo `qstat $split[1]`
 
 while (1)
-  sleep 10
   echo "waiting"
   set out = `qstat $split[1]`
   echo $out
-  if (! $out) then
+  if ($out != "") then
     break
   endif
+  sleep 10
 end
 
 echo "done"
