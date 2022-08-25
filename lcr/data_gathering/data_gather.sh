@@ -37,7 +37,7 @@ while (1)
   echo "waiting"
   set out = `qstat $split[1]`
   echo $out
-  if ($out != "") then
+  if ("$out" == "") then
     break
   endif
   sleep 10
