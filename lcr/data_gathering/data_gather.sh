@@ -31,6 +31,7 @@ echo $id
 set split = ($id:as/./ /)
 echo $split
 echo $split[1]
+echo qstat $split[1]
 echo `qstat $split[1]`
 
 
