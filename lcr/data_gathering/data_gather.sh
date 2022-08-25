@@ -16,49 +16,59 @@ set prefix = TS
 
 mkdir ../../data/${prefix}
 mkdir ../../data/${prefix}_calcs
-#mkdir ../../data/$prefix_calcs/reports
+mkdir ../../data/$prefix_calcs/reports
 
 set arrDay= (TS)
 
-#remote mutiple files
+#currently requires custom json files in the current directory
 foreach x ($arrDay)
    echo $x
    set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-#  set id2 = printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
+   set id2 = printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
 end
 
 echo $id
 set split = ($id:as/./ /)
+set split2 = ($id:as/./ /)
 
 sleep 30
 echo `qstat $split[1]`
+echo `qstat $split2[1]`
 
 while (1)
   echo "waiting"
   set out = `qstat $split[1]`
-  echo $out
-  if ("$out" == "") then
+  set out2 = `qstat $split2[1]`
+  if ("$out" == "" && "$out2" == "") then
     break
   endif
   sleep 10
 end
 
-echo "done"
+echo "calculations and metrics performed, starting to determine optimal compression parameters for each algorithm"
 
 # local single file
 # python ~/git/lcr/lcr/data_gathering/compute_batch.py -oo ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld
 # python ~/git/lcr/lcr/data_gathering/compute_batch.py -o ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_metrics.csv -j ${prefix}_diff.json -ld
 
-# temporary comment
-#foreach x ($arrDay)
-#  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp
-#end
-#
-#python compare_algorithms.py -a zfp -v TS -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -o ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
-#
-#foreach x ($arrDay)
-#  python histograms_of_optimal_levels.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -v $x
-#end
-#
-#python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -c ../../data/${prefix}_calcs/${prefix}_daily_calcs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_df.csv
-#python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf nn -t 1
+foreach x ($arrDay)
+  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp
+end
+
+echo "optimal settings determined, comparing across algorithms"
+
+python compare_algorithms.py -a zfp -v TS -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -o ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
+
+echo "algorithms compared, creating labels"
+
+foreach x ($arrDay)
+  python histograms_of_optimal_levels.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -v $x
+end
+
+echo "labels created, creating dataframe by merging labels and calculations"
+
+python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -c ../../data/${prefix}_calcs/${prefix}_daily_calcs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_df.csv
+
+echo "dataframe created, running models"
+
+python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/

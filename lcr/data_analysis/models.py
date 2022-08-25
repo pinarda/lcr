@@ -223,6 +223,8 @@ def parseArguments():
                         nargs='+', required=True)
     parser.add_argument("-t", "--train", help="argument to train (if 0, use train set or variables, if 1, randomize)",
                         type=int, default=0)
+    parser.add_argument("-r", "--reportdir", help="directory to place reports",
+                        type=str, default=f'../../data/minidata_calcs/reports/')
     args = parser.parse_args()
 
     return args
@@ -234,6 +236,7 @@ if __name__ == "__main__":
     argv_output = args.output
     argv_models = args.models
     argv_train = args.train
+    argv_reportdir = args.reportdir
 
     count = 5
     daily_df = pd.read_csv(argv_dailyloc)
@@ -322,7 +325,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, rf_preds))
         report = classification_report(y_test, rf_preds, output_dict=True)
         rf_df = pd.DataFrame(report).transpose()
-        rf_df.to_csv(f'../../data/minidata_calcs/reports/rf_report_{count}.csv', float_format="%.3f")
+        rf_df.to_csv(argv_reportdir + f'rf_report_{count}.csv', float_format="%.3f")
         print("END SECTION RANDOM FOREST -----------------")
 
     if "ada" in argv_models:
@@ -332,7 +335,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, boost_preds))
         report = classification_report(y_test, boost_preds, output_dict=True)
         boost_df = pd.DataFrame(report).transpose()
-        boost_df.to_csv(f'../../data/minidata_calcs/reports/boost_report_{count}.csv', float_format="%.3f")
+        boost_df.to_csv(argv_reportdir + f'boost_report_{count}.csv', float_format="%.3f")
         print("END SECTION ADABOOST -----------------")
 
     if "nn" in argv_models:
@@ -342,7 +345,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, nn_preds))
         report = classification_report(y_test, nn_preds, output_dict=True)
         nn_df = pd.DataFrame(report).transpose()
-        nn_df.to_csv(f'../../data/minidata_calcs/reports/nn_report_{count}.csv', float_format="%.3f")
+        nn_df.to_csv(argv_reportdir + f'nn_report_{count}.csv', float_format="%.3f")
         print("END SECTION NEURAL NETWORK -----------------")
 
     if "knn" in argv_models:
@@ -352,7 +355,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, knn_preds))
         report = classification_report(y_test, knn_preds, output_dict=True)
         knn_df = pd.DataFrame(report).transpose()
-        knn_df.to_csv(f'../../data/minidata_calcs/reports/knn_report_{count}.csv', float_format="%.3f")
+        knn_df.to_csv(argv_reportdir + f'knn_report_{count}.csv', float_format="%.3f")
         print("END SECTION KNN -----------------")
 
     if "svm" in argv_models:
@@ -362,7 +365,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, svm_preds))
         report = classification_report(y_test, svm_preds, output_dict=True)
         svm_df = pd.DataFrame(report).transpose()
-        svm_df.to_csv(f'../../data/svm_report_{count}.csv', float_format="%.3f")
+        svm_df.to_csv(argv_reportdir + f'svm_report_{count}.csv', float_format="%.3f")
 
         print("END SECTION SVM -----------------")
 
@@ -373,7 +376,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, lda_preds))
         report = classification_report(y_test, lda_preds, output_dict=True)
         lda_df = pd.DataFrame(report).transpose()
-        lda_df.to_csv(f'../../data/minidata_calcs/reports/lda_report_{count}.csv', float_format="%.3f")
+        lda_df.to_csv(argv_reportdir + f'lda_report_{count}.csv', float_format="%.3f")
         print("END SECTION LDA -----------------")
 
     if "qda" in argv_models:
@@ -383,7 +386,7 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, qda_preds))
         report = classification_report(y_test, qda_preds, output_dict=True)
         qda_df = pd.DataFrame(report).transpose()
-        qda_df.to_csv(f'../../data/minidata_calcs/reports/qda_report_{count}.csv', float_format="%.3f")
+        qda_df.to_csv(argv_reportdir + f'qda_report_{count}.csv', float_format="%.3f")
 
         print("END SECTION QDA -----------------")
 
@@ -394,5 +397,5 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, combine_preds))
         report = classification_report(y_test, combine_preds, output_dict=True)
         combine_df = pd.DataFrame(report).transpose()
-        combine_df.to_csv(f'../../data/minidata_calcs/reports/combine_report_{count}.csv', float_format="%.3f")
+        combine_df.to_csv(argv_reportdir + f'combine_report_{count}.csv', float_format="%.3f")
         print("END SECTION AGGREGATE -----------------")
