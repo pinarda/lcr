@@ -22,34 +22,34 @@ set arrDay= (TS)
 
 #currently requires custom json files in the current directory
 #temporary comment down to next echo line
-#foreach x ($arrDay)
-#   echo $x
-##   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-##   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-#   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-#   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-#end
-#
-#echo $id
-#set split = ($id:as/./ /)
-#set split2 = ($id2:as/./ /)
-#
-#sleep 30
-#echo `qstat $split[1]`
-#echo `qstat $split2[1]`
-#
-#set notnow = `date +%s`
-#while (1)
-#  set now = `date +%s`
-#  @ diff = $now - $notnow
-#  echo $diff
-#  set out = `qstat $split[1]`
-#  set out2 = `qstat $split2[1]`
-#  if ("$out" == "" && "$out2" == "") then
-#    break
-#  endif
-#  sleep 10
-#end
+foreach x ($arrDay)
+   echo $x
+#   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+#   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs.csv -j \${prefix}_calcs.json -ld -tt 2 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics.csv -j \${prefix}_diff.json -ld -tt 2 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+end
+
+echo $id
+set split = ($id:as/./ /)
+set split2 = ($id2:as/./ /)
+
+sleep 30
+echo `qstat $split[1]`
+echo `qstat $split2[1]`
+
+set notnow = `date +%s`
+while (1)
+  set now = `date +%s`
+  @ diff = $now - $notnow
+  echo $diff
+  set out = `qstat $split[1]`
+  set out2 = `qstat $split2[1]`
+  if ("$out" == "" && "$out2" == "") then
+    break
+  endif
+  sleep 10
+end
 
 echo "calculations and metrics performed, starting to determine optimal compression parameters for each algorithm"
 
