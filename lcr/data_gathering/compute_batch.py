@@ -2,6 +2,7 @@ import os,sys
 import argparse
 import json
 import csv
+import time
 
 def main(argv):
  # Get command line stuff and store in a dictionary
@@ -132,6 +133,7 @@ def main(argv):
 
                 for t in range(ts, tend):
                     #print(var, orig, c, t)
+                    start = time.time()
                     calc_dict = simple_diff_calcs(cols[var], var, calcs,  orig, c , t, data_type)
                     row = {
                         'set': c,
@@ -139,6 +141,8 @@ def main(argv):
                     }
                     row.update(calc_dict)
                     writer.writerow(row)
+                    t = start - time.time()
+                    print (t)
 
 
         orig_file_exists = os.path.isfile(origoutfile)
