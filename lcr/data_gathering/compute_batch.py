@@ -145,6 +145,7 @@ def main(argv):
                     print (t)
 
 
+
         orig_file_exists = os.path.isfile(origoutfile)
         with open(origoutfile, 'a+', newline='') as origcsvfile:
             fieldnames = [
@@ -164,6 +165,7 @@ def main(argv):
                 row.update(orig_calc_dict)
                 writer.writerow(row)
 
+        del cols[var]
 
 def read_jsonlist(metajson):
     var_list = []

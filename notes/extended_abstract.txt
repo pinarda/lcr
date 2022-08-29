@@ -10,9 +10,10 @@ any scientific decisions based on a visual inspection of the resulting dataset. 
 identical we use a proxy measurement of visual similarity known as the Data Structural Similarity Index (DSSIM). Using
 an appropriate threshold, we are able to identify when a compressed dataset is visually identical to the original with
 high probability. We can then label an optimally compressed dataset as one which achieves the highest possible
-compression ratio while remaining visually identical to the original.
+compression ratio while remaining visually identical to the original. In addition to the DSSIM, we introduce several
+other metrics that are able to capture major errors in the compression process.
 
-We benchmark statistical modeling approaches that use this criteria to identify the ideal compression ratio for a given
+We benchmark statistical modeling approaches that use these criteria to identify the ideal compression ratio for a given
 dataset. This includes explicit feature models for which we identify important characteristics of the data, such as
 spectral features, that are useful for predicting the compression settings of each optimally compressed dataset. We
 also investigate a convolutional approach which comes from a class of implicit feature models. This method performs
