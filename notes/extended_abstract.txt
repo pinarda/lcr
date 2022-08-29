@@ -1,0 +1,25 @@
+Large climate simulation models such as the Community Earth System Model (CESM), created by the National Center for
+Atmospheric Research (NCAR), produce massive amounts of output data on hundreds of climate variables at multiple
+frequency levels. The massive amount of storage space required is a strain on institutional resources and caps the
+amount of data that can be saved from simulations. This inhibits scientific progress by limiting the spatial and
+temporal resolution of the output datasets, the time range of the simulation, and the number of variables that can be
+tracked. Lossy compression promises large amounts of data reduction if judiciously applied. Lossy compression is an
+aggressive form of compression that does not perfectly preserve the original data, so a tradeoff between compression
+ratio and data fidelity must be made. At a minimum, the data should not visually bias the data, so as not to influence
+any scientific decisions based on a visual inspection of the resulting dataset. To determine whether data is visually
+identical we use a proxy measurement of visual similarity known as the Data Structural Similarity Index (DSSIM). Using
+an appropriate threshold, we are able to identify when a compressed dataset is visually identical to the original with
+high probability. We can then label an optimally compressed dataset as one which achieves the highest possible
+compression ratio while remaining visually identical to the original.
+
+We benchmark statistical modeling approaches that use this criteria to identify the ideal compression ratio for a given
+dataset. This includes explicit feature models for which we identify important characteristics of the data, such as
+spectral features, that are useful for predicting the compression settings of each optimally compressed dataset. We
+also investigate a convolutional approach which comes from a class of implicit feature models. This method performs
+feature extraction and selection as part of the model training process. Both of these approaches require massive
+computational resources in order to compute relevant features and optimal compression settings from existing climate
+datasets. In particular we address the challenge of iterating on these models when the initial results are not
+performing adequately enough for application. Our approach involves modeling a subset of variables that are closely
+related to determine which features of each variable class are important for determining compression settings, as well
+as changing the subset of criteria we use for identifying the optimal compression ratio. We present early modeling
+results for these approaches, and discuss the advantages and disadvantages of each type of model.

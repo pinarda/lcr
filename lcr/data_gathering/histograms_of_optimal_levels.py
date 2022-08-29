@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 import lcr_global_vars
 from os.path import exists
 import argparse
-mpl.use( 'tkagg' )
+#mpl.use( 'tkagg' )
 
 font = {'family' : 'normal',
         'weight' : 'normal',
         'size'   : 22}
 
-mpl.rc('font', **font)
+#mpl.rc('font', **font)
 
 def omit_by(dct, predicate=lambda x: x==0):
     return {k: v for k, v in dct.items() if not predicate(v)}
