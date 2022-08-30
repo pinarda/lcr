@@ -157,7 +157,6 @@ def main(argv):
                 writer.writeheader()
 
             for t in range(ts, tend):
-                start = time.time()
                 row = {
                     'set': orig,
                     'time': t
@@ -165,9 +164,6 @@ def main(argv):
                 orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs, orig, t, data_type)
                 row.update(orig_calc_dict)
                 writer.writerow(row)
-
-                t = time.time() - start
-                print(t)
 
         del cols[var]
 
@@ -257,11 +253,15 @@ def simple_diff_calcs(
 
     calc_dict = {}
     for calc in calcs:
+        start = time.time()
         #print(calc)
         #temp = diff_metrics.get_diff_calc(calc).compute()
         temp = diff_metrics.get_diff_calc(calc)
         #calc_dict[calc] = temp.item(0)
         calc_dict[calc] = temp
+        t = time.time() - start
+        print(calc)
+        print(t)
 
     return calc_dict
 
