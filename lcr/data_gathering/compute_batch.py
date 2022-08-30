@@ -220,7 +220,7 @@ def simple_diff_calcs(
     calcs,
     set1,
     set2,
-    time,
+    t,
     data_type
 ):
     """                                                                                                                                
@@ -244,8 +244,8 @@ def simple_diff_calcs(
     agg_dims = ['lat', 'lon']
     
     diff_metrics = ldcpy.Diffcalcs(
-        ds[varname].sel(collection=set1).isel(time=time),
-        ds[varname].sel(collection=set2).isel(time=time),
+        ds[varname].sel(collection=set1).isel(time=t),
+        ds[varname].sel(collection=set2).isel(time=t),
         data_type,
         agg_dims,
         spre_tol=0.001
