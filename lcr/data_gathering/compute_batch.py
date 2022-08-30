@@ -141,8 +141,8 @@ def main(argv):
                     }
                     row.update(calc_dict)
                     writer.writerow(row)
-                    t = start - time.time()
-                    print (t)
+                    t = time.time() - start
+                    print(t)
 
 
 
@@ -157,6 +157,7 @@ def main(argv):
                 writer.writeheader()
 
             for t in range(ts, tend):
+                start = time.time()
                 row = {
                     'set': orig,
                     'time': t
@@ -164,6 +165,9 @@ def main(argv):
                 orig_calc_dict = simple_orig_calcs(cols[var], var, orig_calcs, orig, t, data_type)
                 row.update(orig_calc_dict)
                 writer.writerow(row)
+
+                t = time.time() - start
+                print(t)
 
         del cols[var]
 
@@ -298,17 +302,17 @@ def simple_orig_calcs(
     )
 
     # HERE, compute 2D FFT first
-    my_data_fft2 = diff_metrics.get_calc("fft2")
-    fft2_calcs = ldcpy.Datasetcalcs(my_data_fft2, "cam-fv", agg_dims, weighted=False)
+    #my_data_fft2 = diff_metrics.get_calc("fft2")
+    #fft2_calcs = ldcpy.Datasetcalcs(my_data_fft2, "cam-fv", agg_dims, weighted=False)
 
 
     calc_dict = {}
     for calc in calcs:
         # print(calc)
-        # temp = diff_metrics.get_diff_calc(calc).compute()
-        temp = float(fft2_calcs.get_calc(calc).compute())
-        # calc_dict[calc] = temp.item(0)
-        calc_dict[calc] = temp
+        temp = diff_metrics.get_diff_calc(calc).compute()
+        #temp = float(fft2_calcs.get_calc(calc).compute())
+        calc_dict[calc] = temp.item(0)
+        #calc_dict[calc] = temp
 
     return calc_dict
 
