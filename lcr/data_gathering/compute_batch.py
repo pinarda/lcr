@@ -239,9 +239,8 @@ def simple_diff_calcs(
         The collection label of the (1st) data to compare   
     """
 
-    ds = ds[varname].to_array().squeeze()
-
     print(ds)
+    print(ds.to_array())
     print(varname)
     print(calcs)
     print(set1)
