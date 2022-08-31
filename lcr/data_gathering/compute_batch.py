@@ -242,6 +242,8 @@ def simple_diff_calcs(
     import ldcpy
 
     agg_dims = ['lat', 'lon']
+
+    ds = ldcpy.subset_data(ds)
     
     diff_metrics = ldcpy.Diffcalcs(
         ds[varname].sel(collection=set1).isel(time=t),
