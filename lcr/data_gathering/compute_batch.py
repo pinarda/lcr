@@ -239,7 +239,7 @@ def simple_diff_calcs(
         The collection label of the (1st) data to compare   
     """
 
-    print(ds[varname])
+    print(ds[varname].to_array())
     print(varname)
     print(calcs)
     print(set1)
@@ -252,8 +252,8 @@ def simple_diff_calcs(
     agg_dims = ['lat', 'lon']
     
     diff_metrics = ldcpy.Diffcalcs(
-        ds[varname].sel(collection=set1).isel(time=t),
-        ds[varname].sel(collection=set2).isel(time=t),
+        ds[varname].to_array().sel(collection=set1).isel(time=t),
+        ds[varname].to_array().sel(collection=set2).isel(time=t),
         data_type,
         agg_dims,
         spre_tol=0.001
