@@ -256,9 +256,8 @@ def simple_diff_calcs(
         start = time.time()
         #print(calc)
         #temp = diff_metrics.get_diff_calc(calc).compute()
-        temp = diff_metrics.get_diff_calc(calc)
         #calc_dict[calc] = temp.item(0)
-        calc_dict[calc] = temp
+        calc_dict[calc] = diff_metrics.get_diff_calc(calc)
         t = time.time() - start
         print(calc)
         print(t)
