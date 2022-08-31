@@ -1,11 +1,7 @@
 {
     "VarList":  ["TS"],
-//    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
-//    "FilenamePost": ".20060101-20801231.nc",
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
     "FilenamePost": ".200601-201012.nc",
-//    "OrigPath": "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily/",
-//    "CompPath":"/glade/scratch/apinard/zfp/",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/",
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/zfp_all/",
     "VarLabel": ["MATCHME"],
