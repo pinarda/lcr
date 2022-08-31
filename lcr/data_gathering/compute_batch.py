@@ -239,7 +239,7 @@ def simple_diff_calcs(
         The collection label of the (1st) data to compare   
     """
 
-    print(ds)
+    print(ds[varname])
     print(varname)
     print(calcs)
     print(set1)

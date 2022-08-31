@@ -43,9 +43,9 @@ data_path = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/"
 
 for variable in monthly_variables:
     print(variable)
-    levels[variable] = [f"zfp_p_20_{variable}"]
+    levels[variable] = [f"zfp_p_10_{variable}"]
     sets[variable] = [f"/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.{variable}.20060101-20801231.nc",
-                      f"/glade/scratch/apinard/zfp/zfp_p_20/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.{variable}.20060101-20801231.nc"]
+                      f"/glade/scratch/apinard/zfp/zfp_p_10/b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.{variable}.20060101-20801231.nc"]
     cols_monthly[variable] = ldcpy.open_datasets("cam-fv", [f"{variable}"], sets[variable], [f"orig_{variable}"] + levels[variable], chunks={"time":700})
 
 
@@ -53,7 +53,7 @@ agg_dims = ['lat', 'lon']
 
 varname="TS"
 set1="orig_TS"
-set2="zfp_p_20_TS"
+set2="zfp_p_10_TS"
 t=0
 data_type="cam-fv"
 calcs =["ssim_fp"]
