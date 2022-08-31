@@ -253,12 +253,12 @@ def simple_diff_calcs(
 
     calc_dict = {}
     for calc in calcs:
-        start = time.time()
+        start = time.clock()
         #print(calc)
         #temp = diff_metrics.get_diff_calc(calc).compute()
         #calc_dict[calc] = temp.item(0)
         calc_dict[calc] = diff_metrics.get_diff_calc(calc)
-        t = time.time() - start
+        t = time.clock() - start
         print(calc)
         print(t)
 
