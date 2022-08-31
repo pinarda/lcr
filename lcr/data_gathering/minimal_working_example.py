@@ -61,7 +61,6 @@ calcs =["ssim_fp"]
 
 ds = cols_monthly[varname].to_array().squeeze()
 print(ds)
-print(ds)
 print(varname)
 print(calcs)
 print(set1)

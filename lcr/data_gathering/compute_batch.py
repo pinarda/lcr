@@ -85,7 +85,7 @@ def main(argv):
         print("list_var = ", list_var)
         print("files = ", files[var])
         print("labels = ", labels[var])
-        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var], weights=False)
+        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var], weights=False, chunks={"time":700})
 
     #create/open csv file and add computations 
 
