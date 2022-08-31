@@ -85,7 +85,7 @@ def main(argv):
         print("list_var = ", list_var)
         print("files = ", files[var])
         print("labels = ", labels[var])
-        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var], weights=False, chunks={"time":1})
+        cols[var] = ldcpy.open_datasets(data_type, list_var, files[var], labels[var], weights=False, chunks={"time":50})
 
     #create/open csv file and add computations 
 
@@ -240,14 +240,6 @@ def simple_diff_calcs(
     """
 
     ds = ds.to_array().squeeze()
-    print(ds)
-    print(varname)
-    print(calcs)
-    print(set1)
-    print(set2)
-    print(t)
-    print(data_type)
-    
     import ldcpy
 
     agg_dims = ['lat', 'lon']
@@ -262,14 +254,10 @@ def simple_diff_calcs(
 
     calc_dict = {}
     for calc in calcs:
-        start = time.time()
         #print(calc)
         #temp = diff_metrics.get_diff_calc(calc).compute()
         #calc_dict[calc] = temp.item(0)
         calc_dict[calc] = diff_metrics.get_diff_calc(calc)
-        t = time.time() - start
-        print(calc)
-        print(t)
 
     return calc_dict
 
