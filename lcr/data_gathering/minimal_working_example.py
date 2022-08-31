@@ -61,6 +61,13 @@ calcs =["ssim_fp"]
 
 ds = cols_monthly[varname].to_array().squeeze()
 print(ds)
+print(ds)
+print(varname)
+print(calcs)
+print(set1)
+print(set2)
+print(t)
+print(data_type)
 
 diff_metrics = ldcpy.Diffcalcs(
     ds.sel(collection=set1).isel(time=t),
