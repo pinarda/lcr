@@ -238,6 +238,14 @@ def simple_diff_calcs(
     set2 : str                                                   
         The collection label of the (1st) data to compare   
     """
+
+    print(ds)
+    print(varname)
+    print(calcs)
+    print(set1)
+    print(set2)
+    print(t)
+    print(data_type)
     
     import ldcpy
 

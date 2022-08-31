@@ -58,7 +58,9 @@ t=0
 data_type="cam-fv"
 calcs =["ssim_fp"]
 
+
 ds = cols_monthly[varname].to_array().squeeze()
+print(ds)
 
 diff_metrics = ldcpy.Diffcalcs(
     ds.sel(collection=set1).isel(time=t),
