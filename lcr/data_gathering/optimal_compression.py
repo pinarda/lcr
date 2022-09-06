@@ -109,7 +109,7 @@ def optimal_level(csvfilename: str, variable: str, timestep: int, threshold: flo
 def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep: int,
                                       dssim_threshold: float, ks_p_threshold: float,
                                       spatial_err_threshold: float, max_spatial_err_threshold: float,
-                                      pcc_threshold: float, compression: str):
+                                      pcc_threshold: float, compression: str, metrics: list):
     """
     Finds the optimal compression level in a csv file assuming the levels are in the first
     column with the format .*_LEVEL_.* the DSSIM/comparison values are in the third column, fourth, ... columns.
@@ -151,62 +151,66 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             levels = levels[::-1]
 
     # compute optimal level based on dssim
-    i = 0
-    prev_lev = None
-    best_dssim_lev = -1
-    for row in rows:
-        dssim = float(row[2])
-        if dssim >= dssim_threshold:
-            prev_lev=levels[i]
-            i=i+1
-            continue
-        if dssim < dssim_threshold:
-            if prev_lev is not None:
-                best_dssim_lev = prev_lev
-            else:
-                best_dssim_lev = 100000
+    if "dssim" in metrics:
+        i = 0
+        prev_lev = None
+        best_dssim_lev = -1
+        for row in rows:
+            dssim = float(row[2])
+            if dssim >= dssim_threshold:
+                prev_lev=levels[i]
+                i=i+1
+                continue
+            if dssim < dssim_threshold:
+                if prev_lev is not None:
+                    best_dssim_lev = prev_lev
+                else:
+                    best_dssim_lev = 100000
 
-    if best_dssim_lev == -1:
-        best_dssim_lev = prev_lev
+        if best_dssim_lev == -1:
+            best_dssim_lev = prev_lev
 
-    i = 0
-    prev_lev = None
-    best_ks_p_lev = -1
-    for row in rows:
-        ks_p = float(row[3])
-        if ks_p >= ks_p_threshold:
-            prev_lev=levels[i]
-            i=i+1
-            continue
-        if ks_p < ks_p_threshold:
-            if prev_lev is not None:
-                best_ks_p_lev = prev_lev
-            else:
-                best_ks_p_lev = 100000
-
-
-    if best_ks_p_lev == -1:
-        best_ks_p_lev = prev_lev
-
-    i = 0
-    prev_lev = None
-    best_spatial_err_lev = -1
-    for row in rows:
-        spatial_err = 100-float(row[4])
-        if spatial_err >= spatial_err_threshold:
-            prev_lev = levels[i]
-            i = i + 1
-            continue
-        if spatial_err < spatial_err_threshold:
-            if prev_lev is not None:
-                best_spatial_err_lev = prev_lev
-            else:
-                best_spatial_err_lev = 100000
+    if "ks" in metrics:
+        i = 0
+        prev_lev = None
+        best_ks_p_lev = -1
+        for row in rows:
+            ks_p = float(row[3])
+            if ks_p >= ks_p_threshold:
+                prev_lev=levels[i]
+                i=i+1
+                continue
+            if ks_p < ks_p_threshold:
+                if prev_lev is not None:
+                    best_ks_p_lev = prev_lev
+                else:
+                    best_ks_p_lev = 100000
 
 
-    if best_spatial_err_lev == -1:
-        best_spatial_err_lev = prev_lev
+        if best_ks_p_lev == -1:
+            best_ks_p_lev = prev_lev
 
+    if "spatial" in metrics:
+        i = 0
+        prev_lev = None
+        best_spatial_err_lev = -1
+        for row in rows:
+            spatial_err = 100-float(row[4])
+            if spatial_err >= spatial_err_threshold:
+                prev_lev = levels[i]
+                i = i + 1
+                continue
+            if spatial_err < spatial_err_threshold:
+                if prev_lev is not None:
+                    best_spatial_err_lev = prev_lev
+                else:
+                    best_spatial_err_lev = 100000
+
+
+        if best_spatial_err_lev == -1:
+            best_spatial_err_lev = prev_lev
+
+    if "max_spatial" in metrics:
     i = 0
     prev_lev = None
     best_max_spatial_err_lev = -1
@@ -222,28 +226,40 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             else:
                 best_max_spatial_err_lev = 100000
 
-    if best_max_spatial_err_lev == -1:
-        best_max_spatial_err_lev = prev_lev
+        if best_max_spatial_err_lev == -1:
+            best_max_spatial_err_lev = prev_lev
 
-    i = 0
-    prev_lev = None
-    best_pcc_lev = -1
-    for row in rows:
-        pcc = float(row[6])
-        if pcc >= pcc_threshold:
-            prev_lev = levels[i]
-            i = i + 1
-            continue
-        if pcc < pcc_threshold:
-            if prev_lev is not None:
-                best_pcc_lev = prev_lev
-            else:
-                best_pcc_lev = 100000
 
-    if best_pcc_lev == -1:
-        best_pcc_lev = prev_lev
+    if "pcc" in metrics:
+        i = 0
+        prev_lev = None
+        best_pcc_lev = -1
+        for row in rows:
+            pcc = float(row[6])
+            if pcc >= pcc_threshold:
+                prev_lev = levels[i]
+                i = i + 1
+                continue
+            if pcc < pcc_threshold:
+                if prev_lev is not None:
+                    best_pcc_lev = prev_lev
+                else:
+                    best_pcc_lev = 100000
 
-    levs = [float(best_dssim_lev), float(best_ks_p_lev), float(best_spatial_err_lev), float(best_max_spatial_err_lev), float(best_pcc_lev)]
+        if best_pcc_lev == -1:
+            best_pcc_lev = prev_lev
+
+    levs = []
+    if "dssim" in metrics:
+        float(levs.append(best_dssim_lev))
+    if "ks" in metrics:
+        float(levs.append(best_ks_p_lev))
+    if "spatial" in metrics:
+        float(levs.append(best_spatial_err_lev))
+    if "max_spatial" in metrics:
+        float(levs.append(best_max_spatial_err_lev))
+    if "pcc" in metrics:
+        float(levs.append(best_pcc_lev))
 
     if compression == "sz3":
         return levs, min(levs)
@@ -281,7 +297,7 @@ def optimal_level_max(csvfilename, variable, threshold, compression, freq, argv_
     min_level = max(levs)
     return min_level
 
-def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var, argv_metricloc):
+def optimal_level_spread(csvfilename, variable, threshold, compression, freq, argv_var, argv_metricloc, argv_metric):
     """
     Find the minimum of all the optimal compression levels for a specified variable
     over all time slices.
@@ -317,7 +333,7 @@ def optimal_level_spread(csvfilename, variable, threshold, compression, freq, ar
         # print(freq)
         # print(argv_var)
         # print(optimal_level_multiple_comparison(f"/glade/scratch/apinard/monthly{argv_var}.csv", variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression))
-        all_lev, lev = optimal_level_multiple_comparison(argv_metricloc, variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression)
+        all_lev, lev = optimal_level_multiple_comparison(argv_metricloc, variable, time, threshold, 0.05, 100-5, 1-0.05, 0.99999, compression, argv_metric)
 
         #lev = optimal_level(f"/glade/scratch/apinard/sz3/{argv_var}_calcs.csv", variable, time, threshold, compression)
 
@@ -405,6 +421,8 @@ def parseArguments():
                         type=str, nargs='+', required=True)
     parser.add_argument("-d", "--dssim", help="dssim threshold",
                         type=float, default=0.995)
+    parser.add_argument("-m", "--metrics", help="metrics to use for determining optimal compression",
+                        type=str, nargs='+', required=True)
     args = parser.parse_args()
 
     return args
@@ -422,6 +440,7 @@ def main():
     argv_metricloc = args.metricloc
     argv_algs = args.algs
     argv_dssim = args.dssim
+    argv_metrics = args.metrics
 
     print(f"current_var: {argv_var}")
 
@@ -459,7 +478,7 @@ def main():
 
         row = {}
         for alg in argv_algs:
-            all_levs, level = optimal_level_spread(argv_metricloc, argv_var, argv_dssim, alg, freq, argv_var, argv_metricloc)
+            all_levs, level = optimal_level_spread(argv_metricloc, argv_var, argv_dssim, alg, freq, argv_var, argv_metricloc, argv_metrics)
             for j in range(0, len(all_levs)):
                 row[f"all_{alg}_levs"] = all_levs[j]
                 if alg == "sz":
