@@ -3,9 +3,9 @@ import os
 
 #indir = "/glade/scratch/abaker/comp/sm_orig"
 # Full dataset
-#indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
+indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
 # 2006-2010 subset
-indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
+#indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
 
 outdir = "/glade/scratch/apinard/zfp"
 
@@ -41,8 +41,8 @@ for filename in os.listdir(indir):
     else:
         chunk = chunk_2d
 
-#    if filename.endswith("TS.20060101-20801231.nc"):
-    if filename.endswith(".20060101-20071231.nc"):
+    if filename.endswith("TS.20060101-20801231.nc"):
+#    if filename.endswith(".20060101-20071231.nc"):
         for i in range(10,27,2):
             zfpdir = "zfp_p_" + str(i)
             infile = indir + "/" + filename
