@@ -421,7 +421,7 @@ def parseArguments():
                         type=str, nargs='+', required=True)
     parser.add_argument("-d", "--dssim", help="dssim threshold",
                         type=float, default=0.995)
-    parser.add_argument("-m", "--metrics", help="metrics to use for determining optimal compression",
+    parser.add_argument("-p", "--metrics", help="metrics to use for determining optimal compression",
                         type=str, nargs='+', required=True)
     args = parser.parse_args()
 
