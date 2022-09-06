@@ -211,20 +211,20 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
             best_spatial_err_lev = prev_lev
 
     if "max_spatial" in metrics:
-    i = 0
-    prev_lev = None
-    best_max_spatial_err_lev = -1
-    for row in rows:
-        max_spatial_err = 1-float(row[5])
-        if max_spatial_err >= max_spatial_err_threshold:
-            prev_lev = levels[i]
-            i = i + 1
-            continue
-        if max_spatial_err < max_spatial_err_threshold:
-            if prev_lev is not None:
-                best_max_spatial_err_lev = prev_lev
-            else:
-                best_max_spatial_err_lev = 100000
+        i = 0
+        prev_lev = None
+        best_max_spatial_err_lev = -1
+        for row in rows:
+            max_spatial_err = 1-float(row[5])
+            if max_spatial_err >= max_spatial_err_threshold:
+                prev_lev = levels[i]
+                i = i + 1
+                continue
+            if max_spatial_err < max_spatial_err_threshold:
+                if prev_lev is not None:
+                    best_max_spatial_err_lev = prev_lev
+                else:
+                    best_max_spatial_err_lev = 100000
 
         if best_max_spatial_err_lev == -1:
             best_max_spatial_err_lev = prev_lev
