@@ -2,7 +2,10 @@
 import os
 
 #indir = "/glade/scratch/abaker/comp/sm_orig"
-indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
+# Full dataset
+#indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
+# 2006-2010 subset
+indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/"
 
 outdir = "/glade/scratch/apinard/zfp"
 
