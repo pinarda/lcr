@@ -251,15 +251,15 @@ def optimal_level_multiple_comparison(csvfilename: str, variable: str, timestep:
 
     levs = []
     if "dssim" in metrics:
-        float(levs.append(best_dssim_lev))
+        levs.append(float(best_dssim_lev))
     if "ks" in metrics:
-        float(levs.append(best_ks_p_lev))
+        levs.append(float(best_ks_p_lev))
     if "spatial" in metrics:
-        float(levs.append(best_spatial_err_lev))
+        levs.append(float(best_spatial_err_lev))
     if "max_spatial" in metrics:
-        float(levs.append(best_max_spatial_err_lev))
+        levs.append(float(best_max_spatial_err_lev))
     if "pcc" in metrics:
-        float(levs.append(best_pcc_lev))
+        levs.append(float(best_pcc_lev))
 
     if compression == "sz3":
         return levs, min(levs)
