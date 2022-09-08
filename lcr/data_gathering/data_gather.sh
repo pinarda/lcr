@@ -18,7 +18,7 @@
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
 set prefix = test3D
-set runtype = "rerun"
+set runtype = "new"
 set testset = "random"
 
 if ($runtype == "new") then
