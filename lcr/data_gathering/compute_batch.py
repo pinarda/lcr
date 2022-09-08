@@ -303,7 +303,7 @@ def simple_orig_calcs(
 
 
     calc_dict = {}
-    for calc in clcs:
+    for calc in calcs:
         # print(calc)
         # temp = diff_metrics.get_diff_calc(calc).compute()
         #temp = float(fft2_calcs.get_calc(calc).compute())

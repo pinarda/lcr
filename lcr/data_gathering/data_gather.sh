@@ -23,8 +23,10 @@ set testset = "random"
 
 set arrDay= ()
 set arrMonth= (T)
+
+rm -rf ../../data/${prefix}_calcs/*
+
 if ($runtype == "new") then
-  mkdir ../../data/${prefix}
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
   set arrComp = (zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
