@@ -293,7 +293,7 @@ def simple_orig_calcs(
     clcs = ldcpy.Datasetcalcs(
         ds[varname].sel(collection=set1).isel(time=time),
         data_type,
-        [],
+        agg_dims,
         weighted=False
     )
 
