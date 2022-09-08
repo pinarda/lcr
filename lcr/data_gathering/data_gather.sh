@@ -25,6 +25,7 @@ set arrDay= ()
 set arrMonth= (T)
 
 rm -rf ../../data/${prefix}_calcs/*
+rm testb*
 
 if ($runtype == "new") then
   mkdir ../../data/${prefix}_calcs
