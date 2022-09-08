@@ -18,8 +18,10 @@
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
 set prefix = test3D
+set runtype = "rerun"
+set testset = "random"
 
-if ($0 == "new") then
+if ($runtype == "new") then
   mkdir ../../data/${prefix}
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
@@ -129,7 +131,7 @@ python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_monthly_label
 
 echo "dataframe created, running models"
 
-if ($1 == "random") then
+if ($testset == "random") then
   python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/
 else
   python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/
