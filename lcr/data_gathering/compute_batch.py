@@ -290,7 +290,7 @@ def simple_orig_calcs(
 
     agg_dims = ['lat', 'lon']
 
-    diff_metrics = ldcpy.Datasetcalcs(
+    clcs = ldcpy.Datasetcalcs(
         ds[varname].sel(collection=set1).isel(time=time),
         data_type,
         [],
@@ -298,15 +298,16 @@ def simple_orig_calcs(
     )
 
     # HERE, compute 2D FFT first
-    my_data_fft2 = diff_metrics.get_calc("fft2")
-    fft2_calcs = ldcpy.Datasetcalcs(my_data_fft2, "cam-fv", agg_dims, weighted=False)
+    #my_data_fft2 = diff_metrics.get_calc("fft2")
+    #fft2_calcs = ldcpy.Datasetcalcs(my_data_fft2, "cam-fv", agg_dims, weighted=False)
 
 
     calc_dict = {}
-    for calc in calcs:
+    for calc in clcs:
         # print(calc)
         # temp = diff_metrics.get_diff_calc(calc).compute()
-        temp = float(fft2_calcs.get_calc(calc).compute())
+        #temp = float(fft2_calcs.get_calc(calc).compute())
+        temp = float(clcs.get_calc(calc).compute())
         # calc_dict[calc] = temp.item(0)
         calc_dict[calc] = temp
 
