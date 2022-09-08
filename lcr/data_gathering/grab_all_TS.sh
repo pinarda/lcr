@@ -48,7 +48,7 @@ for filename in os.listdir(indir):
 # daily
 #    if filename.endswith(".20060101-20071231.nc"):
 #monthly
-    if filename.endswith("T.200601-203512.nc"):
+    if filename.endswith(".T.200601-203512.nc"):
         for i in range(10,27,2):
             zfpdir = "zfp_p_" + str(i)
             infile = indir + "/" + filename
