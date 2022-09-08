@@ -5,11 +5,11 @@ import os
 # Full dataset
 #indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
 # 2006-2010 subset daily
-indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
+#indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
 # 2006-2010 subset monthly
 indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/"
 
-outdir = "/glade/scratch/apinard/zfp"
+outdir = "/glade/scratch/apinard/3D/zfp"
 
 print("indir = ",indir)
 print("outdir = ", outdir)
