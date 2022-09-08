@@ -24,6 +24,8 @@ set testset = "random"
 set arrDay= ()
 set arrMonth= (T)
 
+git pull
+
 rm -rf ../../data/${prefix}_calcs/*
 rm testb*
 
