@@ -239,34 +239,45 @@ if __name__ == "__main__":
     argv_reportdir = args.reportdir
 
     count = 5
-    daily_df = pd.read_csv(argv_dailyloc)
+    if argv_dailyloc is not None:
+        daily_df = pd.read_csv(argv_dailyloc)
     if argv_monthlyloc is not None:
         monthly_df = pd.read_csv(argv_monthlyloc)
 
     # just look at a particular algorithm and try and guess the level for now
-    subset_daily = daily_df[daily_df["algs"] == "zfp"]
+    if argv_dailyloc is not None:
+        subset_daily = daily_df[daily_df["algs"] == "zfp"]
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
-    subset_daily = daily_df[daily_df["levels"] != 100000]
+    if argv_dailyloc is not None:
+        subset_daily = daily_df[daily_df["levels"] != 100000]
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["levels"] != 100000]
     #subset_daily = daily_df
-    X1 = subset_daily[lcr_global_vars.features]
+    if argv_dailyloc is not None:
+        X1 = subset_daily[lcr_global_vars.features]
 
     if argv_monthlyloc is not None:
         X2 = subset_monthly[lcr_global_vars.features]
-    subset_daily["levels"][subset_daily["levels"] == 100000] = 28
+
+    if argv_dailyloc is not None:
+        subset_daily["levels"][subset_daily["levels"] == 100000] = 28
     if argv_monthlyloc is not None:
         subset_monthly["levels"][subset_monthly["levels"] == 100000] = 28
-    y1 = subset_daily[["levels"]]
+    if argv_dailyloc is not None:
+        y1 = subset_daily[["levels"]]
     if argv_monthlyloc is not None:
         y2 = subset_monthly[["levels"]]
     #y = subset_daily[["algs"]]
     #y = np.where(y == "zfp", 0, np.where(y == "sz", 1, 2))
-    y1 = np.array(y1).ravel()
+
+    if argv_dailyloc is not None:
+        y1 = np.array(y1).ravel()
     if argv_monthlyloc is not None:
         y2 = np.array(y2).ravel()
-    y1 = np.unique(y1, return_inverse=True)[1]
+
+    if argv_dailyloc is not None:
+        y1 = np.unique(y1, return_inverse=True)[1]
     if argv_monthlyloc is not None:
         y2 = np.unique(y2, return_inverse=True)[1]
 
@@ -277,39 +288,36 @@ if __name__ == "__main__":
 
     # create train-test split by selecting variables
     if argv_train == 0:
-        X1_train = X1[subset_daily["variable"].isin(train_vars)]
-        X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
-        X1_test = X1[subset_daily["variable"].isin(test_vars)]
+        if argv_dailyloc is not None:
+            X1_train = X1[subset_daily["variable"].isin(train_vars)]
+            X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
+            X1_test = X1[subset_daily["variable"].isin(test_vars)]
 
         if argv_monthlyloc is not None:
             X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
             X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
             X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
 
-        y1_train = y1[subset_daily["variable"].isin(train_vars)]
-        y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
-        y1_test = y1[subset_daily["variable"].isin(test_vars)]
+        if argv_dailyloc is not None:
+            y1_train = y1[subset_daily["variable"].isin(train_vars)]
+            y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
+            y1_test = y1[subset_daily["variable"].isin(test_vars)]
 
         if argv_monthlyloc is not None:
             y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
             y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
             y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
     elif argv_train == 1:
-        X1_train, X1_test, y1_train, y1_test = train_test_split(X1,y1,test_size = 0.2, random_state = 42)
-        X1_train, X1_validate, y1_train, y1_validate = train_test_split(X1_train, y1_train, test_size=0.25, random_state=42)
+
+        if argv_dailyloc is not None:
+            X1_train, X1_test, y1_train, y1_test = train_test_split(X1,y1,test_size = 0.2, random_state = 42)
+            X1_train, X1_validate, y1_train, y1_validate = train_test_split(X1_train, y1_train, test_size=0.25, random_state=42)
         if argv_monthlyloc is not None:
             X2_train, X2_test, y2_train, y2_test = train_test_split(X2,y2,test_size = 0.2, random_state = 42)
             X2_train, X2_validate, y2_train, y2_validate = train_test_split(X2_train, y2_train, test_size=0.25, random_state=42)
 
-    if argv_monthlyloc is not None:
-        X_train = X1_train.append(X2_train)
-        X_validate = X1_validate.append(X2_validate)
-        X_test = X1_test.append(X2_test)
 
-        y_train = np.concatenate((y1_train, y2_train))
-        y_validate = np.concatenate((y1_validate, y2_validate))
-        y_test = np.concatenate((y1_test, y2_test))
-    else:
+    if argv_dailyloc is not None:
         X_train = X1_train
         X_validate = X1_validate
         X_test = X1_test
@@ -317,6 +325,22 @@ if __name__ == "__main__":
         y_train = y1_train
         y_validate = y1_validate
         y_test = y1_test
+        if argv_monthlyloc is not None:
+            X_train = X1_train.append(X2_train)
+            X_validate = X1_validate.append(X2_validate)
+            X_test = X1_test.append(X2_test)
+
+            y_train = np.concatenate((y1_train, y2_train))
+            y_validate = np.concatenate((y1_validate, y2_validate))
+            y_test = np.concatenate((y1_test, y2_test))
+    if argv_monthlyloc is not None:
+        X_train = X2_train
+        X_validate = X2_validate
+        X_test = X2_test
+
+        y_train = y2_train
+        y_validate = y2_validate
+        y_test = y2_test
 
     if "rf" in argv_models:
         (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
