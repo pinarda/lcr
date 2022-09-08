@@ -21,13 +21,12 @@ set prefix = test3D
 set runtype = "rerun"
 set testset = "random"
 
+set arrDay= ()
+set arrMonth= (T)
 if ($runtype == "new") then
   mkdir ../../data/${prefix}
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-
-  set arrDay= ()
-  set arrMonth= (T)
   set arrComp = (zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
   # for this use -tt 1095 on line 44
   #set time = (0 1095 2190 3285 4380 5475 6570 7665 8760 9855 10950 12045 13140 14235 15330 16425 17520 18615 19710 20805 21900 22995 24090 25185 26280)
