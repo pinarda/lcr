@@ -134,7 +134,7 @@ if ($testset == "random") then
   python ../data_analysis/models.py -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/
 else
   python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/
-end
+endif
 
 
 
