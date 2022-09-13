@@ -305,7 +305,7 @@ def simple_orig_calcs(
     calc_dict = {}
     for calc in calcs:
         # print(calc)
-        temp = clcs.get_diff_calc(calc).compute()
+        temp = clcs.get_calc(calc).compute()
         #temp = float(fft2_calcs.get_calc(calc).compute())
         #temp = float(clcs.get_calc(calc).compute())
         calc_dict[calc] = temp.item(0)
