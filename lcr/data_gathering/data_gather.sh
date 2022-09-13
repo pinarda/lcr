@@ -147,5 +147,5 @@ endif
 
 echo "models completed, formatting report"
 foreach p (rf nn)
-  python tably.py ../../data/${prefix}_calcs/reports/${p}_report.csv -o ../../data/${prefix}_calcs/reports/${p}_report.tex
+  python tably.py ../../data/${prefix}_calcs/reports/${p}_report_5.csv -o ../../data/${prefix}_calcs/reports/${p}_report.tex
 end
