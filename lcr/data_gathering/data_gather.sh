@@ -19,14 +19,14 @@
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = testAllDay
+set prefix = testDaily
 # "new" or "rerun"
-set runtype = "new"
+set runtype = "rerun"
 # "fixed" or "random"
-set testset = "fixed"
+set testset = "random"
 
-set arrDay= ()
-set arrMonth= (T)
+set arrDay= (TS)
+set arrMonth= ()
 
 git pull
 
@@ -145,7 +145,7 @@ python ../data_analysis/feature_selector.py -l ../../data/${prefix}_calcs/${pref
 echo "features selected, running models"
 
 if ($testset == "random") then
-  python ../data_analysis/models.py -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/ -f ../data/${prefix}_calcs/${prefix}_feature_list_monthly.pkl
+  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/ -f ../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
 else
   # select models to run: ada, rf, nn, svm, lda, qda, agg
   python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/ -f ../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
