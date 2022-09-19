@@ -43,4 +43,5 @@ alg_prefixes = ["zfp", "bg", "sz", "sz1ROn", "zfp5", "sz3_ROn"]
 algs = ["zfp", "bg", "sz", "sz1413", "z_hdf5", "sz3"]
 
 # list of single-value features being used by the models
-features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile"]
+#features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile"]
+features = ["mean","variance","ns_con_var","w_e_first_differences","prob_positive","num_zero","range","quantile","fftmean","fftvariance","fftns_con_var","fftw_e_first_differences","fftprob_positive","fftnum_zero","fftrange","fftquantile","fftmax","fftratio","vfftmax","vfftratio"]

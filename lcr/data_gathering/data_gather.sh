@@ -17,9 +17,13 @@
 # To change the metrics to use in determining optimal compression level, change the metrics (option -p) on line 74 and 100
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
-set prefix = test3D
+
+# directory and filename prefix
+set prefix = testAllDay
+# "new" or "rerun"
 set runtype = "new"
-set testset = "random"
+# "fixed" or "random"
+set testset = "fixed"
 
 set arrDay= ()
 set arrMonth= (T)
@@ -133,12 +137,18 @@ echo "labels created, creating dataframe by merging labels and calculations"
 python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_daily_labels.csv -c ../../data/${prefix}_calcs/${prefix}_daily_calcs.csv -o ../../data/${prefix}_calcs/${prefix}_daily_df.csv
 python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_monthly_labels.csv -c ../../data/${prefix}_calcs/${prefix}_monthly_calcs.csv -o ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 
-echo "dataframe created, running models"
+echo "dataframe created, performing feature extraction"
+
+python ../data_analysis/feature_selector.py -l ../../data/${prefix}_calcs/${prefix}_daily_df.csv -o ../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
+python ../data_analysis/feature_selector.py -l ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -o ../data/${prefix}_calcs/${prefix}_feature_list_monthly.pkl
+
+echo "features selected, running models"
 
 if ($testset == "random") then
-  python ../data_analysis/models.py -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/
+  python ../data_analysis/models.py -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/ -f ../data/${prefix}_calcs/${prefix}_feature_list_monthly.pkl
 else
-  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/
+  # select models to run: ada, rf, nn, svm, lda, qda, agg
+  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/ -f ../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
 endif
 
 

@@ -11,6 +11,7 @@ import os
 import argparse
 import matplotlib.pyplot as plt
 import sys
+import pickle
 import inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -217,6 +218,8 @@ def parseArguments():
                         type=str, default=None)
     parser.add_argument("-m", "--monthlyloc", help="location of monthly csv file",
                         type=str, default=None)
+    parser.add_argument("-f", "--featureloc", help="location of feature list file",
+                        type=str, default=None)
     parser.add_argument("-o", "--output", help="location of output csv file",
                         type=str, default=f"../../data/minidata_calcs/results.csv")
     parser.add_argument("-e", "--models", help="array of models to run",
@@ -237,6 +240,7 @@ if __name__ == "__main__":
     argv_models = args.models
     argv_train = args.train
     argv_reportdir = args.reportdir
+    argv_featureloc = args.featureloc
 
     count = 5
     if argv_dailyloc is not None:
@@ -254,11 +258,17 @@ if __name__ == "__main__":
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["levels"] != 100000]
     #subset_daily = daily_df
+
+    # load feature list from feature_list.pkl (set in feature_selection.py)
+    with open(argv_featureloc, 'rb') as inp:
+         features = pickle.load(inp)
     if argv_dailyloc is not None:
-        X1 = subset_daily[lcr_global_vars.features]
+        # X1 = subset_daily[lcr_global_vars.features]
+        X1 = subset_daily[features]
 
     if argv_monthlyloc is not None:
-        X2 = subset_monthly[lcr_global_vars.features]
+        # X2 = subset_monthly[lcr_global_vars.features]
+        X2 = subset_monthly[features]
 
     if argv_dailyloc is not None:
         subset_daily["levels"][subset_daily["levels"] == 100000] = 28
