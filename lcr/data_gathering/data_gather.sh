@@ -30,10 +30,10 @@ set arrMonth= ()
 
 git pull
 
-rm -rf ../../data/${prefix}_calcs/*
 rm testb*
 
 if ($runtype == "new") then
+  rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
   set arrComp = (zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
