@@ -1,3 +1,11 @@
+Todo with the script:
+
+Allow compression and automatic creation of filesize csv within the script
+Format the classificaiton matrix report in latex
+Update models
+(and update CNN)
+
+
 Alex todo:
 
 technically should list orig as optimal level if none pass the dssim theshold, currently just uses lowest compression level which is equivalent to lossless in most cases
