@@ -21,7 +21,7 @@ conda activate my-npl-ml
 # directory and filename prefix
 set prefix = testDaily
 # "new" or "rerun"
-set runtype = "new"
+set runtype = "rerun"
 # "fixed" or "random"
 set testset = "random"
 
