@@ -215,7 +215,7 @@ def PredMostFrequent(X_train, X_test, y_train, y_test):
 def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--dailyloc", help="location of optimal csv file",
-                        type=str, default=None)
+                        type=str, default=f"../../data/minidata_calcs/minidata_daily_df.csv")
     parser.add_argument("-m", "--monthlyloc", help="location of monthly csv file",
                         type=str, default=None)
     parser.add_argument("-f", "--featureloc", help="location of feature list file",
@@ -260,8 +260,11 @@ if __name__ == "__main__":
     #subset_daily = daily_df
 
     # load feature list from feature_list.pkl (set in feature_selection.py)
-    with open(argv_featureloc, 'rb') as inp:
-         features = pickle.load(inp)
+    if argv_featureloc is not None:
+        with open(argv_featureloc, 'rb') as inp:
+             features = pickle.load(inp)
+    else:
+        features = ["mean", "variance"]
     if argv_dailyloc is not None:
         # X1 = subset_daily[lcr_global_vars.features]
         X1 = subset_daily[features]
@@ -275,16 +278,16 @@ if __name__ == "__main__":
     if argv_monthlyloc is not None:
         subset_monthly["levels"][subset_monthly["levels"] == 100000] = 28
     if argv_dailyloc is not None:
-        y1 = subset_daily[["levels"]]
+        y1_orig = subset_daily[["levels"]]
     if argv_monthlyloc is not None:
-        y2 = subset_monthly[["levels"]]
+        y2_orig = subset_monthly[["levels"]]
     #y = subset_daily[["algs"]]
     #y = np.where(y == "zfp", 0, np.where(y == "sz", 1, 2))
 
     if argv_dailyloc is not None:
-        y1 = np.array(y1).ravel()
+        y1 = np.array(y1_orig).ravel()
     if argv_monthlyloc is not None:
-        y2 = np.array(y2).ravel()
+        y2 = np.array(y2_orig).ravel()
 
     if argv_dailyloc is not None:
         y1 = np.unique(y1, return_inverse=True)[1]
@@ -352,6 +355,10 @@ if __name__ == "__main__":
         y_validate = y2_validate
         y_test = y2_test
 
+    mappingto = list(set(y1_orig.T.values[0]))
+    mappingfrom = list(set(y1))
+    map = dict(zip(mappingfrom, mappingto))
+
     if "rf" in argv_models:
         (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
         print("SECTION RANDOM FOREST -----------------")
@@ -359,6 +366,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, rf_preds))
         report = classification_report(y_test, rf_preds, output_dict=True)
         rf_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            rf_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        rf_df.rename(columnf_df = rf_df.res={"": "level"}, inplace=True)
         rf_df.to_csv(argv_reportdir + f'rf_report_{count}.csv', float_format="%.3f")
         print("END SECTION RANDOM FOREST -----------------")
 
@@ -369,6 +379,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, boost_preds))
         report = classification_report(y_test, boost_preds, output_dict=True)
         boost_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            boost_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        boost_df.rename(columns={"": "level"}, inplace=True)
         boost_df.to_csv(argv_reportdir + f'boost_report_{count}.csv', float_format="%.3f")
         print("END SECTION ADABOOST -----------------")
 
@@ -379,6 +392,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, nn_preds))
         report = classification_report(y_test, nn_preds, output_dict=True)
         nn_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            nn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        nn_df.rename(columns={"": "level"}, inplace=True)
         nn_df.to_csv(argv_reportdir + f'nn_report_{count}.csv', float_format="%.3f")
         print("END SECTION NEURAL NETWORK -----------------")
 
@@ -389,6 +405,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, knn_preds))
         report = classification_report(y_test, knn_preds, output_dict=True)
         knn_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            knn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        knn_df.rename(columns={"": "level"}, inplace=True)
         knn_df.to_csv(argv_reportdir + f'knn_report_{count}.csv', float_format="%.3f")
         print("END SECTION KNN -----------------")
 
@@ -399,6 +418,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, svm_preds))
         report = classification_report(y_test, svm_preds, output_dict=True)
         svm_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            svm_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        svm_df.rename(columns={"": "level"}, inplace=True)
         svm_df.to_csv(argv_reportdir + f'svm_report_{count}.csv', float_format="%.3f")
 
         print("END SECTION SVM -----------------")
@@ -410,6 +432,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, lda_preds))
         report = classification_report(y_test, lda_preds, output_dict=True)
         lda_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            lda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        lda_df.rename(columns={"": "level"}, inplace=True)
         lda_df.to_csv(argv_reportdir + f'lda_report_{count}.csv', float_format="%.3f")
         print("END SECTION LDA -----------------")
 
@@ -420,6 +445,9 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, qda_preds))
         report = classification_report(y_test, qda_preds, output_dict=True)
         qda_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            qda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+ #       qda_df.rename(columns={"": "level"}, inplace=True)
         qda_df.to_csv(argv_reportdir + f'qda_report_{count}.csv', float_format="%.3f")
 
         print("END SECTION QDA -----------------")
@@ -431,5 +459,8 @@ if __name__ == "__main__":
         print(confusion_matrix(y_test, combine_preds))
         report = classification_report(y_test, combine_preds, output_dict=True)
         combine_df = pd.DataFrame(report).transpose()
+        for i in range(len(map)):
+            combine_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+#        combine_df.rename(columns={"": "level"}, inplace=True)
         combine_df.to_csv(argv_reportdir + f'combine_report_{count}.csv', float_format="%.3f")
         print("END SECTION AGGREGATE -----------------")
