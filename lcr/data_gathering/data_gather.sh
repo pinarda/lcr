@@ -15,12 +15,13 @@
 # To change the daily or monthly variables to be processed, change the variable list arrDay and arrMonth below on lines 24 and 25
 # To change the time slices to be processed, change the starting time slices in line 27 and the total number of time slices to be processed on lines 33 and 40
 # To change the metrics to use in determining optimal compression level, change the metrics (option -p) on line 74 and 100
+# NOTE: Compressing only currently works for zfp compression. If the runtype is "compress" - modify the indir and ourdir variables in grab_all_TS.sh and lines 51-55.
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
 
 # directory and filename prefix
 set prefix = testDaily
-# "new" or "rerun"
+# "new" or "rerun" or "compress"
 set runtype = "new"
 # "fixed" or "random"
 set testset = "random"
@@ -32,7 +33,12 @@ git pull
 
 rm testb*
 
-if ($runtype == "new") then
+if ($runtype == "compress") then
+    ./grab_all_TS.sh
+endif
+
+
+if ($runtype == "new" || $runtype == "compress") then
   rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
@@ -113,12 +119,12 @@ foreach x ($arrDay)
 
   foreach z ($time)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-    "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a zfp -p dssim" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
+    printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a zfp -p dssim" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
   end
 foreach x ($arrMonth)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
   foreach z ($time)
-    "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/monthly/monthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a zfp -p dssim"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
+    printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/monthly/monthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a zfp -p dssim"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1
   end
 end
 
