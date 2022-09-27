@@ -482,7 +482,7 @@ def main():
         row = {}
         for alg in argv_algs:
             all_levs, level = optimal_level_spread(argv_metricloc, argv_var, argv_dssim, alg, freq, argv_var, argv_metricloc, argv_metrics)
-            for j in range(0 + argv_timestart, len(all_levs) + argv_timestart):
+            for j in range(0, len(all_levs)):
                 row[f"all_{alg}_levs"] = all_levs[j]
                 if alg == "sz":
                     row[f"{alg}_level"] = [str(i) for i in level][j]
@@ -510,7 +510,7 @@ def main():
 
                 row["variable"] = argv_var
                 row["frequency"] = freq
-                row["timestep"] = j
+                row["timestep"] = j + argv_timestart
 
                 with open(argv_loc, 'a', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
