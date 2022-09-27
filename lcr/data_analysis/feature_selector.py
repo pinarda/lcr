@@ -88,16 +88,16 @@ if __name__ == "__main__":
     # LightGBM
 
     from sklearn.feature_selection import SelectFromModel
-    from lightgbm import LGBMClassifier
-
-    lgbc=LGBMClassifier(n_estimators=500, learning_rate=0.05, num_leaves=32, colsample_bytree=0.2,
-                reg_alpha=3, reg_lambda=1, min_split_gain=0.01, min_child_weight=40)
-
-    embeded_lgb_selector = SelectFromModel(lgbc, max_features=num_feats)
-    embeded_lgb_selector.fit(X, y)
-    embeded_lgb_support = embeded_lgb_selector.get_support()
-    embeded_lgb_feature = X.loc[:,embeded_lgb_support].columns.tolist()
-    print(str(len(embeded_lgb_feature)), 'selected features')
+    # from lightgbm import LGBMClassifier
+    #
+    # lgbc=LGBMClassifier(n_estimators=500, learning_rate=0.05, num_leaves=32, colsample_bytree=0.2,
+    #             reg_alpha=3, reg_lambda=1, min_split_gain=0.01, min_child_weight=40)
+    #
+    # embeded_lgb_selector = SelectFromModel(lgbc, max_features=num_feats)
+    # embeded_lgb_selector.fit(X, y)
+    # embeded_lgb_support = embeded_lgb_selector.get_support()
+    # embeded_lgb_feature = X.loc[:,embeded_lgb_support].columns.tolist()
+    # print(str(len(embeded_lgb_feature)), 'selected features')
 
     # Feature List
     feature_name = list(X.columns)
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     # feature_selection_df = pd.DataFrame({'Feature':feature_name, 'Pearson':cor_support, 'Chi-2':chi_support, 'RFE':rfe_support, 'Logistics':embeded_lr_support,
     #                                     'Random Forest':embeded_rf_support, 'LightGBM':embeded_lgb_support})
     feature_selection_df = pd.DataFrame({'Feature':feature_name, 'Pearson':cor_support, 'Chi-2':chi_support, 'RFE':rfe_support, 'Logistics':embeded_lr_support,
-                                        'Random Forest':embeded_rf_support, 'LightGBM':embeded_lgb_support})
+                                        'Random Forest':embeded_rf_support}) #,'LightGBM':embeded_lgb_support})
     # count the selected times for each feature
     feature_selection_df['Total'] = np.sum(feature_selection_df, axis=1)
     # display the top 100
