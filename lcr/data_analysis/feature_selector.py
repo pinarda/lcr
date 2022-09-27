@@ -22,7 +22,7 @@ if __name__ == "__main__":
     argv_loc = args.loc
     argv_output = args.outfile
 
-    num_feats=20
+    num_feats=10
     if argv_loc is not None:
         df = pd.read_csv(argv_loc)
         subset_daily = df[df["algs"] == "zfp"]
