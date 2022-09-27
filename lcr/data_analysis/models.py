@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import sys
 import pickle
 import inspect
+import re
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
@@ -364,6 +365,37 @@ if __name__ == "__main__":
         print("SECTION RANDOM FOREST -----------------")
         print(rf_acc)
         print(confusion_matrix(y_test, rf_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, rf_preds, output_dict=True)
         rf_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -377,6 +409,37 @@ if __name__ == "__main__":
         print("SECTION ADABOOST -----------------")
         print(boost_acc)
         print(confusion_matrix(y_test, boost_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, boost_preds, output_dict=True)
         boost_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -390,6 +453,37 @@ if __name__ == "__main__":
         print("SECTION NEURAL NETWORK -----------------")
         print(nn_acc)
         print(confusion_matrix(y_test, nn_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, nn_preds, output_dict=True)
         nn_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -403,6 +497,37 @@ if __name__ == "__main__":
         (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
         print(knn_acc)
         print(confusion_matrix(y_test, knn_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, knn_preds, output_dict=True)
         knn_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -416,6 +541,37 @@ if __name__ == "__main__":
         (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
         print(svm_acc)
         print(confusion_matrix(y_test, svm_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, svm_preds, output_dict=True)
         svm_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -430,6 +586,37 @@ if __name__ == "__main__":
         (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
         print(lda_acc)
         print(confusion_matrix(y_test, lda_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, lda_preds, output_dict=True)
         lda_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -443,6 +630,37 @@ if __name__ == "__main__":
         (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
         print(qda_acc)
         print(confusion_matrix(y_test, qda_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, qda_preds, output_dict=True)
         qda_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
@@ -457,6 +675,37 @@ if __name__ == "__main__":
         (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
         print(combine_acc)
         print(confusion_matrix(y_test, combine_preds))
+        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+        for i in range(len(renamed_mat)):
+            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+        with open("../data_gathering/confusion_template.tex", "r") as template:
+            lines = template.readlines()
+        with open(argv_reportdir + "rf_template.tex", "w") as destination:
+            for line in lines:
+                for i in range(len(renamed_mat)):
+                    nclasses = len(renamed_mat)
+                    q = re.search(r"\\def\\numClasses\{9\}", line)
+                    if q:
+                        line = re.sub(r"9", str(nclasses), line)
+                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                    s = re.search(classtring, line)
+                    if s:
+                        # CHECK THIS
+                        thing = {"','".join(str(x) for x in mappingto)}
+                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                        line = re.sub('\[', '{', line)
+                        line = re.sub('\]', '}', line)
+                        line = re.sub("'", '"', line)
+                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                    p = re.search(string, line)
+                    if p:
+                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                        res = re.sub('\[', '{', res)
+                        res = re.sub('\]', '}', res)
+                        destination.write(res)
+                    elif i==0:
+                        destination.write(line)
         report = classification_report(y_test, combine_preds, output_dict=True)
         combine_df = pd.DataFrame(report).transpose()
         for i in range(len(map)):
