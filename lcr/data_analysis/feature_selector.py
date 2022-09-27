@@ -114,6 +114,6 @@ if __name__ == "__main__":
     feature_selection_df = feature_selection_df.sort_values(['Total','Feature'] , ascending=False)
     feature_selection_df.index = range(1, len(feature_selection_df)+1)
     sel = list(feature_selection_df["Total"] >= 5)
-    with open(argv_output, 'wb') as outp:
+    with open(argv_output, 'w+') as outp:
         flist = list(feature_selection_df[sel]["Feature"])
         pickle.dump(flist, outp, pickle.HIGHEST_PROTOCOL)
