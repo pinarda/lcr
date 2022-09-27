@@ -423,6 +423,8 @@ def parseArguments():
                         type=float, default=0.995)
     parser.add_argument("-p", "--metrics", help="metrics to use for determining optimal compression",
                         type=str, nargs='+', required=True)
+    parser.add_argument("-t", "--timestart", help="start timestep index",
+                        type=int, default=0)
     args = parser.parse_args()
 
     return args
@@ -441,6 +443,7 @@ def main():
     argv_algs = args.algs
     argv_dssim = args.dssim
     argv_metrics = args.metrics
+    argv_timestart = args.timestart
 
     print(f"current_var: {argv_var}")
 
@@ -479,7 +482,7 @@ def main():
         row = {}
         for alg in argv_algs:
             all_levs, level = optimal_level_spread(argv_metricloc, argv_var, argv_dssim, alg, freq, argv_var, argv_metricloc, argv_metrics)
-            for j in range(0, len(all_levs)):
+            for j in range(0 + argv_timestart, len(all_levs) + argv_timestart):
                 row[f"all_{alg}_levs"] = all_levs[j]
                 if alg == "sz":
                     row[f"{alg}_level"] = [str(i) for i in level][j]

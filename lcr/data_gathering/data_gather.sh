@@ -7,14 +7,18 @@
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
 
+## KNOWN ISSUES: This script does not wait for all compute_batch.py jobs to finish before moving on to the next step.
+## The same may hold true for optimal_compression.py. Compression script needs to be manually edited rather than using command
+## line options in this file. Filesizes are not computed in this script.
+
 # all variable lists
 #set arrMonth= (ABSORB ANRAIN ANSNOW AODABS AODDUST1 AODDUST2 AODDUST3 AODVIS AQRAIN AQSNOW AREI AREL AWNC AWNI bc_a1_SRF BURDENBC BURDENDUST BURDENPOM BURDENSEASALT BURDENSO4 BURDENSOA CCN3 CDNUMC CLDHGH CLDICE CLDLIQ CLDLOW CLDMED CLDTOT CLOUD CO2 CO2_FFF CO2_LND CO2_OCN DCQ dst_a1_SRF dst_a3_SRF DTCOND DTV EXTINCT FICE FLDS FLNS FLNSC FLNT FLNTC FLUT FLUTC FREQI FREQL FREQR FREQS FSDS FSDSC FSNS FSNSC FSNT FSNTC FSNTOA FSNTOAC ICEFRAC ICIMR ICLDIWP ICLDTWP ICWMR IWC LANDFRAC LHFLX LWCF NUMICE NUMLIQ OCNFRAC OMEGA OMEGAT PBLH PHIS pom_a1_SRF PRECC PRECL PRECSC PRECSL PS PSL Q QFLX QRL QRS RELHUM SFCO2 SFCO2_FFF SFCO2_LND SFCO2_OCN SHFLX SNOWHICE SNOWHLND so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF SOLIN SRFRAD SWCF T TAUX TAUY TGCLDIWP TGCLDLWP TMCO2 TMCO2_FFF TMCO2_LND TMCO2_OCN TMQ TOT_CLD_VISTAU TREFHT TREFHTMN TREFHTMX TROP_P TROP_T TS TSMN TSMX U10 U UQ UU V VD01 VQ VT VU VV WGUSTD WSPDSRFMX WSUB Z3)
 #set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 VBOT WSPDSRFAV Z050 Z500)
 
 # Instructions:
-# To change the daily or monthly variables to be processed, change the variable list arrDay and arrMonth below on lines 24 and 25
-# To change the time slices to be processed, change the starting time slices in line 27 and the total number of time slices to be processed on lines 33 and 40
-# To change the metrics to use in determining optimal compression level, change the metrics (option -p) on line 74 and 100
+# To change the daily or monthly variables to be processed, change the variable list $arrDay and $arrMonth below
+# To change the time slices to be processed, change the starting time slices $time and the total number of time slices to be processed in the compute_batch commands
+# To change the metrics to use in determining optimal compression level, change the metrics (option -p) to optimal_compression.py
 # NOTE: Compressing only currently works for zfp compression. If the runtype is "compress" - modify the indir and ourdir variables in grab_all_TS.sh and lines 51-55.
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
