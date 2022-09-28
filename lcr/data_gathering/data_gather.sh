@@ -19,18 +19,19 @@
 # To change the daily or monthly variables to be processed, change the variable list $arrDay and $arrMonth below
 # To change the time slices to be processed, change the starting time slices $time and the total number of time slices to be processed in the compute_batch commands
 # To change the metrics to use in determining optimal compression level, change the metrics (option -p) to optimal_compression.py
+# Ensure that ${prefix}_calcs.json and ${prefix}_diff.json are in this directory and set them up appropriately
 # NOTE: Compressing only currently works for zfp compression. If the runtype is "compress" - modify the indir and ourdir variables in grab_all_TS.sh and lines 51-55.
 # example : "./data_gather.sh rerun random" | qsub
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = testDaily
+set prefix = testAllDay
 # "new" or "rerun" or "compress"
-set runtype = "rerun"
+set runtype = "new"
 # "fixed" or "random"
 set testset = "random"
 
-set arrDay= (TS)
+set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 VBOT WSPDSRFAV Z050 Z500)
 set arrMonth= ()
 
 #git pull
