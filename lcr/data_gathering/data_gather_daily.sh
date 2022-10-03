@@ -51,7 +51,7 @@ if ($runtype == "new" || $runtype == "compress") then
   rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  set arrComp = (br_1 br_2 br_3, br_4, br_5, br_6, br_7, br_8, br_9, br_10, br_11, br_12, br_13, br_14, br_15, br_16, br_17, br_18, br_19, br_20)
+  set arrComp = (br_1 br_2 br_3 br_4 br_5 br_6 br_7 br_8 br_9 br_10 br_11 br_12 br_13 br_14 br_15 br_16 br_17 br_18 br_19 br_20)
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
   foreach x ($arrDay)
