@@ -21,18 +21,19 @@
 # To change the metrics to use in determining optimal compression level, change the metrics (option -p) to optimal_compression.py
 # Ensure that ${prefix}_calcs.json and ${prefix}_diff.json are in this directory and set them up appropriately
 # NOTE: Compressing only currently works for zfp compression. If the runtype is "compress" - modify the indir and ourdir variables in grab_all_TS.sh and lines 51-55.
-# example : "./data_gather.sh rerun random" | qsub
+# example : "./data_gather_daily.sh rerun random" | qsub
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = testAllDay
+set prefix = CAMdaily
 # "new" or "rerun" or "compress"
 set runtype = "new"
 # "fixed" or "random"
 set testset = "random"
 
-set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 VBOT WSPDSRFAV Z050 Z500)
-set arrMonth= ()
+#set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 VBOT WSPDSRFAV Z050 Z500)
+set arrDay= ()
+set arrMonth = (FLUT LHFLX PRECT TAUX TS Z500)
 
 #git pull
 
@@ -50,33 +51,33 @@ if ($runtype == "new" || $runtype == "compress") then
   rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  set arrComp = (zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
+  set arrComp = (br_1 br_2 br_3, br_4, br_5, br_6, br_7, br_8, br_9, br_10, br_11, br_12, br_13, br_14, br_15, br_16, br_17, br_18, br_19, br_20)
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
   foreach x ($arrDay)
     foreach z ($time)
-        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
     end
     foreach y ($arrComp)
       echo $x
   #   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   #   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       foreach z ($time)
-        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       end
     end
   end
 
   foreach x ($arrMonth)
     foreach z ($time)
-        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_monthly_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_monthly_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
     end
     foreach y ($arrComp)
       echo $x
   #   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   #   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       foreach z ($time)
-        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_monthly_metrics.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_monthly_metrics.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       end
     end
   end
