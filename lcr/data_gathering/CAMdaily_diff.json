@@ -3,7 +3,7 @@
     "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS", "U"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
     "FilenamePost": ".200601-201012.nc",
-    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/orig_nocomp/",
+    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig",
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/br/",
     "VarLabel": ["MATCHME"],
     "CompDirs": ["MATCHME"],
