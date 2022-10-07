@@ -63,7 +63,7 @@ if ($runtype == "new" || $runtype == "compress") then
   #   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   #   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       foreach z ($time)
-        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=5:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       end
     end
   end
@@ -77,7 +77,7 @@ if ($runtype == "new" || $runtype == "compress") then
   #   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   #   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       foreach z ($time)
-        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" | sed "s/MATCHVAR/$x/" > ${prefix}_diff_${y}_${x}.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -j ${prefix}_diff_${y}_${x}.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" | sed "s/MATCHVAR/$x/" > ${prefix}_diff_${y}_${x}.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -j ${prefix}_diff_${y}_${x}.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=5:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       end
     end
   end
@@ -123,14 +123,14 @@ rm -f ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 foreach x ($arrDay)
   foreach z ($time)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a zfp -p dssim -t ${z}'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/CAMdaily_calcs/CAMdaily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a zfp -p dssim -t ${z}'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
 foreach x ($arrMonth)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
   foreach z ($time)
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/monthly/monthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a zfp -p dssim -t ${z}'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/CAMmonthly_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a zfp -p dssim -t ${z}'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
