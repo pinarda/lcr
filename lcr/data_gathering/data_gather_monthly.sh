@@ -27,7 +27,7 @@ conda activate my-npl-ml
 # directory and filename prefix
 set prefix = CAMmonthly
 # "new" or "rerun" or "compress"
-set runtype = "new"
+set runtype = "rerun"
 # "fixed" or "random"
 set testset = "random"
 
