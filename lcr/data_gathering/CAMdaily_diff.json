@@ -1,6 +1,5 @@
 {
-    "VarList":  ["CCN3", "CLOUD", "FLNS", "FLNT", "FSNS", "FSNT", "LHFLX",
-    "PRECC", "PRECL", "PS", "QFLX", "SHFLX", "TMQ", "TS", "U"],
+    "VarList":  ["MATCHVAR"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
     "FilenamePost": ".200601-201012.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/orig/",

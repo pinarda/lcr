@@ -2,7 +2,7 @@
 #PBS -A NTDD0005
 #PBS -N testb
 #PBS -q regular
-#PBS -l walltime=12:00:00
+#PBS -l walltime=3:00:00
 #PBS -j oe
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
@@ -25,7 +25,7 @@
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = CAMdaily
+set prefix = CAMdaily2
 # "new" or "rerun" or "compress"
 set runtype = "new"
 # "fixed" or "random"
@@ -63,7 +63,7 @@ if ($runtype == "new" || $runtype == "compress") then
   #   set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_calcs_${x}.csv -j \${prefix}_calcs.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   #   set id2 = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${x} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/\${prefix}_calcs/\${prefix}_daily_metrics_${x}.csv -j \${prefix}_diff.json -ld -tt 10 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       foreach z ($time)
-        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id2 = `printf "tcsh -c 'cat ${prefix}_diff.json | sed "s/MATCHME/$y/" | sed "s/MATCHVAR/$x/" > ${prefix}_diff_$y.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -o ~/lcr/data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -j ${prefix}_diff_$y.json -ld -ts ${z} -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       end
     end
   end
