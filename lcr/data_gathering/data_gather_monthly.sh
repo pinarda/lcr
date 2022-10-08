@@ -155,8 +155,8 @@ end
 
 echo "optimal settings determined, comparing across algorithms"
 
-python compare_algorithms.py -a zfp -v TS -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -o ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
-python compare_algorithms.py -a zfp -v TS -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -o ../../data/${prefix}_calcs/${prefix}_monthly_optim_algs.csv
+python compare_algorithms.py -a br -v TS -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -o ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
+python compare_algorithms.py -a br -v TS -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -o ../../data/${prefix}_calcs/${prefix}_monthly_optim_algs.csv
 
 echo "algorithms compared, creating labels"
 

@@ -88,7 +88,7 @@ def optimal_per_slice():
 # def optimal_over_var():
 #     freqs = ["daily"]
 #     for freq in freqs:
-#         csvfilename = f"../../data/{freq}/{freq}_zfp_bg_sz_comp_slices.csv"
+#         csvfilename = f"../../data/CAM{freq}/CAM{freq}_{freq}_optim.csv"
 #         with open(csvfilename, newline='') as csvfile:
 #             content = csvfile.readlines()
 #         rowstrings = content[1:]
@@ -131,3 +131,4 @@ def optimal_per_slice():
 
 if __name__ == "__main__":
     optimal_per_slice()
+    # optimal_over_var()
