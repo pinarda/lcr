@@ -107,12 +107,12 @@ endif
 echo "calculations and metrics performed, starting to determine optimal compression parameters for each algorithm"
 
 rm -f ../../data/${prefix}_calcs/${prefix}_daily_labels.csv
-rm -f ../../data/${prefix}_calcs/${prefix}_daily_optim.csv
+#rm -f ../../data/${prefix}_calcs/${prefix}_daily_optim.csv
 rm -f ../../data/${prefix}_calcs/${prefix}_daily_optim_algs.csv
 rm -f ../../data/${prefix}_calcs/${prefix}_daily_df.csv
 rm -f ../../data/${prefix}_calcs/reports/*
 rm -f ../../data/${prefix}_calcs/${prefix}_monthly_labels.csv
-rm -f ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv
+#rm -f ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv
 rm -f ../../data/${prefix}_calcs/${prefix}_monthly_optim_algs.csv
 rm -f ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 
@@ -120,26 +120,26 @@ rm -f ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 # python ~/git/lcr/lcr/data_gathering/compute_batch.py -oo ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld
 # python ~/git/lcr/lcr/data_gathering/compute_batch.py -o ~/git/lcr/data/${prefix}_calcs/${prefix}_daily_metrics.csv -j ${prefix}_diff.json -ld
 
-foreach x ($arrDay)
-  foreach z ($time)
-#  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/CAMdaily_calcs/CAMdaily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a bg -p dssim -t ${z}'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-  end
-end
-
-foreach x ($arrMonth)
-#  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-  foreach z ($time)
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/CAMmonthly_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a bg -p dssim -t ${z}'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-  end
-end
-
-# Wait for optimal compression calculations to complete
-echo $idlast
-set split3 = ($idlast:as/./ /)
-
-sleep 60
-echo `qstat $split3[1]`
+#foreach x ($arrDay)
+#  foreach z ($time)
+##  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
+#    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/CAMdaily_calcs/CAMdaily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a bg -p dssim -t ${z}'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+#  end
+#end
+#
+#foreach x ($arrMonth)
+##  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
+#  foreach z ($time)
+#    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/CAMmonthly_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a bg -p dssim -t ${z}'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+#  end
+#end
+#
+## Wait for optimal compression calculations to complete
+#echo $idlast
+#set split3 = ($idlast:as/./ /)
+#
+#sleep 60
+#echo `qstat $split3[1]`
 
 set notnow = `date +%s`
 while (1)
