@@ -23,7 +23,7 @@ def translate_alg_to_prefix(compression:str):
     elif compression == "sz":
         return "sz3"
     elif compression == "bg":
-        return "bg"
+        return "br"
     return None
 
 
