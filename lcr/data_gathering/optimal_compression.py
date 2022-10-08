@@ -445,6 +445,14 @@ def main():
     argv_metrics = args.metrics
     argv_timestart = args.timestart
 
+    print(f"argv_var: {argv_var}")
+    print(f"argv_freq: {argv_freq}")
+    print(f"argv_loc: {argv_loc}")
+    print(f"argv_sizeloc: {argv_sizeloc}")
+    print(f"argv_metricloc: {argv_metricloc}")
+    print(f"current_algs: {argv_algs}")
+    print(f"current_var: {argv_var}")
+    print(f"current_var: {argv_var}")
     print(f"current_var: {argv_var}")
 
     for freq in [argv_freq]:

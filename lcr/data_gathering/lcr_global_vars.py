@@ -34,6 +34,7 @@ daily_vars = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",
                "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "VBOT",
                "WSPDSRFAV", "Z050", "Z500"]
 
+
 # array of the name prefixes for each compression algorithm
 # used in most csv files and most other places in the python code
 alg_prefixes = ["zfp", "bg", "sz", "sz1ROn", "zfp5", "sz3_ROn"]
