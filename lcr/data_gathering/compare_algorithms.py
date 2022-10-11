@@ -154,7 +154,7 @@ def optimal_over_var_new():
                         if int(level) > int(d[variable]):
                             d[variable] = level
 
-                for var in vars:
+                for var in sorted(vars):
                         fieldnames = ["variable", "best_level"]
                         writer = csv.DictWriter(newcsvfile, fieldnames=fieldnames)
 

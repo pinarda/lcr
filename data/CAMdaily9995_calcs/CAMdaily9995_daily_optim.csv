@@ -1,5 +1,4 @@
-variable,frequency,timestep,bg_level,bg_size,bg_ratio,all_bg_levs
-variable,frequency,timestep,bg_level,bg_size,bg_ratio,all_bg_levs
+variable,frequency,timestep,br_level,br_size,br_ratio,all_br_levs
 CLOUD,daily,0,9,,,[9.0]
 CLOUD,daily,1,8,,,[8.0]
 CCN3,daily,0,15,,,[15.0]
