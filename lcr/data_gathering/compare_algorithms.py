@@ -129,6 +129,44 @@ def optimal_per_slice():
 #                     }
 #                 )
 
+def optimal_over_var_new():
+    freqs = ["daily", "monthly"]
+    cutoffs = ["95", "995", "9995"]
+    for freq in freqs:
+        for cutoff in cutoffs:
+            location = f"../../data/CAM{freq}{cutoff}_calcs/{freq}{cutoff}_optimal_over_var.csv"
+            file_exists = os.path.isfile(location)
+            with open(location, 'a', newline='') as newcsvfile:
+                csvfilename = f"../../data/CAM{freq}{cutoff}_calcs/CAM{freq}{cutoff}_{freq}_optim.csv"
+                with open(csvfilename, newline='') as csvfile:
+                    content = csvfile.readlines()
+                rowstrings = content[1:]
+                d = {}
+                vars = []
+                for rowstring in rowstrings:
+                    row = rowstring.strip().split(",")
+                    variable = row[0]
+                    level = row[3]
+                    if variable not in d:
+                        vars.append(variable)
+                        d[variable] = level
+                    else:
+                        if int(level) > int(d[variable]):
+                            d[variable] = level
+
+                for var in vars:
+                        fieldnames = ["variable", "best_level"]
+                        writer = csv.DictWriter(newcsvfile, fieldnames=fieldnames)
+
+                        if not file_exists:
+                            writer.writeheader()
+                        writer.writerow(
+                            {
+                             'variable': var,
+                             'best_level': d[var]
+                            }
+                        )
+
 if __name__ == "__main__":
-    optimal_per_slice()
-    # optimal_over_var()
+    #optimal_per_slice()
+    optimal_over_var_new()
