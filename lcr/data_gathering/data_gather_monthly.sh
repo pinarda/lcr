@@ -123,14 +123,14 @@ rm -f ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 foreach x ($arrDay)
   foreach z ($time)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/CAMdaily_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a bg -p dssim -t ${z}'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/CAMdaily_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a bg -p dssim -t ${z} -d 0.9995'" | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
 foreach x ($arrMonth)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/daily_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
   foreach z ($time)
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/CAMmonthly_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a bg -p dssim -t ${z}'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/CAMmonthly_calcs/CAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a bg -p dssim -t ${z} -d 0.9995'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=2:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
