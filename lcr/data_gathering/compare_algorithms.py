@@ -134,7 +134,7 @@ def optimal_over_var_new():
     cutoffs = ["95", "995", "9995"]
     for freq in freqs:
         for cutoff in cutoffs:
-            location = f"../../data/CAM{freq}{cutoff}_calcs/{freq}{cutoff}_optimal_over_var.csv"
+            location = f"../../data/AllCAM{freq}{cutoff}_calcs/{freq}{cutoff}_optimal_over_var.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
                 csvfilename = f"../../data/CAM{freq}{cutoff}_calcs/CAM{freq}{cutoff}_{freq}_optim.csv"
