@@ -6,6 +6,6 @@
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/br/",
     "VarLabel": ["MATCHME"],
     "CompDirs": ["MATCHME"],
-    "DiffCalcs": ["ssim_fp", "ks_p_value", "spatial_rel_error", "max_spatial_rel_error", "pearson_correlation_coefficient"],
+    "DiffCalcs": ["ssim_fp", "ks_p_value", "spatial_rel_error", "pearson_correlation_coefficient"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
 }
