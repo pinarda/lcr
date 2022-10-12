@@ -25,9 +25,9 @@
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = CAMmonthly9995
+set prefix = AllCAMmonthly
 # "new" or "rerun" or "compress"
-set runtype = "rerun"
+set runtype = "new"
 # "fixed" or "random"
 set testset = "random"
 
@@ -51,7 +51,7 @@ if ($runtype == "new" || $runtype == "compress") then
   rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  set arrComp = (br_1 br_2 br_3 br_4 br_5 br_6 br_7 br_8 br_9 br_10 br_11 br_12 br_13 br_14 br_15 br_16 br_17 br_18 br_19 br_20)
+  set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26 br_1 br_2 br_3 br_4 br_5 br_6 br_7 br_8 br_9 br_10 br_11 br_12 br_13 br_14 br_15 br_16 br_17 br_18 br_19 br_20 br_21 br_22)
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
   foreach x ($arrDay)
