@@ -137,7 +137,7 @@ def optimal_over_var_new():
             location = f"../../data/AllCAM{freq}{cutoff}_calcs/{freq}{cutoff}_optimal_over_var.csv"
             file_exists = os.path.isfile(location)
             with open(location, 'a', newline='') as newcsvfile:
-                csvfilename = f"../../data/CAM{freq}{cutoff}_calcs/CAM{freq}{cutoff}_{freq}_optim.csv"
+                csvfilename = f"../../data/AllCAM{freq}_calcs/AllCAM{freq}{cutoff}_{freq}_optim.csv"
                 with open(csvfilename, newline='') as csvfile:
                     content = csvfile.readlines()
                 rowstrings = content[1:]
