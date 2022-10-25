@@ -305,7 +305,7 @@ def simple_orig_calcs(
     calc_dict = {}
     for calc in calcs:
         # print(calc)
-        if calc in ["entropy", "range", "lat_autocorr", "lon_autocorr", "percent_unique", "most_repeated_percent"]:
+        if calc in ["entropy", "lat_autocorr", "lon_autocorr", "percent_unique", "most_repeated_percent"]:
             temp = clcs.get_single_calc(calc)
             calc_dict[calc] = temp
         else:
