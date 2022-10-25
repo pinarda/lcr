@@ -305,6 +305,10 @@ def simple_orig_calcs(
     calc_dict = {}
     for calc in calcs:
         # print(calc)
+        if calc in ["entropy", "range", "lat_autocorr", "lon_autocorr", "percent_unique", "most_repeated", "most_repeated_percent"]:
+            calc_dict[calc] = clcs.get_single_calc(calc)
+        else:
+            calc_dict[calc] = clcs.get_calc(calc)
         temp = clcs.get_calc(calc).compute()
         #temp = float(fft2_calcs.get_calc(calc).compute())
         #temp = float(clcs.get_calc(calc).compute())

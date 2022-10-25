@@ -12,6 +12,6 @@
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
     "FilenamePost": ".20060101-20071231.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/",
-    "OrigCalcs": ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio", "ew_con_var", "n_s_first_differences", "w_e_derivative", "std", "standardized_mean", "pooled_var_ratio", "prob_negative", "odds_positive", "mae_day_max", "mean_abs", "mean_squared", "rms", "quantile", "max_abs", "min_abs", "min_abs_nonzero", "min_val", "max_val", "lat_autocorr", "lon_autocorr", "entropy", "percent_unique", "most_repeated_percent"],
+    "OrigCalcs": ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio", "ew_con_var", "n_s_first_differences", "w_e_derivative", "std", "standardized_mean", "prob_negative", "odds_positive", "mae_day_max", "mean_abs", "mean_squared", "rms", "quantile", "max_abs", "min_abs", "min_abs_nonzero", "min_val", "max_val", "lat_autocorr", "lon_autocorr", "entropy", "percent_unique", "most_repeated_percent"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
 }
