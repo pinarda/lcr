@@ -252,10 +252,10 @@ if __name__ == "__main__":
     # just look at a particular algorithm and try and guess the level for now
     # remove some zfp_p_22 to balance the classes
     x1, x2, y1, y2, idx1, idx2 = train_test_split(daily_df[daily_df["levels"] == 22], daily_df[daily_df["levels"]==22]["levels"], daily_df[daily_df["levels"] == 22].index, test_size=0.02, random_state=3)
+    daily_df.drop(index=idx1, inplace=True)
 
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["algs"] == "zfp"]
-        subset_daily.drop(index=idx1, inplace=True)
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
     if argv_dailyloc is not None:
