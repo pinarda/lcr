@@ -217,9 +217,10 @@ def save_labels():
     args = parseArguments()
     v = args.var
     argv_loc = args.loc
+    df = pd.read_csv(argv_loc)
     argv_output = args.output
 
-vdf = df[df["variable"]==v]
+    vdf = df[df["variable"]==v]
     #vdf=df
 
     adf=df["best_alg"].to_list()
