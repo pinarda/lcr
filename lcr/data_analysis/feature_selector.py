@@ -113,7 +113,7 @@ if __name__ == "__main__":
     # display the top 100
     feature_selection_df = feature_selection_df.sort_values(['Total','Feature'] , ascending=False)
     feature_selection_df.index = range(1, len(feature_selection_df)+1)
-    sel = list(feature_selection_df["Total"] >= 3)
+    sel = list(feature_selection_df["Total"] >= 2)
     with open(argv_output, 'wb+') as outp:
         flist = list(feature_selection_df[sel]["Feature"])
         print(flist)

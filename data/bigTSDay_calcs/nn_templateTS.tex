@@ -2,15 +2,14 @@
 %Horizontal target class
 %Vertical output class
 \def\myConfMat{{
-{0, 0, 0, 0, 0},  %row 1
+{0, 3, 2, 0},  %row 1
 %{0,0,0,0,0,0,0,0,0,2},  %row 2
-{1, 1, 0, 1, 0},  %row 2
+{0, 29, 16, 0},  %row 2
 %{0,0,0,0,0,0,0,0,0,3},  %row 3
-{0, 0, 0, 0, 0},  %row 3
+{0, 16, 16, 0},  %row 3
 %{0,0,0,0,0,0,0,0,0,4},  %row 4
-{0, 0, 1, 0, 0},  %row 4
+{0, 0, 1, 0},  %row 4
 %{0,0,0,0,0,0,0,0,0,5},  %row 5
-{0, 0, 2, 0, 0},  %row 5
 %{0,0,0,0,0,0,0,0,0,6},  %row 6
 %{0,0,0,0,0,0,0,0,0,7},  %row 7
 %{0,0,0,0,0,0,0,0,0,8},  %row 8
@@ -19,9 +18,9 @@
 }}
 
 
-\def\classNames{{"14","16","18","20","22","24"}} %class names. Adapt at will
+\def\classNames{{"24","26","20","22"}} %class names. Adapt at will
 
-\def\numClasses{5} %number of classes. Could be automatic, but you can change it for tests.
+\def\numClasses{4} %number of classes. Could be automatic, but you can change it for tests.
 
 \def\myScale{1.4} % 1.5 is a good scale. Values under 1 may need smaller fonts!
 \begin{tikzpicture}[
@@ -53,7 +52,7 @@
     \begin{scope}[shift={(\x,-\y)}]
         \def\mVal{\myConfMat[\y-1][\x-1]} % The value at index y,x (-1 because of zero indexing)
         \pgfmathtruncatemacro{\r}{\mVal}   %
-        \pgfmathtruncatemacro{\p}{round(\r/(\totSamples+0.0000001)*100)}
+        \pgfmathtruncatemacro{\p}{round(\r/\totSamples*100)}
         \coordinate (C) at (0,0);
         \ifthenelse{\p<50}{\def\txtcol{black}}{\def\txtcol{white}} %decide text color for contrast
         \node[
