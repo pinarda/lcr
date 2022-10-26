@@ -251,8 +251,7 @@ if __name__ == "__main__":
 
     # just look at a particular algorithm and try and guess the level for now
     # remove some zfp_p_22 to balance the classes
-    indices = np.arange(len(daily_df[daily_df["levels"] == 22][0]))
-    x1, x2, y1, y2, idx1, idx2 = train_test_split(daily_df[daily_df["levels"] == 22], daily_df[daily_df["levels"]==22]["levels"], indices, test_size=0.02, random_state=3)
+    x1, x2, y1, y2, idx1, idx2 = train_test_split(daily_df[daily_df["levels"] == 22], daily_df[daily_df["levels"]==22]["levels"], daily_df[daily_df["levels"] == 22].index, test_size=0.02, random_state=3)
 
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["algs"] == "zfp"]
