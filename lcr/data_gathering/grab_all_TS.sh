@@ -9,7 +9,7 @@ import os
 # 2006-2010 subset monthly
 indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/"
 
-outdir = "/glade/scratch/apinard/ICEFRAC/zfp/"
+outdir = "/glade/scratch/apinard/ICEFRAC/zfp"
 
 print("indir = ",indir)
 print("outdir = ", outdir)
