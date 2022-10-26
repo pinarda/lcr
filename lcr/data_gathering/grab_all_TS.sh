@@ -9,7 +9,7 @@ import os
 # 2006-2010 subset monthly
 indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/"
 
-outdir = "/glade/scratch/apinard/3D/zfp"
+outdir = "/glade/scratch/apinard/ICEFRAC/zfp/"
 
 print("indir = ",indir)
 print("outdir = ", outdir)
@@ -48,7 +48,7 @@ for filename in os.listdir(indir):
 # daily
 #    if filename.endswith(".20060101-20071231.nc"):
 #monthly
-    if filename.endswith(".T.200601-203512.nc"):
+    if filename.endswith(".ICEFRAC.200601-203512.nc"):
         for i in range(10,27,2):
             zfpdir = "zfp_p_" + str(i)
             infile = indir + "/" + filename
