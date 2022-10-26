@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     daily_label_df = pd.read_csv(argv_labelloc)
     # monthly_label_df = pd.read_csv('../data/monthly_labels_zfp.csv')
-    daily_calc_df = pd.read_csv(argv_calcloc, header=True)
+    daily_calc_df = pd.read_csv(argv_calcloc, header=0)
     # monthly_calc_df = pd.read_csv('../data/monthly_calcs.csv')
 
     daily_df = pd.DataFrame()
