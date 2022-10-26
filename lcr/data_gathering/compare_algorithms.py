@@ -168,5 +168,5 @@ def optimal_over_var_new():
                         )
 
 if __name__ == "__main__":
-    #optimal_per_slice()
-    optimal_over_var_new()
+    optimal_per_slice()
+    #optimal_over_var_new()
