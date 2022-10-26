@@ -45,7 +45,8 @@ if __name__ == "__main__":
             i=1
             continue
         print (row[1])
-        varnames.append(re.search(r'orig_(?P<name>.*)', row[1])[1])
+        if re.search(r'orig_(?P<name>.*)', row[1]) is not None:
+            varnames.append(re.search(r'orig_(?P<name>.*)', row[1])[1])
     daily_calc_df['variable'] = varnames
 
     daily_df = pd.merge(daily_calc_df, daily_label_df, on=['variable', 'time'])
