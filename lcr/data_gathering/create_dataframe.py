@@ -39,11 +39,7 @@ if __name__ == "__main__":
     # No longer lazy, match variable name and timestep
     len(daily_calc_df)
     varnames = []
-    i=0
     for row in daily_calc_df.itertuples():
-        if (i==0):
-            i=1
-            continue
         print (row[1])
         if re.search(r'orig_(?P<name>.*)', row[1]) is not None:
             varnames.append(re.search(r'orig_(?P<name>.*)', row[1])[1])
