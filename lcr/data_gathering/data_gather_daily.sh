@@ -27,7 +27,7 @@ conda activate my-npl-ml
 # directory and filename prefix
 set prefix = bigTSDay
 # "new" or "rerun" or "compress"
-set runtype = "calcs"
+set runtype = "rerun"
 # "fixed" or "random"
 set testset = "random"
 set alg = "zfp"
