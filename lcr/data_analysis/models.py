@@ -251,11 +251,12 @@ if __name__ == "__main__":
 
     # just look at a particular algorithm and try and guess the level for now
     # remove some zfp_p_22 to balance the classes
-    discard_ind, use_ind = train_test_split(daily_df[daily_df["levels"] == 22], test_size=0.02, random_state=3)
+    indices = np.arange(len(daily_df[daily_df["levels"] == 22][0]))
+    x1, x2, y1, y2, idx1, idx2 = train_test_split(daily_df[daily_df["levels"] == 22], daily_df[daily_df["levels"]==22]["levels"], indices, test_size=0.02, random_state=3)
 
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["algs"] == "zfp"]
-        subset_daily.drop(index=discard_ind.index, inplace=True)
+        subset_daily.drop(index=idx1, inplace=True)
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
     if argv_dailyloc is not None:
