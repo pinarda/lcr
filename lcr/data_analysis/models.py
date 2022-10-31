@@ -258,8 +258,10 @@ if __name__ == "__main__":
 
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["algs"] == "zfp"]
+        daily_df = daily_df[daily_df["levels"].isin([14,20])]
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
+        monthly_df = monthly_df[monthly_df["levels"].isin([14,20])]
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["levels"] != 100000]
     if argv_monthlyloc is not None:
