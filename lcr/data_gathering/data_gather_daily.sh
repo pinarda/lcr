@@ -27,7 +27,7 @@ conda activate my-npl-ml
 # directory and filename prefix
 set prefix = AllCAMdaily2
 # "new" or "rerun" or "compress"
-set runtype = "new"
+set runtype = "calcs"
 # "fixed" or "random"
 set testset = "random"
 set alg = "zfp"
@@ -61,7 +61,7 @@ if ($runtype == "new" || $runtype == "compress") then
   #temporary comment down to next echo line
   foreach x ($arrDay)
     foreach z ($time)
-        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id = `printf "tcsh -c 'cat ${prefix}_calcs.json | sed "s/MATCHVAR/$x/" > ${prefix}_calcs_${x}.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs_${x}.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
     end
     foreach y ($arrComp)
       echo $x
@@ -112,7 +112,7 @@ endif
 if ($runtype == "calcs") then
   foreach x ($arrDay)
     foreach z ($time)
-        set id = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+        set id = `printf "tcsh -c ''cat ${prefix}_calcs.json | sed "s/MATCHVAR/$x/" > ${prefix}_calcs_${x}.json && conda activate my-npl-ml && set prefix = ${prefix} && python ~/lcr/lcr/data_gathering/compute_batch.py -oo ~/lcr/data/${prefix}_calcs/${prefix}_daily_calcs.csv -j ${prefix}_calcs_${x}.json -ld -ts ${z} -tt 365 -v'" | qsub -A NTDD0005 -N testb -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
     end
   end
 

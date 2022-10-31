@@ -50,7 +50,7 @@ def optimal_per_slice():
 
         best_ratio = max(ratios)
 
-        best_alg = rationames[np.where(ratios == best_ratio)[0][0]].split("_")[0]
+        best_alg = rationames[np.argmax(ratios)].split("_")[0]
         best_size = comp_csv[f"{best_alg}_size"][i]
         #best_size = min(row[4], row[7], row[10])#, row[13], row[16])
         # only look at zfp
