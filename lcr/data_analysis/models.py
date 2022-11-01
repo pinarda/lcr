@@ -114,7 +114,7 @@ def random_forest(X_train, X_test, y_train, y_test):
     fig.savefig('rf_individualtree.png')
     y_pred = rf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
-    return (y_pred, accuracy)
+    return (y_pred, accuracy, rf.feature_importances_)
 
 def adaboost(X_train, X_test, y_train, y_test):
     params = {
@@ -259,21 +259,30 @@ if __name__ == "__main__":
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["algs"] == "zfp"]
         daily_df = daily_df[daily_df["levels"].isin([14,20])]
+        # replace any nan values with 0
+        daily_df.fillna(0, inplace=True)
+        # replace any inf values with 0
+        daily_df.replace([np.inf, -np.inf], 0, inplace=True)
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["algs"] == "zfp"]
         monthly_df = monthly_df[monthly_df["levels"].isin([14,20])]
+        # replace any nan values with 0
+        monthly_df.fillna(0, inplace=True)
+        # replace any inf values with 0
+        monthly_df.replace([np.inf, -np.inf], 0, inplace=True)
     if argv_dailyloc is not None:
         subset_daily = daily_df[daily_df["levels"] != 100000]
     if argv_monthlyloc is not None:
         subset_monthly = monthly_df[monthly_df["levels"] != 100000]
     #subset_daily = daily_df
 
+
     # load feature list from feature_list.pkl (set in feature_selection.py)
     if argv_featureloc is not None:
         with open(argv_featureloc, 'rb') as inp:
              features = pickle.load(inp)
     else:
-        features = ["mean", "variance"]
+        features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax"]
     if argv_dailyloc is not None:
         # X1 = subset_daily[lcr_global_vars.features]
         X1 = subset_daily[features]
@@ -369,10 +378,11 @@ if __name__ == "__main__":
     map = dict(zip(mappingfrom, mappingto))
 
     if "rf" in argv_models:
-        (rf_preds, rf_acc) = random_forest(X_train, X_test, y_train, y_test)
+        (rf_preds, rf_acc, rf_importance) = random_forest(X_train, X_test, y_train, y_test)
         print("SECTION RANDOM FOREST -----------------")
         print(rf_acc)
         print(confusion_matrix(y_test, rf_preds))
+        print(rf_importance)
         renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
         for i in range(len(renamed_mat)):
             renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)

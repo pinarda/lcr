@@ -206,16 +206,16 @@ python create_dataframe.py -l ../../data/${prefix}_calcs/${prefix}_monthly_label
 
 echo "dataframe created, performing feature extraction"
 
-python ../data_analysis/feature_selector.py -l ../../data/${prefix}_calcs/${prefix}_daily_df.csv -o ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
-python ../data_analysis/feature_selector.py -l ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -o ../../data/${prefix}_calcs/${prefix}_feature_list_monthly.pkl
+python ../data_analysis/feature_selector.py -p 1 -l ../../data/${prefix}_calcs/${prefix}_daily_df.csv -o ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
+python ../data_analysis/feature_selector.py -p 1 -l ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -o ../../data/${prefix}_calcs/${prefix}_feature_list_monthly.pkl
 
 echo "features selected, running models"
 
 if ($testset == "random") then
-  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf nn -t 1 -r ../../data/${prefix}_calcs/reports/ -f ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
+  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -e rf -t 1 -r ../../data/${prefix}_calcs/reports/ -f ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
 else
   # select models to run: ada, rf, nn, svm, lda, qda, agg
-  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf nn -t 0 -r ../../data/${prefix}_calcs/reports/ -f ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
+  python ../data_analysis/models.py -d ../../data/${prefix}_calcs/${prefix}_daily_df.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_df.csv -e rf -t 0 -r ../../data/${prefix}_calcs/reports/ -f ../../data/${prefix}_calcs/${prefix}_feature_list_daily.pkl
 endif
 
 
@@ -223,6 +223,6 @@ endif
 #add a step here for formatting the tables and reports before converting to latex and saving
 
 echo "models completed, formatting report"
-foreach p (rf nn)
+foreach p (rf)
   python tably.py ../../data/${prefix}_calcs/reports/${p}_report_5.csv -o ../../data/${prefix}_calcs/reports/${p}_report.tex
 end

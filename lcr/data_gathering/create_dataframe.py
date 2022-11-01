@@ -14,11 +14,11 @@ import numpy as np
 def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--labelloc", help="location of labels",
-                        type=str, default=f"../../data/daily/daily_labels.csv")
+                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_labels.csv")
     parser.add_argument("-c", "--calcloc", help="location of features",
-                        type=str, default=f"../../data/daily/daily_calcs.csv")
+                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_calcs.csv")
     parser.add_argument("-o", "--output", help="location of output csv file",
-                        type=str, default=f"../../data/daily/daily_df.csv")
+                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_df.csv")
     args = parser.parse_args()
 
     return args
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         print (row[1])
         if re.search(r'orig_(?P<name>.*)', row[1]) is not None:
             varnames.append(re.search(r'orig_(?P<name>.*)', row[1])[1])
-    daily_calc_df.drop(index=0, inplace=True)
+    #daily_calc_df.drop(index=0, inplace=True)
     daily_calc_df['variable'] = varnames
 
     daily_df = pd.merge(daily_calc_df, daily_label_df, on=['variable', 'time'])

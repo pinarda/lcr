@@ -13,6 +13,8 @@ def parseArguments():
                         type=str, default=None)
     parser.add_argument("-o", "--outfile", help="location of output feature list",
                         type=str, default=None)
+    parser.add_argument("-p", "--passthrough", help="check if we want to run feature selection at all",
+                        type=int, default=0)
     args = parser.parse_args()
 
     return args
@@ -21,6 +23,7 @@ if __name__ == "__main__":
     args = parseArguments()
     argv_loc = args.loc
     argv_output = args.outfile
+    argv_passthrough = args.passthrough
 
     num_feats=10
     if argv_loc is not None:
@@ -113,7 +116,11 @@ if __name__ == "__main__":
     # display the top 100
     feature_selection_df = feature_selection_df.sort_values(['Total','Feature'] , ascending=False)
     feature_selection_df.index = range(1, len(feature_selection_df)+1)
-    sel = list(feature_selection_df["Total"] >= 2)
+    if argv_passthrough == 1:
+        sel = list(feature_selection_df["Total"] >= 0)
+    else:
+        sel = list(feature_selection_df["Total"] >= 2)
+
     with open(argv_output, 'wb+') as outp:
         flist = list(feature_selection_df[sel]["Feature"])
         print(flist)
