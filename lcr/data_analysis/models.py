@@ -90,6 +90,91 @@ monthly_test_vars = ["ABSORB", "ANRAIN", "AREI", "CCN3", "CO2", "CO2_FFF", "ICEF
 
 monthly_validate_vars = ["ANSNOW", "AODABS", "AREL", "CDNUMC", "CO2_LND", "CO2_OCN", "ICLDIWP", "ICLDTWP", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGAT", "PSL", "soa_a2_SRF", "UQ", "UU", "WSUB", "Z3"]
 
+monthly_groups = [["BURDENSO4", "BURDENSOA"], ["CLDLOW", "CLDMED", "CLDHGH"],
+                 ["CLDICE", "CLDLIQ", "CLOUD"], ["CO2", "CO2_FFF"],
+                 ["FREQI", "FREQL", "FREQR", "FREQS"], ["FLUT", "FLNT"],
+                 ["ICIMR", "ICWMR", "ICLDIWP", "ICLDTWP", "IWC"],
+                 ["OMEGA", "OMEGAT"],  ["TREFHT", "TSMN", "TS"], ["U", "UQ"],
+                 ["VT", "VV", "VQ"], ["TMCO2", "TMCO2_OCN"],
+                 ["FSNT", "FSNTOA"], ["FSNTC", "FSNTOAC"], ["FLNTC"], ["FLUTC"],
+                 ["FSNS"], ["FSNSC"], ["FLDS"], ["FLNS"], ["FLNSC"], ["FSDS"],
+                ["FSDSC"], ["SWCF"], ["LWCF"], ["SHFLX"], ["LHFLX"], ["QFLX"],
+                ["PRECC"], ["PRECL"], ["PRECSC"], ["PRECSL"], ["bc_a1_SRF"],
+                ["dst_a1_SRF"], ["dst_a3_SRF"], ["pom_a1_SRF"], ["so4_a1_SRF"],
+                ["so4_a2_SRF"], ["so4_a3_SRF"], ["soa_a1_SRF"], ["soa_a2_SRF"],
+                ["AODDUST1"], ["AODDUST2"], ["AODDUST3"], ["AODVIS"], ["AQRAIN"],
+                ["AQSNOW"], ["AWNC"], ["AWNI"], ["BURDENBC"], ["BURDENDUST"],
+                ["BURDENPOM"], ["BURDENSEASALT"], ["DCQ"], ["EXTINCT"],
+                ["FICE"], ["FREQL"], ["FREQR"], ["FREQS"], ["FSNS"], ["FSNSC"],
+                ["FSNT"], ["FSNTC"], ["FSNTOA"], ["FSNTOAC"], ["PBLH"], ["PHIS"],
+                ["SFCO2"], ["SFCO2_FFF"], ["SFCO2_LND"], ["SFCO2_OCN"], ["SNOWHICE"],
+                ["SNOWHLND"], ["T"], ["TAUX"], ["TAUY"], ["TGCLDIWP"], ["TGCLDLWP"],
+                ["TMCO2"], ["TMCO2_FFF"], ["TMCO2_LND"], ["TMCO2_OCN"], ["TMQ"],
+                ["TREFHTMN"], ["TREFHTMX"], ["TROP_P"], ["TROP_T"], ["TSMX"],
+                ["V"], ["VD01"], ["VU"], ["WGUSTD"], ["WSPDSRFMX"], ["WSUB"],
+                ["Z3"], ["ABSORB"], ["ANRAIN"], ["AREI"], ["CCN3"], ["CO2"],
+                ["CO2_FFF"], ["ICEFRAC"], ["LANDFRAC"], ["OMEGA"], ["PS"],
+                ["SOLIN"], ["SRFRAD"], ["TOT_CLD_VISTAU"], ["U10"], ["U"],
+                ["DTCOND"], ["DTV"], ["Q"], ["QRL"], ["QRS"], ["RELHUM"],
+                ["SFCO2"], ["SFCO2_FFF"], ["SFCO2_LND"], ["SFCO2_OCN"], ["SHFLX"],
+                ["SNOWHICE"], ["SNOWHLND"], ["so4_a1_SRF"], ["so4_a2_SRF"],
+                ["so4_a3_SRF"], ["soa_a1_SRF"], ["SWCF"], ["T"], ["TAUX"],
+                ["TAUY"], ["TGCLDIWP"], ["TGCLDLWP"], ["TMCO2"], ["TMCO2_FFF"],
+                ["TMCO2_LND"], ["TMCO2_OCN"], ["TMQ"], ["TREFHT"], ["TREFHTMN"],
+                ["TREFHTMX"], ["TROP_P"], ["TROP_T"], ["TS"], ["TSMN"], ["TSMX"],
+                ["V"], ["VD01"], ["VQ"], ["VT"], ["VU"], ["VV"], ["ANSNOW"],
+                ["AODABS"], ["AREL"], ["CDNUMC"], ["CO2_LND"], ["CO2_OCN"],
+                ["ICLDIWP"], ["ICLDTWP"], ["LHFLX"], ["LWCF"], ["NUMICE"],
+                ["NUMLIQ"], ["OCNFRAC"], ["OMEGAT"], ["PSL"], ["soa_a2_SRF"],
+                ["UQ"], ["UU"], ["WSUB"], ["Z3"]]
+
+monthly_vars = ["ABSORB", "ANRAIN", "ANSNOW", "AODABS", "AODDUST1", "AODDUST2", "AODDUST3",
+                "AODVIS", "AQRAIN", "AQSNOW", "AREI", "AREL", "AWNC", "AWNI", "bc_a1_SRF",
+                "BURDENBC", "BURDENDUST", "BURDENPOM", "BURDENSEASALT", "BURDENSO4", "BURDENSOA",
+                "CCN3", "CDNUMC", "CLDHGH", "CLDICE", "CLDLIQ", "CLDLOW", "CLDMED", "CLDTOT",
+                "CLOUD", "CO2", "CO2_FFF", "CO2_LND", "CO2_OCN", "DCQ", "dst_a1_SRF", "dst_a3_SRF",
+                "DTCOND", "DTV", "EXTINCT", "FICE", "FLDS", "FLNS", "FLNSC", "FLNT", "FLNTC", "FLUT",
+                "FLUTC", "FREQI", "FREQL", "FREQR", "FREQS", "FSDS", "FSDSC", "FSNS", "FSNSC",
+                "FSNT", "FSNTC", "FSNTOA", "FSNTOAC", "ICEFRAC", "ICIMR", "ICLDIWP", "ICLDTWP",
+                "ICWMR", "IWC", "LANDFRAC", "LHFLX", "LWCF", "NUMICE", "NUMLIQ", "OCNFRAC", "OMEGA",
+                "OMEGAT", "PBLH", "PHIS", "pom_a1_SRF", "PRECC", "PRECL", "PRECSC", "PRECSL", "PS",
+                "PSL", "Q", "QFLX", "QRL", "QRS", "RELHUM", "SFCO2", "SFCO2_FFF", "SFCO2_LND",
+                "SFCO2_OCN", "SHFLX", "SNOWHICE", "SNOWHLND", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF",
+                "soa_a1_SRF", "soa_a2_SRF", "SOLIN", "SRFRAD", "SWCF", "T", "TAUX", "TAUY", "TGCLDIWP",
+                "TGCLDLWP", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TMQ", "TOT_CLD_VISTAU",
+                "TREFHT", "TREFHTMN", "TREFHTMX", "TROP_P", "TROP_T", "TS", "TSMN", "TSMX", "U10",
+                "U", "UQ", "UU", "V", "VD01", "VQ", "VT", "VU", "VV", "WGUSTD", "WSPDSRFMX", "WSUB", "Z3"]
+
+daily_vars = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC",
+              "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850",
+              "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200",
+              "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500",
+              "U850", "UBOT", "V200", "V500", "V850", "VBOT", "WSPDSRFAV", "Z050", "Z500"]
+
+daily_groups = [["dst_a1_SRF", "dst_a3_SRF"], ["PRECT", "PRECTMX"], ["so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF"],
+                ["soa_a1_SRF", "soa_a2_SRF"], ["TREFHTMX", "TS"], ["U200", "U500", "U850", "UBOT"], ["V200", "V500"],
+                ["bc_a1_SRF"], ["pom_a1_SRF"], ["FLNS"], ["FLNSC"], ["FLUT"], ["FSNS"], ["FSNSC"], ["FSNTOA"], ["ICEFRAC"],
+                ["LHFLX"], ["PRECL"], ["PRECSC"], ["PRECSL"], ["PSL"], ["Q200"], ["Q500"], ["Q850"], ["QBOT"], ["SHFLX"],
+                ["T010"], ["T200"], ["T500"], ["T850"], ["TAUX"], ["TAUY"], ["TMQ"], ["TREFHT"], ["TREFHTMN"], ["TREFHTMX"],
+                ["TS"], ["U010"], ["U200"], ["U500"], ["U850"], ["UBOT"], ["V200"], ["V500"], ["V850"], ["VBOT"], ["WSPDSRFAV"],
+                ["Z050"], ["Z500"]]
+
+daily_14 = [["FLNS"], ["FSNS"], ["FSNTOA"], ["ICEFRAC"], ["LHFLX"], ["PRECL"], ["PRECSC"], ["PRECSL"], ["SHFLX"], ["TAUX"],
+            ["TAUY"], ["V850"], ["VBOT"], ["WSPDSRFAV"], ["bc_a1_SRF"], ["dst_a1_SRF"], ["pom_a1_SRF"], ["dst_a3_SRF", "dst_a1_SRF"], ["PRECT", "PRECTMX"],
+            ["so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF"], ["soa_a1_SRF", "soa_a2_SRF"], ["U200", "U500", "U850", "UBOT"], ["V200", "V500"]]
+
+daily_18 = [["FLUT"], ["FSNSC"], ["ICEFRAC"], ["Q200"], ["U010"], ["so4_a1_SRF"], ["so4_a2_SRF"], ["so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF"]]
+
+monthly_14 = [["BURDENDUST"], ["CLDTOT"], ["ICEFRAC"], ["LHFLX"], ["LWCF"], ["PRECC"], ["PRECSC"], ["PRECSL"], ["QFLX"], ["SFCO2_FFF"], ["SFCO2_OCN"],
+              ["SFCO2_LND"], ["SNOWHICE"], ["SWCF"], ["TAUX"], ["TAUY"], ["TGCLDLWP"], ["WGUSTD"], ["bc_a1_SRF"], ["dst_a1_SRF"], ["pom_a1_SRF"], ["dst_a3_SRF", "dst_a1_SRF"],
+              ["soa_a1_SRF"], ["soa_a2_SRF"], ["CLDLOW", "CLDMED", "CLDHGH"], ["OMEGA", "OMEGAT"]]
+
+monthly_18 = [["BURDENBC"], ["CCN3"], ["FLDS"], ["FLNSC"], ["FSNSC"], ["ICEFRAC"], ["QRS"], ["RELHUM"], ["SNOWHLND"], ["SOLIN"], ["SRFRAD"], ["UU"], ["V"], ["so4_a1_SRF"], ["so4_a2_SRF"],
+              ["BURDENSO4", "BURDENSOA"], ["FLUT", "FLNT"], ["U", "UQ"], ["VT", "VU", "VV"], ["FSNTC", "FSNTOAC"]]
+
+all_14 = np.concatenate((daily_14, monthly_14))
+all_18 = np.concatenate((daily_18, monthly_18))
+
 # train_vars, validate_vars = train_test_split(all_vars, test_size=0.2, random_state=3)
 # monthly_train_vars, monthly_validate_vars = train_test_split(monthly_vars, test_size=0.2, random_state=3)
 # train_vars, test_vars, = train_test_split(train_vars, test_size=0.25, random_state=3)  # 0.25 x 0.8 = 0.2
@@ -225,7 +310,7 @@ def parseArguments():
                         type=str, default=f"../../data/minidata_calcs/results.csv")
     parser.add_argument("-e", "--models", help="array of models to run",
                         nargs='+', required=True)
-    parser.add_argument("-t", "--train", help="argument to train (if 0, use train set or variables, if 1, randomize)",
+    parser.add_argument("-t", "--train", help="argument to train (if 0, use train set or variables, if 1, randomize, if 2, use randomized train/test variable groups)",
                         type=int, default=0)
     parser.add_argument("-r", "--reportdir", help="directory to place reports",
                         type=str, default=f'../../data/minidata_calcs/reports/')
@@ -318,416 +403,506 @@ if __name__ == "__main__":
     #                                                     test_size = 0.33, random_state = 42)
 
     # create train-test split by selecting variables
-    if argv_train == 0:
+    save_preds = []
+    save_accuracy = []
+    save_importance = []
+    for j in range (0, 2):
+        # randomly assign groups in all_14 to training and testing sets
+        np.random.shuffle(daily_14)
+        np.random.shuffle(monthly_14)
+        train_daily_14 = daily_14[:int(0.8 * int(len(daily_14)))]
+        test_daily_14 = daily_14[int(0.8 * int(len(daily_14))):]
+        test_monthly_14 = monthly_14[:int(0.8 * int(len(monthly_14)))]
+        train_monthly_14 = monthly_14[int(0.8 * int(len(monthly_14))):]
+
+        # flatten the list of lists
+        train_daily_14 = [item for sublist in train_daily_14 for item in sublist]
+        test_daily_14 = [item for sublist in test_daily_14 for item in sublist]
+        test_monthly_14 = [item for sublist in test_monthly_14 for item in sublist]
+        train_monthly_14 = [item for sublist in train_monthly_14 for item in sublist]
+
+        # repeat for all_18
+        np.random.shuffle(daily_18)
+        np.random.shuffle(monthly_18)
+        train_daily_18 = daily_18[:int(0.8 * int(len(all_18)))]
+        test_daily_18 = daily_18[int(0.8 * int(len(all_18))):]
+        test_monthly_18 = monthly_18[:int(0.8 * int(len(monthly_18)))]
+        train_monthly_18 = monthly_18[int(0.8 * int(len(monthly_18))):]
+
+        train_daily_18 = [item for sublist in train_daily_18 for item in sublist]
+        test_daily_18 = [item for sublist in test_daily_18 for item in sublist]
+        test_monthly_18 = [item for sublist in test_monthly_18 for item in sublist]
+        train_monthly_18 = [item for sublist in train_monthly_18 for item in sublist]
+
+        # combine the training and testing sets
+        training_daily = train_daily_14 + train_daily_18
+        testing_daily = test_daily_14 + test_daily_18
+        testing_monthly = test_monthly_14 + test_monthly_18
+        training_monthly = train_monthly_14 + train_monthly_18
+
+        if argv_train == 0:
+            if argv_dailyloc is not None:
+                X1_train = X1[subset_daily["variable"].isin(train_vars)]
+                X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
+                X1_test = X1[subset_daily["variable"].isin(test_vars)]
+
+            if argv_monthlyloc is not None:
+                X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
+                X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
+                X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
+
+            if argv_dailyloc is not None:
+                y1_train = y1[subset_daily["variable"].isin(train_vars)]
+                y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
+                y1_test = y1[subset_daily["variable"].isin(test_vars)]
+
+            if argv_monthlyloc is not None:
+                y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
+                y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
+                y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
+        elif argv_train == 1:
+            if argv_dailyloc is not None:
+                X1_train, X1_test, y1_train, y1_test = train_test_split(X1,y1,test_size = 0.2, random_state = 42)
+                X1_train, X1_validate, y1_train, y1_validate = train_test_split(X1_train, y1_train, test_size=0.25, random_state=42)
+            if argv_monthlyloc is not None:
+                X2_train, X2_test, y2_train, y2_test = train_test_split(X2,y2,test_size = 0.2, random_state = 42)
+                X2_train, X2_validate, y2_train, y2_validate = train_test_split(X2_train, y2_train, test_size=0.25, random_state=42)
+        elif argv_train == 2:
+            # create train-test split by selecting groups of variables from train_14, train_18, test_14, test_18
+            if argv_dailyloc is not None:
+                X1_train = X1[subset_daily["variable"].isin(training_daily)]
+                X1_test = X1[subset_daily["variable"].isin(testing_daily)]
+                X1_validate = []
+                y1_train = y1[subset_daily["variable"].isin(training_daily)]
+                y1_test = y1[subset_daily["variable"].isin(testing_daily)]
+                y1_validate = []
+                print(len(X1_train)+len(X1_test))
+            if argv_monthlyloc is not None:
+                X2_train = X2[subset_monthly["variable"].isin(training_monthly)]
+                X2_test = X2[subset_monthly["variable"].isin(testing_monthly)]
+                X2_validate = []
+                y2_train = y2[subset_monthly["variable"].isin(training_monthly)]
+                y2_test = y2[subset_monthly["variable"].isin(testing_monthly)]
+                y2_validate = []
+
         if argv_dailyloc is not None:
-            X1_train = X1[subset_daily["variable"].isin(train_vars)]
-            X1_validate = X1[subset_daily["variable"].isin(validate_vars)]
-            X1_test = X1[subset_daily["variable"].isin(test_vars)]
+            X_train = X1_train
+            X_validate = X1_validate
+            X_test = X1_test
 
+            y_train = y1_train
+            y_validate = y1_validate
+            y_test = y1_test
+            if argv_monthlyloc is not None:
+                X_train = X1_train.append(X2_train)
+                X_validate = X1_validate.append(X2_validate)
+                X_test = X1_test.append(X2_test)
+
+                y_train = np.concatenate((y1_train, y2_train))
+                y_validate = np.concatenate((y1_validate, y2_validate))
+                y_test = np.concatenate((y1_test, y2_test))
         if argv_monthlyloc is not None:
-            X2_train = X2[subset_monthly["variable"].isin(monthly_train_vars)]
-            X2_validate = X2[subset_monthly["variable"].isin(monthly_validate_vars)]
-            X2_test = X2[subset_monthly["variable"].isin(monthly_test_vars)]
+            X_train = X2_train
+            X_validate = X2_validate
+            X_test = X2_test
 
-        if argv_dailyloc is not None:
-            y1_train = y1[subset_daily["variable"].isin(train_vars)]
-            y1_validate = y1[subset_daily["variable"].isin(validate_vars)]
-            y1_test = y1[subset_daily["variable"].isin(test_vars)]
+            y_train = y2_train
+            y_validate = y2_validate
+            y_test = y2_test
 
-        if argv_monthlyloc is not None:
-            y2_train = y2[subset_monthly["variable"].isin(monthly_train_vars)]
-            y2_validate = y2[subset_monthly["variable"].isin(monthly_validate_vars)]
-            y2_test = y2[subset_monthly["variable"].isin(monthly_test_vars)]
-    elif argv_train == 1:
+        mappingto = list(set(y1_orig.T.values[0]))
+        mappingfrom = list(set(y1))
+        map = dict(zip(mappingfrom, mappingto))
 
-        if argv_dailyloc is not None:
-            X1_train, X1_test, y1_train, y1_test = train_test_split(X1,y1,test_size = 0.2, random_state = 42)
-            X1_train, X1_validate, y1_train, y1_validate = train_test_split(X1_train, y1_train, test_size=0.25, random_state=42)
-        if argv_monthlyloc is not None:
-            X2_train, X2_test, y2_train, y2_test = train_test_split(X2,y2,test_size = 0.2, random_state = 42)
-            X2_train, X2_validate, y2_train, y2_validate = train_test_split(X2_train, y2_train, test_size=0.25, random_state=42)
+        if "rf" in argv_models:
+            (rf_preds, rf_acc, rf_importance) = random_forest(X_train, X_test, y_train, y_test)
+            print("SECTION RANDOM FOREST -----------------")
+            print(rf_acc)
+            print(confusion_matrix(y_test, rf_preds))
+            print(rf_importance)
+            # add predictions to save_preds
+            if save_preds == []:
+                # flatten confusion matrix and add to save_preds
+                save_preds = confusion_matrix(y_test, rf_preds).flatten()
+                save_accuracy = rf_acc
+                save_importance = rf_importance
+            else:
+                # add predictions to save_preds along a new axis
+                save_preds = np.column_stack((save_preds, confusion_matrix(y_test, rf_preds).flatten()))
+                save_accuracy = np.column_stack((save_accuracy, rf_acc))
+                save_importance = np.column_stack((save_importance, rf_importance))
 
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for k in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif k==0:
+                            destination.write(line)
+            report = classification_report(y_test, rf_preds, output_dict=True)
+            rf_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                rf_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        rf_df.rename(columnf_df = rf_df.res={"": "level"}, inplace=True)
+            rf_df.to_csv(argv_reportdir + f'rf_report_{count}_{j}.csv', float_format="%.3f")
+            print("END SECTION RANDOM FOREST -----------------")
 
-    if argv_dailyloc is not None:
-        X_train = X1_train
-        X_validate = X1_validate
-        X_test = X1_test
+        if "ada" in argv_models:
+            (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
+            print("SECTION ADABOOST -----------------")
+            print(boost_acc)
+            print(confusion_matrix(y_test, boost_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, boost_preds, output_dict=True)
+            boost_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                boost_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        boost_df.rename(columns={"": "level"}, inplace=True)
+            boost_df.to_csv(argv_reportdir + f'boost_report_{count}.csv', float_format="%.3f")
+            print("END SECTION ADABOOST -----------------")
 
-        y_train = y1_train
-        y_validate = y1_validate
-        y_test = y1_test
-        if argv_monthlyloc is not None:
-            X_train = X1_train.append(X2_train)
-            X_validate = X1_validate.append(X2_validate)
-            X_test = X1_test.append(X2_test)
+        if "nn" in argv_models:
+            (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
+            print("SECTION NEURAL NETWORK -----------------")
+            print(nn_acc)
+            print(confusion_matrix(y_test, nn_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, nn_preds, output_dict=True)
+            nn_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                nn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        nn_df.rename(columns={"": "level"}, inplace=True)
+            nn_df.to_csv(argv_reportdir + f'nn_report_{count}.csv', float_format="%.3f")
+            print("END SECTION NEURAL NETWORK -----------------")
 
-            y_train = np.concatenate((y1_train, y2_train))
-            y_validate = np.concatenate((y1_validate, y2_validate))
-            y_test = np.concatenate((y1_test, y2_test))
-    if argv_monthlyloc is not None:
-        X_train = X2_train
-        X_validate = X2_validate
-        X_test = X2_test
+        if "knn" in argv_models:
+            print("SECTION KNN -----------------")
+            (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
+            print(knn_acc)
+            print(confusion_matrix(y_test, knn_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, knn_preds, output_dict=True)
+            knn_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                knn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        knn_df.rename(columns={"": "level"}, inplace=True)
+            knn_df.to_csv(argv_reportdir + f'knn_report_{count}.csv', float_format="%.3f")
+            print("END SECTION KNN -----------------")
 
-        y_train = y2_train
-        y_validate = y2_validate
-        y_test = y2_test
+        if "svm" in argv_models:
+            print("SECTION SVM -----------------")
+            (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
+            print(svm_acc)
+            print(confusion_matrix(y_test, svm_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, svm_preds, output_dict=True)
+            svm_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                svm_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        svm_df.rename(columns={"": "level"}, inplace=True)
+            svm_df.to_csv(argv_reportdir + f'svm_report_{count}.csv', float_format="%.3f")
 
-    mappingto = list(set(y1_orig.T.values[0]))
-    mappingfrom = list(set(y1))
-    map = dict(zip(mappingfrom, mappingto))
+            print("END SECTION SVM -----------------")
 
-    if "rf" in argv_models:
-        (rf_preds, rf_acc, rf_importance) = random_forest(X_train, X_test, y_train, y_test)
-        print("SECTION RANDOM FOREST -----------------")
-        print(rf_acc)
-        print(confusion_matrix(y_test, rf_preds))
-        print(rf_importance)
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, rf_preds, output_dict=True)
-        rf_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            rf_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        rf_df.rename(columnf_df = rf_df.res={"": "level"}, inplace=True)
-        rf_df.to_csv(argv_reportdir + f'rf_report_{count}.csv', float_format="%.3f")
-        print("END SECTION RANDOM FOREST -----------------")
+        if "lda" in argv_models:
+            print("SECTION LDA -----------------")
+            (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+            print(lda_acc)
+            print(confusion_matrix(y_test, lda_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, lda_preds, output_dict=True)
+            lda_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                lda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        lda_df.rename(columns={"": "level"}, inplace=True)
+            lda_df.to_csv(argv_reportdir + f'lda_report_{count}.csv', float_format="%.3f")
+            print("END SECTION LDA -----------------")
 
-    if "ada" in argv_models:
-        (boost_preds, boost_acc) = adaboost(X_train, X_test, y_train, y_test)
-        print("SECTION ADABOOST -----------------")
-        print(boost_acc)
-        print(confusion_matrix(y_test, boost_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, boost_preds, output_dict=True)
-        boost_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            boost_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        boost_df.rename(columns={"": "level"}, inplace=True)
-        boost_df.to_csv(argv_reportdir + f'boost_report_{count}.csv', float_format="%.3f")
-        print("END SECTION ADABOOST -----------------")
+        if "qda" in argv_models:
+            print("SECTION QDA -----------------")
+            (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
+            print(qda_acc)
+            print(confusion_matrix(y_test, qda_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, qda_preds, output_dict=True)
+            qda_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                qda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+     #       qda_df.rename(columns={"": "level"}, inplace=True)
+            qda_df.to_csv(argv_reportdir + f'qda_report_{count}.csv', float_format="%.3f")
 
-    if "nn" in argv_models:
-        (nn_preds, nn_acc) = neural_net(X_train, X_test, y_train, y_test)
-        print("SECTION NEURAL NETWORK -----------------")
-        print(nn_acc)
-        print(confusion_matrix(y_test, nn_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, nn_preds, output_dict=True)
-        nn_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            nn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        nn_df.rename(columns={"": "level"}, inplace=True)
-        nn_df.to_csv(argv_reportdir + f'nn_report_{count}.csv', float_format="%.3f")
-        print("END SECTION NEURAL NETWORK -----------------")
+            print("END SECTION QDA -----------------")
 
-    if "knn" in argv_models:
-        print("SECTION KNN -----------------")
-        (knn_preds, knn_acc, knn_params) = kNN(X_train, X_test, y_train, y_test)
-        print(knn_acc)
-        print(confusion_matrix(y_test, knn_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, knn_preds, output_dict=True)
-        knn_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            knn_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        knn_df.rename(columns={"": "level"}, inplace=True)
-        knn_df.to_csv(argv_reportdir + f'knn_report_{count}.csv', float_format="%.3f")
-        print("END SECTION KNN -----------------")
+        if "agg" in argv_models:
+            print("SECTION AGGREGATE -----------------")
+            (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
+            print(combine_acc)
+            print(confusion_matrix(y_test, combine_preds))
+            renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
+            for i in range(len(renamed_mat)):
+                renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
+                renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
+            with open("../data_gathering/confusion_template.tex", "r") as template:
+                lines = template.readlines()
+            with open(argv_reportdir + "rf_template.tex", "w") as destination:
+                for line in lines:
+                    for i in range(len(renamed_mat)):
+                        nclasses = len(renamed_mat)
+                        q = re.search(r"\\def\\numClasses\{9\}", line)
+                        if q:
+                            line = re.sub(r"9", str(nclasses), line)
+                        classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
+                        s = re.search(classtring, line)
+                        if s:
+                            # CHECK THIS
+                            thing = {"','".join(str(x) for x in mappingto)}
+                            line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
+                            line = re.sub('\[', '{', line)
+                            line = re.sub('\]', '}', line)
+                            line = re.sub("'", '"', line)
+                        string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
+                        p = re.search(string, line)
+                        if p:
+                            res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
+                            res = re.sub('\[', '{', res)
+                            res = re.sub('\]', '}', res)
+                            destination.write(res)
+                        elif i==0:
+                            destination.write(line)
+            report = classification_report(y_test, combine_preds, output_dict=True)
+            combine_df = pd.DataFrame(report).transpose()
+            for i in range(len(map)):
+                combine_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
+    #        combine_df.rename(columns={"": "level"}, inplace=True)
+            combine_df.to_csv(argv_reportdir + f'combine_report_{count}.csv', float_format="%.3f")
+            print("END SECTION AGGREGATE -----------------")
+    # average the results in save_preds, save_accs, save_importance
+    mean_preds = np.mean(save_preds, axis=1)
+    # format mean_preds into a 2x2 matrix
+    mean_preds = np.reshape(mean_preds, (2, 2))
+    mean_accs = np.mean(save_accuracy, axis=1)
+    mean_importance = np.mean(save_importance, axis=1)
+    # repeat to get the std
+    std_preds = np.std(save_preds, axis=1)
+    std_preds = np.reshape(std_preds, (2, 2))
+    std_accs = np.std(save_accuracy, axis=1)
+    std_importance = np.std(save_importance, axis=1)
+    # save the results
+    np.save(argv_reportdir + "mean_preds.npy", mean_preds)
+    np.save(argv_reportdir + "mean_accs.npy", mean_accs)
+    np.save(argv_reportdir + "mean_importance.npy", mean_importance)
+    np.save(argv_reportdir + "std_preds.npy", std_preds)
+    np.save(argv_reportdir + "std_accs.npy", std_accs)
+    np.save(argv_reportdir + "std_importance.npy", std_importance)
+    # print the results
+    print("Mean accuracy: ", mean_accs)
+    print("Mean importance: ", mean_importance)
+    print("Mean confusion matrix: ", mean_preds)
+    print("Std accuracy: ", std_accs)
+    print("Std importance: ", std_importance)
+    print("Std confusion matrix: ", std_preds)
 
-    if "svm" in argv_models:
-        print("SECTION SVM -----------------")
-        (svm_preds, svm_acc) = SVM(X_train, X_test, y_train, y_test)
-        print(svm_acc)
-        print(confusion_matrix(y_test, svm_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, svm_preds, output_dict=True)
-        svm_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            svm_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        svm_df.rename(columns={"": "level"}, inplace=True)
-        svm_df.to_csv(argv_reportdir + f'svm_report_{count}.csv', float_format="%.3f")
-
-        print("END SECTION SVM -----------------")
-
-    if "lda" in argv_models:
-        print("SECTION LDA -----------------")
-        (lda_preds, lda_acc) = LinearDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-        print(lda_acc)
-        print(confusion_matrix(y_test, lda_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, lda_preds, output_dict=True)
-        lda_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            lda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        lda_df.rename(columns={"": "level"}, inplace=True)
-        lda_df.to_csv(argv_reportdir + f'lda_report_{count}.csv', float_format="%.3f")
-        print("END SECTION LDA -----------------")
-
-    if "qda" in argv_models:
-        print("SECTION QDA -----------------")
-        (qda_preds, qda_acc) = QuadraticDiscriminantAnalysis(X_train, X_test, y_train, y_test)
-        print(qda_acc)
-        print(confusion_matrix(y_test, qda_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, qda_preds, output_dict=True)
-        qda_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            qda_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
- #       qda_df.rename(columns={"": "level"}, inplace=True)
-        qda_df.to_csv(argv_reportdir + f'qda_report_{count}.csv', float_format="%.3f")
-
-        print("END SECTION QDA -----------------")
-
-    if "agg" in argv_models:
-        print("SECTION AGGREGATE -----------------")
-        (combine_preds, combine_acc) = PredMostFrequent(X_train, X_test, y_train, y_test)
-        print(combine_acc)
-        print(confusion_matrix(y_test, combine_preds))
-        renamed_mat = pd.DataFrame(confusion_matrix(y_test, rf_preds))
-        for i in range(len(renamed_mat)):
-            renamed_mat.rename(index={i: f"{map[i]}"}, inplace=True)
-            renamed_mat.rename(columns={i: f"{map[i]}"}, inplace=True)
-        with open("../data_gathering/confusion_template.tex", "r") as template:
-            lines = template.readlines()
-        with open(argv_reportdir + "rf_template.tex", "w") as destination:
-            for line in lines:
-                for i in range(len(renamed_mat)):
-                    nclasses = len(renamed_mat)
-                    q = re.search(r"\\def\\numClasses\{9\}", line)
-                    if q:
-                        line = re.sub(r"9", str(nclasses), line)
-                    classtring = r'\\def\\classNames\{\{"0","1","2","3","4","5","6","7","8"\}\}'
-                    s = re.search(classtring, line)
-                    if s:
-                        # CHECK THIS
-                        thing = {"','".join(str(x) for x in mappingto)}
-                        line = re.sub('\{"0","1","2","3","4","5","6","7","8"\}', f'{thing}', line)
-                        line = re.sub('\[', '{', line)
-                        line = re.sub('\]', '}', line)
-                        line = re.sub("'", '"', line)
-                    string = f'%{{0,0,0,0,0,0,0,0,0,{i+1}}}'
-                    p = re.search(string, line)
-                    if p:
-                        res = re.sub(string, f'{list(renamed_mat.iloc[i])}', line)
-                        res = re.sub('\[', '{', res)
-                        res = re.sub('\]', '}', res)
-                        destination.write(res)
-                    elif i==0:
-                        destination.write(line)
-        report = classification_report(y_test, combine_preds, output_dict=True)
-        combine_df = pd.DataFrame(report).transpose()
-        for i in range(len(map)):
-            combine_df.rename(index={f"{i}": f"{map[i]}"}, inplace=True)
-#        combine_df.rename(columns={"": "level"}, inplace=True)
-        combine_df.to_csv(argv_reportdir + f'combine_report_{count}.csv', float_format="%.3f")
-        print("END SECTION AGGREGATE -----------------")
