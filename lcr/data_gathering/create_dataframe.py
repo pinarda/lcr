@@ -11,14 +11,16 @@ import re
 import argparse
 import numpy as np
 
+freq = "monthly"
+
 def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--labelloc", help="location of labels",
-                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_labels.csv")
+                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_labels.csv")
     parser.add_argument("-c", "--calcloc", help="location of features",
-                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_calcs.csv")
+                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_calcs.csv")
     parser.add_argument("-o", "--output", help="location of output csv file",
-                        type=str, default=f"../../data/AllCAMmonthly2_calcs/AllCAMmonthly2_monthly_df.csv")
+                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_df.csv")
     args = parser.parse_args()
 
     return args
@@ -48,6 +50,11 @@ if __name__ == "__main__":
     #daily_calc_df.drop(index=0, inplace=True)
     daily_calc_df['variable'] = varnames
 
+    # quick standardization
+    daily_calc_df['mean'] = (daily_calc_df['mean'] - daily_calc_df['mean'].mean())/daily_calc_df['mean'].std()
+    daily_calc_df['quantile'] = (daily_calc_df['quantile'] - daily_calc_df['quantile'].mean())/daily_calc_df['quantile'].std()
+
+
     daily_df = pd.merge(daily_calc_df, daily_label_df, on=['variable', 'time'])
 
     # monthly_df = pd.DataFrame()
@@ -62,6 +69,7 @@ if __name__ == "__main__":
     # m_fileloc = f"../data/monthly_compress_df.csv"
     dfile_exists = exists(d_fileloc)
     # mfile_exists = exists(m_fileloc)
+
     if dfile_exists:
         daily_df.to_csv(d_fileloc, mode="a", header=False, index=False)
     else:

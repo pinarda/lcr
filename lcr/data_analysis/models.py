@@ -182,14 +182,13 @@ all_18 = np.concatenate((daily_18, monthly_18))
 
 def random_forest(X_train, X_test, y_train, y_test):
     params = {
-        "max_depth": [2, 5],
+        "max_depth": [5, 10],
         "random_state": [0]
     }
     # clf = GridSearchCV(estimator=RandomForestClassifier(), param_grid=params, scoring="accuracy", cv=10)
     # clf.fit(X_train, y_train)
 
-    rf = RandomForestClassifier(n_estimators=100,
-                                random_state=0, max_depth=5)
+    rf = RandomForestClassifier(n_estimators=100, random_state=0, max_depth=10)
     rf.fit(X_train, y_train)
 
     # fn = data.feature_names
@@ -367,7 +366,7 @@ if __name__ == "__main__":
         with open(argv_featureloc, 'rb') as inp:
              features = pickle.load(inp)
     else:
-        features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax"]
+        features = ["mean","variance","ns_con_var","w_e_first_differences","w_e_first_differences_max","n_s_first_difference", "n_s_first_differences_max","quantile","fftmax","fftratio","vfftmax","vfftratio","magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns", "entropy"]
     if argv_dailyloc is not None:
         # X1 = subset_daily[lcr_global_vars.features]
         X1 = subset_daily[features]
@@ -406,7 +405,7 @@ if __name__ == "__main__":
     save_preds = []
     save_accuracy = []
     save_importance = []
-    for j in range (0, 2):
+    for j in range (0, 50):
         # randomly assign groups in all_14 to training and testing sets
         np.random.shuffle(daily_14)
         np.random.shuffle(monthly_14)
