@@ -366,7 +366,7 @@ if __name__ == "__main__":
         with open(argv_featureloc, 'rb') as inp:
              features = pickle.load(inp)
     else:
-        features = ["mean","variance","ns_con_var","w_e_first_differences","w_e_first_differences_max","n_s_first_difference", "n_s_first_differences_max","quantile","fftmax","fftratio","vfftmax","vfftratio","magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns", "entropy"]
+        features = ["mean","variance","ns_con_var","w_e_first_differences","w_e_first_differences_max","n_s_first_differences", "n_s_first_differences_max","quantile","fftmax","fftratio","vfftmax","vfftratio","magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns", "entropy"]
     if argv_dailyloc is not None:
         # X1 = subset_daily[lcr_global_vars.features]
         X1 = subset_daily[features]
