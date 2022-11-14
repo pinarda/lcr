@@ -45,4 +45,4 @@ algs = ["zfp", "bg", "sz", "sz1413", "z_hdf5", "sz3"]
 
 # list of single-value features being used by the models
 #features = ["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile"]
-features = [["mean", "variance", "ns_con_var", "w_e_first_differences", "prob_positive", "num_zero", "range", "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio", "ew_con_var", "n_s_first_differences", "w_e_derivative", "std", "standardized_mean", "prob_negative", "odds_positive", "mean_abs", "mean_squared", "rms", "quantile", "max_abs", "min_abs", "min_abs_nonzero", "min_val", "max_val", "lat_autocorr", "lon_autocorr", "entropy", "percent_unique", "most_repeated_percent", "magnitude_range"]]
+features = [["mean", "variance", "ns_con_var", "ew_con_var", "w_e_first_differences","w_e_first_differences_max","n_s_first_differences", "n_s_first_differences_max", "quantile", "fftmax", "fftratio", "vfftmax",  "vfftratio", "magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns", "entropy", "real_information_cutoff"]]
