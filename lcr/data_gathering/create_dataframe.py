@@ -11,7 +11,7 @@ import re
 import argparse
 import numpy as np
 
-freq = "monthly"
+freq = "daily"
 
 def parseArguments():
     parser = argparse.ArgumentParser()
