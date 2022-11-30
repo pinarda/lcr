@@ -291,7 +291,7 @@ def simple_orig_calcs(
     agg_dims = ['lat', 'lon']
 
     clcs = ldcpy.Datasetcalcs(
-        ds[varname].sel(collection=set1).isel(time=time),
+        ds[varname].sel(collection=set1).isel(time=time).expand_dims("time"),
         data_type,
         agg_dims,
         weighted=False
