@@ -25,15 +25,15 @@
 conda activate my-npl-ml
 
 # directory and filename prefix
-set prefix = bigDCQDay
+set prefix = bigICEFRACDay
 # "new" or "rerun" or "compress"
-set runtype = "calcs"
+set runtype = "new"
 # "fixed" or "random"
 set testset = "random"
 set alg = "zfp"
 
 #set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 UBOT V200 V500 V850 VBOT WSPDSRFAV Z050 Z500)
-set arrDay= (DCQ)
+set arrDay= (ICEFRAC)
 set arrMonth = ()
 
 #git pull
