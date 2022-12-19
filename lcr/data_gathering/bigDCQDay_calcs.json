@@ -1,0 +1,8 @@
+{
+    "VarList":  ["DCQ"],
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
+    "FilenamePost": ".20060101-20801231.nc",
+    "OrigPath": "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily/",
+    "OrigCalcs": ["mean", "variance", "ns_con_var", "ew_con_var", "w_e_first_differences","w_e_first_differences_max","n_s_first_differences", "n_s_first_differences_max", "quantile", "fftmax", "fftratio", "vfftmax",  "vfftratio", "magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns", "entropy", "real_information_cutoff"],
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy"
+}
