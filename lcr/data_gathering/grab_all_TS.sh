@@ -5,9 +5,9 @@ import os
 # Full dataset
 #indir = "/glade/p/cisl/asap/abaker/pepsi/ens_31/orig/daily"
 # 2006-2010 subset daily
-#indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
+indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/"
 # 2006-2010 subset monthly
-indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/"
+#indir = "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/monthly_orig/"
 
 outdir = "/glade/scratch/apinard/ICEFRAC/zfp"
 
@@ -48,7 +48,7 @@ for filename in os.listdir(indir):
 # daily
 #    if filename.endswith(".20060101-20071231.nc"):
 #monthly
-    if filename.endswith(".ICEFRAC.200601-203512.nc"):
+    if filename.endswith(".ICEFRAC.20060101-20801231.nc"):
         for i in range(10,27,2):
             zfpdir = "zfp_p_" + str(i)
             infile = indir + "/" + filename
