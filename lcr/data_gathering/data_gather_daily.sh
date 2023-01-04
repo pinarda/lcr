@@ -26,16 +26,16 @@ conda activate my-npl-ml
 source  /glade/work/haiyingx/netcdf-c-4.8.1/use_nccopy.sh
 
 # directory and filename prefix
-set prefix = AllCAMdaily3
+set prefix = AllCAMdaily2
 # "new" or "rerun" or "compress"
 set runtype = "new"
 # "fixed" or "random"
-set testset = "random"
-set alg = "sz3"
+set testset = "calcs"
+set alg = "zfp"
 
-#set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 UBOT V200 V500 V850 VBOT WSPDSRFAV Z050 Z500)
+set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 UBOT V200 V500 V850 VBOT WSPDSRFAV Z050 Z500)
 #set arrDay= (ICEFRAC)
-set arrDay = (FLUT LHFLX PRECT TAUX TS Z500)
+#set arrDay = (FLUT LHFLX PRECT TAUX TS Z500)
 
 #git pull
 
