@@ -57,8 +57,8 @@ if ($runtype == "new" || $runtype == "compress") then
   #rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  #set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
-  set arrComp = (sz3_ROn0.1 sz3_ROn0.05 sz3_ROn0.01 sz3_ROn0.005 sz3_ROn0.001 sz3_ROn0.0005 sz3_ROn0.0001 sz3_ROn5e-05 sz3_ROn1e-05 sz3_ROn5e-06 sz3_ROn1e-06)
+  set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
+  #set arrComp = (sz3_ROn0.1 sz3_ROn0.05 sz3_ROn0.01 sz3_ROn0.005 sz3_ROn0.001 sz3_ROn0.0005 sz3_ROn0.0001 sz3_ROn5e-05 sz3_ROn1e-05 sz3_ROn5e-06 sz3_ROn1e-06)
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
   foreach x ($arrDay)
