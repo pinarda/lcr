@@ -26,12 +26,12 @@ conda activate my-npl-ml
 source  /glade/work/haiyingx/netcdf-c-4.8.1/use_nccopy.sh
 
 # directory and filename prefix
-set prefix = AllCAMmonthly4
+set prefix = AllCAMmonthly2
 # "new" or "rerun" or "compress"
 set runtype = "calcs"
 # "fixed" or "random"
 set testset = "random"
-set alg = "bg"
+set alg = "zfp"
 
 #set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 UBOT V200 V500 V850 VBOT WSPDSRFAV Z050 Z500)
 set arrDay= ()
@@ -54,9 +54,9 @@ if ($runtype == "new" || $runtype == "compress") then
   #rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  #set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
+  set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
   #set arrComp = (sz3_ROn0.1 sz3_ROn0.05 sz3_ROn0.01 sz3_ROn0.005 sz3_ROn0.001 sz3_ROn0.0005 sz3_ROn0.0001 sz3_ROn5e-05 sz3_ROn1e-05 sz3_ROn5e-06 sz3_ROn1e-06)
-  set arrComp = (br_2 br_4 br_6 br_8 br_10 br_12 br_14 br_16 br_18 br_20 br_22)
+  #set arrComp = (br_2 br_4 br_6 br_8 br_10 br_12 br_14 br_16 br_18 br_20 br_22)
 
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
