@@ -51,12 +51,12 @@ if __name__ == "__main__":
     daily_calc_df['variable'] = varnames
 
     # quick standardization
-    for feature in ["mean", "variance", "ns_con_var", "ew_con_var", "w_e_first_differences",
-                    "w_e_first_differences_max", "n_s_first_differences", "n_s_first_differences_max",
-                    "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio",
-                    "magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns",
-                    "entropy", "real_information_cutoff"]:
-        daily_calc_df[feature] = (daily_calc_df[feature] - daily_calc_df[feature].mean()) / daily_calc_df[feature].std()
+    # for feature in ["mean", "variance", "ns_con_var", "ew_con_var", "w_e_first_differences",
+    #                 "w_e_first_differences_max", "n_s_first_differences", "n_s_first_differences_max",
+    #                 "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio",
+    #                 "magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns",
+    #                 "entropy", "real_information_cutoff"]:
+    #     daily_calc_df[feature] = (daily_calc_df[feature] - daily_calc_df[feature].mean()) / daily_calc_df[feature].std()
 
 
     daily_df = pd.merge(daily_calc_df, daily_label_df, on=['variable', 'time'])
