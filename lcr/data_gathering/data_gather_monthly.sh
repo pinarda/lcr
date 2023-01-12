@@ -28,7 +28,7 @@ source  /glade/work/haiyingx/netcdf-c-4.8.1/use_nccopy.sh
 # directory and filename prefix
 set prefix = AllCAMmonthly4
 # "new" or "rerun" or "compress"
-set runtype = "new"
+set runtype = "rerun"
 # "fixed" or "random"
 set testset = "random"
 set alg = "bg"
