@@ -8,7 +8,6 @@
 from sklearn.model_selection import train_test_split
 import xarray as xr
 import numpy as np
-import ldcpy
 import os
 import gc
 import sys
@@ -203,6 +202,10 @@ def main():
     ### This version of the main function builds a separate CNN for each variable, useful for training to predict a single variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     loc, save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_test.json")
+    if ldcpypath:
+        sys.path.insert(0, ldcpypath)
+    import ldcpy
+
     # create a list of compressed paths by prepending cpath to each directory in cdirs
     cpaths = [cpath + cdir for cdir in cdirs]
     # add opath to the beginning of cpaths
