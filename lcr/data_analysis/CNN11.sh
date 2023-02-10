@@ -2,7 +2,7 @@
 #PBS -A NTDD0005
 #PBS -N testb
 #PBS -q regular
-#PBS -l walltime=2:00:00
+#PBS -l walltime=12:00:00
 #PBS -j oe
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
