@@ -1,5 +1,4 @@
 {
-    "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.TS.100days.nc",
     "SaveDir": "/glade/scratch/apinard/CNN11/",
     "VarList":  ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",

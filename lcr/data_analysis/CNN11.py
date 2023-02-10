@@ -149,7 +149,6 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
 
 
 def read_jsonlist(metajson):
-    loc = ""
     comp = ""
     lev = []
     save = ""
@@ -171,8 +170,6 @@ def read_jsonlist(metajson):
     else:
         fd = open(metajson)
         metainfo = json.load(fd)
-        if 'Location' in metainfo:
-            loc = metainfo['Location']
         if 'SaveDir' in metainfo:
             save = metainfo['SaveDir']
         if "VarList" in metainfo:
@@ -194,14 +191,14 @@ def read_jsonlist(metajson):
         if "StorageLoc" in metainfo:
             storage = metainfo['StorageLoc']
 
-    return loc, save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storage
+    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storage
 
 
 # the main function runs open_dataset, cut_dataset, and compute_ssim_matd
 def main():
     ### This version of the main function builds a separate CNN for each variable, useful for training to predict a single variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    loc, save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_test.json")
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_test.json")
     if ldcpypath:
         sys.path.insert(0, ldcpypath)
     import ldcpy
@@ -262,7 +259,7 @@ def main():
 def main1():
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    loc, save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_local.json")
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_local.json")
     if ldcpypath:
         sys.path.insert(0, ldcpypath)
     import ldcpy
