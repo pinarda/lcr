@@ -11,6 +11,7 @@ import numpy as np
 import os
 import gc
 import sys
+import argparse
 import json
 import typing
 import matplotlib.pyplot as plt
@@ -193,12 +194,22 @@ def read_jsonlist(metajson):
 
     return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storage
 
+def parseArguments():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="./CNN11_test.json")
+    args = parser.parse_args()
+
+    return args
 
 # the main function runs open_dataset, cut_dataset, and compute_ssim_matd
 def main():
+    args = parseArguments()
+
+    json = args.json
     ### This version of the main function builds a separate CNN for each variable, useful for training to predict a single variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_test.json")
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist(json)
     if ldcpypath:
         sys.path.insert(0, ldcpypath)
     import ldcpy
@@ -257,9 +268,12 @@ def main():
     print(error)
 
 def main1():
+    args = parseArguments()
+
+    json = args.json
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_test.json")
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist(json)
     if ldcpypath:
         sys.path.insert(0, ldcpypath)
     import ldcpy
