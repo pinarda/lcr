@@ -263,6 +263,9 @@ def main1():
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     loc, save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc = read_jsonlist("CNN11_local.json")
+    if ldcpypath:
+        sys.path.insert(0, ldcpypath)
+    import ldcpy
     # create a list of compressed paths by prepending cpath to each directory in cdirs
     cpaths = [cpath + cdir for cdir in cdirs]
     # add opath to the beginning of cpaths
