@@ -8,6 +8,8 @@
 #PBS -l select=1:ncpus=1
 
 echo $PLP
+echo $1
+
 
 module load conda
 conda activate my-npl-ml
