@@ -7,7 +7,7 @@
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
 
-echo PLP
+echo $PLP
 
 module load conda
 conda activate my-npl-ml
@@ -17,4 +17,4 @@ mkdir -p $TMPDIR
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 
-python CNN11.py -j PLP
+python CNN11.py -j $PLP
