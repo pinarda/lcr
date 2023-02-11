@@ -1,5 +1,6 @@
 #!/bin/tcsh
 #PBS -A NTDD0005
+#PBS -F CNN11_test.json
 #PBS -N testb
 #PBS -q regular
 #PBS -l walltime=12:00:00
