@@ -9,7 +9,6 @@
 
 echo $PLP
 
-
 module load conda
 conda activate my-npl-ml
 
