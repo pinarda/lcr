@@ -7,7 +7,6 @@
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
 
-echo $PLP
 echo $1
 
 
