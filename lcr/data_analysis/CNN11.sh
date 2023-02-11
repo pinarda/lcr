@@ -1,6 +1,5 @@
 #!/bin/tcsh
 #PBS -A NTDD0005
-#PBS -F CNN11_test.json
 #PBS -N testb
 #PBS -q regular
 #PBS -l walltime=12:00:00
@@ -8,7 +7,7 @@
 #PBS -M apinard@ucar.edu
 #PBS -l select=1:ncpus=1
 
-echo $argv[1]
+echo PLP
 
 module load conda
 conda activate my-npl-ml
@@ -18,4 +17,4 @@ mkdir -p $TMPDIR
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 
-python CNN11.py -j $argv[1]
+python CNN11.py -j PLP
