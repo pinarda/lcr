@@ -160,7 +160,8 @@ def read_jsonlist(metajson):
     cpath = ""
     cdirs = []
     ldcpypath = ""
-    time=0
+    time = 0
+    storageloc = ""
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
@@ -192,6 +193,17 @@ def read_jsonlist(metajson):
             time = metainfo['Time']
         if "StorageLoc" in metainfo:
             storage = metainfo['StorageLoc']
+
+    print("Save directory: ", save)
+    print("Variable list: ", vlist)
+    print("Filename prefix: ", pre)
+    print("Filename postfix: ", post)
+    print("Original data path: ", opath)
+    print("Compressed data path: ", cpath)
+    print("Compressed data directories: ", cdirs)
+    print("Optimized Ldcpy path: ", ldcpypath)
+    print("Time: ", time)
+    print("Storage location: ", storage)
 
     return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storage
 
