@@ -160,6 +160,7 @@ def read_jsonlist(metajson):
     cpath = ""
     cdirs = []
     ldcpypath = ""
+    time=0
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
