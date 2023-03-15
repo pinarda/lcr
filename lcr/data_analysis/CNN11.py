@@ -431,7 +431,7 @@ def performance_plots(x, errors, dssims, preds, legend):
         # then, plot each list as a boxplot
 
         # make sure the y-axis is on a log scale
-        p = plt.boxplot(np.log10(np.array(error), where=(np.array(error)>0)), positions=test_slices, patch_artist=True)
+        p = plt.boxplot(np.log10(np.array(error)), positions=test_slices, patch_artist=True)
         for box in p['boxes']:
             box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
 
@@ -470,7 +470,7 @@ def performance_plots(x, errors, dssims, preds, legend):
         ibin = bin(num_colors)[2:].zfill(3)
         ibin = bin(i)[2:].zfill(3)
         #plt.semilogy(x, pred, linestyle='dashed', color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
-        p = plt.boxplot(np.log10(np.array(pred), where=(np.array(pred)>0)), positions=test_slices, patch_artist=True)
+        p = plt.boxplot(np.log10(np.array(pred)), positions=test_slices, patch_artist=True)
         for box in p['boxes']:
             box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
