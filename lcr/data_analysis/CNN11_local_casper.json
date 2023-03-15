@@ -5,7 +5,7 @@
     "FilenamePre":"",
     "FilenamePost": ".100days.nc",
     "OrigPath": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig/",
-    "CompPath":"/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/cam-fv/",
+    "CompPath":"/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/",
     "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [2, 3, 4],
