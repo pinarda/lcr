@@ -27,6 +27,8 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras import models
 #mpl.use('TKAgg')
 
+os.environ["HDF5_PLUGIN_PATH"]
+
 def actualsize(input_obj):
     memory_size = 0
     ids = set()
