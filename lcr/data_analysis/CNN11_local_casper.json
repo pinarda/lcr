@@ -8,7 +8,7 @@
     "CompPath":"/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/",
     "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "Times": [2, 3, 4],
-    "Navg": 2,
+    "Times": [2, 6, 11, 51, 100],
+    "Navg": 3,
     "StorageLoc": "./"
 }
