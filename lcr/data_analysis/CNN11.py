@@ -408,7 +408,7 @@ def main1(timeoverride=None):
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, "10pct", )
+    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, "1var", )
     print(errors)
     return errors, av_preds, av_dssims, predictions
 
