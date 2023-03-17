@@ -415,7 +415,7 @@ def main1(timeoverride=None):
     return errors, av_preds, av_dssims, predictions
 
 
-def performance_plots(x, errors, dssims, preds, legend):
+def performance_plots(x, errors, dssims, preds, legend, j):
     # create a plot of the errors, errors1, and errors3 vs. time
     num_colors = len(dssims)
     i=0
@@ -456,7 +456,7 @@ def performance_plots(x, errors, dssims, preds, legend):
         leg.legendHandles[i].set_color((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
 
-    plt.savefig("error_all_vs_time.png")
+    plt.savefig(f"error_all_vs_time_{j}.png")
     plt.clf()
     # create a plot of the average dssim vs. time, and overlay the average prediction
 
@@ -485,7 +485,7 @@ def performance_plots(x, errors, dssims, preds, legend):
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM/Prediction")
     plt.title("Average DSSIM/Prediction vs. Time Steps Used")
-    plt.savefig("dssim_all_vs_time.png")
+    plt.savefig(f"dssim_all_vs_time_{j}.png")
     plt.clf()
 
     # crreate a plot of the difference between the average dssim and the average prediction vs. time
@@ -512,7 +512,7 @@ def performance_plots(x, errors, dssims, preds, legend):
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM - Average Prediction")
     plt.title("Average DSSIM - Average Prediction vs. Time Steps Used")
-    plt.savefig("dssim-pred_all_vs_time.png")
+    plt.savefig(f"dssim-pred_all_vs_time_{j}.png")
     plt.clf()
 
 def p(times):
@@ -582,7 +582,7 @@ if __name__ == "__main__":
     performance_plots(test_slices, [errors_all, errors1_all, errors3_all],
                       [av_dssims_all, av_dssims1_all, av_dssims3_all],
                       [av_preds_all, av_preds1_all, av_preds3_all],
-                      cdirs)
+                      cdirs, j.split(".")[0])
 
     # Remaining to-do: test if the new test sets work properly
     # average results over multiple fits and create boxplots
