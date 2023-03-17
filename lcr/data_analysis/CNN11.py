@@ -270,6 +270,7 @@ def parseArguments():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json configuration file", type=str, default="./CNN11_local.json")
+    parser.add_argument("-t", "--testset", help="test set type", type=str, default="1var")
     args = parser.parse_args()
 
     return args
@@ -343,6 +344,7 @@ def main1(timeoverride=None):
     args = parseArguments()
 
     json = args.json
+    testset = args.testset
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, navg = read_jsonlist(json)
@@ -410,7 +412,7 @@ def main1(timeoverride=None):
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, "1var", )
+    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, )
     print(errors)
     return errors, av_preds, av_dssims, predictions
 
