@@ -42,7 +42,7 @@ for i in range(len(newvars)):
 # all we have to do here is replace the string "TEMPLATE" in CNN11_template.sh
 # with the corresponding element in newnames
 for i in range(len(newnames)):
-    with open(f'CNN11_template.sh', 'r') as f:
+    with open('CNN11_template.sh', 'r') as f:
         batch = f.read()
     batch = re.sub('TEMPLATE', newnames[i], batch)
     with open('CNN11_' + newnames[i] + '.sh', 'w') as f:
