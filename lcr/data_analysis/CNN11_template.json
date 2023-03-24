@@ -1,6 +1,6 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.TS.100days.nc",
-    "SaveDir": "/glade/scratch/apinard/CNN11/",
+    "SaveDir": "/glade/u/home/apinard/lcr/plots/CNN11/",
     "VarList":  ["bc_a1_SRF", "FLNS", "FLUT", "ICEFRAC", "PSL", "TS"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h0.",
     "FilenamePost": ".200601-203512.nc",
