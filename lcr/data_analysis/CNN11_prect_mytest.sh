@@ -19,4 +19,4 @@ conda activate my-npl-ml
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis
 
-python CNN11.py --json CNN11_prect_mytest.json --testset "1var"
+python CNN11.py --json CNN11_prect_mytest.json --testset "10pct"

@@ -25,7 +25,8 @@ Times = config['Times']
 newnames = ["prect_mytest"]
 newvars = [["PRECT"]]
 newcomps = [["zfp_p_10", "zfp_p_16", "zfp_p_22"]]
-newtimes = [["2", "6"]]
+newtimes = [[2, 6]]
+newtestset = "10pct"
 
 # we need to write a new json file for each model configuration
 # so we need to loop over variables, component directories, and times simultaneously
@@ -45,9 +46,10 @@ for i in range(len(newnames)):
     with open('CNN11_template.sh', 'r') as f:
         batch = f.read()
     batch = re.sub('TEMPLATE', newnames[i], batch)
+    batch = re.sub('TESTSET', f"\"{newtestset}\"", batch)
     with open('CNN11_' + newnames[i] + '.sh', 'w') as f:
         f.write(batch)
 
 # now we need to submit the batch file to the queue using qsub
 for i in range(len(newnames)):
-    os.system(f'qsub CNN11_{newnames[i]}.sh')
+    os.system(f'qsub -v PLP="CNN11_{newnames[i]}.json" CNN11_{newnames[i]}.sh')
