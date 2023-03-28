@@ -417,7 +417,7 @@ def main1(timeoverride=None):
     return errors, av_preds, av_dssims, predictions
 
 
-def performance_plots(x, errors, dssims, preds, legend, j):
+def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
     # create a plot of the errors, errors1, and errors3 vs. time
     num_colors = len(dssims)
     i=0
@@ -458,7 +458,7 @@ def performance_plots(x, errors, dssims, preds, legend, j):
         leg.legendHandles[i].set_color((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
 
-    plt.savefig(f"error_all_vs_time_{j}.png")
+    plt.savefig(f"{plotdir}/error_all_vs_time_{j}.png")
     plt.clf()
     # create a plot of the average dssim vs. time, and overlay the average prediction
 
@@ -487,7 +487,7 @@ def performance_plots(x, errors, dssims, preds, legend, j):
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM/Prediction")
     plt.title("Average DSSIM/Prediction vs. Time Steps Used")
-    plt.savefig(f"dssim_all_vs_time_{j}.png")
+    plt.savefig(f"{plotdir}/dssim_all_vs_time_{j}.png")
     plt.clf()
 
     # crreate a plot of the difference between the average dssim and the average prediction vs. time
@@ -514,7 +514,7 @@ def performance_plots(x, errors, dssims, preds, legend, j):
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM - Average Prediction")
     plt.title("Average DSSIM - Average Prediction vs. Time Steps Used")
-    plt.savefig(f"dssim-pred_all_vs_time_{j}.png")
+    plt.savefig(f"{plotdir}/dssim-pred_all_vs_time_{j}.png")
     plt.clf()
 
 def p(times):
@@ -550,7 +550,7 @@ if __name__ == "__main__":
     args = parseArguments()
 
     j = args.json
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, n = read_jsonlist(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, n= read_jsonlist(j)
     # times = [2, 3, 4]
     # n = 2
 
@@ -584,7 +584,7 @@ if __name__ == "__main__":
     performance_plots(test_slices, [errors_all, errors1_all, errors3_all],
                       [av_dssims_all, av_dssims1_all, av_dssims3_all],
                       [av_preds_all, av_preds1_all, av_preds3_all],
-                      cdirs, j.split(".")[0])
+                      cdirs, j.split(".")[0], save)
 
     # Remaining to-do: test if the new test sets work properly
     # average results over multiple fits and create boxplots
