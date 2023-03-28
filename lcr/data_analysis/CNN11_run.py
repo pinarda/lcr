@@ -55,4 +55,6 @@ for i in range(len(newnames)):
 
 # now we need to submit the batch file to the queue using qsub
 for i in range(len(newnames)):
+    # os.system(f'qsub -v PLP="CNN11_{newnames[i]}.json" CNN11_{newnames[i]}.sh')
+    # do something like this, but fix the syntax
     os.system(f'qsub -v PLP="CNN11_{newnames[i]}.json" CNN11_{newnames[i]}.sh')
