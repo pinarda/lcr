@@ -46,7 +46,10 @@ for i in range(len(newnames)):
     with open('CNN11_template.sh', 'r') as f:
         batch = f.read()
     batch = re.sub('TEMPLATE', newnames[i], batch)
-    batch = re.sub('TESTSET', f'\"{newtestset[i]}\"', batch)
+    # replace the test set with the new test set enclosed in quotes
+    batch = re.sub('TESTSET', '"' + newtestset[i] + '"', batch)
+
+
     with open('CNN11_' + newnames[i] + '.sh', 'w') as f:
         f.write(batch)
 
