@@ -56,6 +56,8 @@ for i in range(len(newnames)):
 for i in range(len(newnames)):
     # run a command to submit the batch file to the queue using the -v flag and setting the environment variable PLP
     # to the name of the json file
+    os.system('qsub -v PLP=' + '"' + f'CNN11_{newnames[i]}.json' + '"' + f'CNN11_{newnames[i]}.sh')
+
 
 
     # os.system(f'qsub -v PLP="CNN11_{newnames[i]}.json" CNN11_{newnames[i]}.sh')
