@@ -1,20 +1,23 @@
 #!/bin/tcsh
+### Job Name
+#PBS -N CNN11_TEMPLATE
+### Charging account
 #PBS -A NTDD0005
-#PBS -N testb
-#PBS -q regular
+### Request a resource chunk with a GPU
+#PBS -l select=1:ngpus=1
+### Specify that the GPUs will be V100s
+#PBS -l gpu_type=v100
+### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
+### Route the job to the casper queue
+#PBS -q casper
+### Join output and error streams into single file
 #PBS -j oe
-#PBS -M apinard@ucar.edu
-#PBS -l select=1:ncpus=1
-
 echo $PLP
 
-module load conda
 conda activate my-npl-ml
 
-setenv TMPDIR /glade/scratch/$USER/temp
-mkdir -p $TMPDIR
-
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+cd ~/lcr/lcr/data_analysis
 
-python CNN11.py -j $PLP
+python CNN11.py -j $PLP --testset "1var"
