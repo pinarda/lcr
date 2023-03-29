@@ -22,7 +22,7 @@ CompDirs = config['CompDirs']
 Times = config['Times']
 
 newnames = ["prect_mytest"]
-newvars = [["PRECT"]]
+newvars = [["PRECL"]]
 newcomps = [["zfp_p_10", "zfp_p_16", "zfp_p_22"]]
 newtimes = [[2, 6]]
 newtestset = ["10pct"]
@@ -56,7 +56,7 @@ for i in range(len(newnames)):
 for i in range(len(newnames)):
     # run a command to submit the batch file to the queue using the -v flag and setting the environment variable PLP
     # to the name of the json file
-    os.system('qsub -v PLP=' + '"' + 'CNN11_' + newnames[i] + '.json' + '"' + ' CNN11_' + newnames[i] + '.sh')
+    os.system('qsub -v PLP=' + '"' + 'CNN11_' + newnames[i] + '.json' + '"' + ' CCNN11_' + newnames[i] + '.sh')
 
 
 
