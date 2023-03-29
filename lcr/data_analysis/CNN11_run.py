@@ -21,11 +21,16 @@ CompDirs = config['CompDirs']
 # get the list of times
 Times = config['Times']
 
-newnames = ["prect_mytest"]
-newvars = [["PRECL"]]
-newcomps = [["zfp_p_10", "zfp_p_16", "zfp_p_22"]]
-newtimes = [[2, 6]]
-newtestset = ["10pct"]
+newnames = ["precl_mytest",
+            "flns_mytest2"]
+newvars = [["PRECL"],
+           ["FLNS"]]
+newcomps = [["zfp_p_10", "zfp_p_16", "zfp_p_22"],
+            ["zfp_p_10", "zfp_p_16", "zfp_p_22"]]
+newtimes = [[2, 6],
+            [3, 4]]
+newtestset = ["10pct",
+              "10pct"]
 
 # we need to write a new json file for each model configuration
 # so we need to loop over variables, component directories, and times simultaneously
