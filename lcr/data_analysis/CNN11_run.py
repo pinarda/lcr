@@ -21,16 +21,28 @@ CompDirs = config['CompDirs']
 # get the list of times
 Times = config['Times']
 
-newnames = ["precl_mytest",
-            "flns_mytest2"]
-newvars = [["PRECL"],
-           ["FLNS"]]
-newcomps = [["zfp_p_10", "zfp_p_16", "zfp_p_22"],
-            ["zfp_p_10", "zfp_p_16", "zfp_p_22"]]
-newtimes = [[2, 6],
-            [3, 4]]
-newtestset = ["10pct",
-              "10pct"]
+newnames = ["bigtest_2var",
+            "bigtest_5var",
+            "bigtest_10var",
+            "bigtest_20var"]
+newvars = [["bc_a1_SRF",],
+           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",],
+           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC",],
+           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
+           ]
+newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+            ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+            ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+            ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
+newtimes = [[6],
+            [6],
+            [6],
+            [6]]
+newtestset = ["1var",
+              "1var",
+              "1var",
+              "1var",
+              "1var",]
 
 # we need to write a new json file for each model configuration
 # so we need to loop over variables, component directories, and times simultaneously
