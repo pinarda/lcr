@@ -22,13 +22,13 @@ CompDirs = config['CompDirs']
 Times = config['Times']
 
 newnames = ["bigtest_2var",
-            "bigtest_5var",
-            "bigtest_10var",
-            "bigtest_20var"]
-newvars = [["bc_a1_SRF",],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC",],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC",],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
+            "bigtest_5var_alt",
+            "bigtest_10var_alt",
+            "bigtest_20var_alt"]
+newvars = [["bc_a1_SRF", "dst_a1_SRF"],
+           ["bc_a1_SRF", "dst_a1_SRF", "Q500", "Q850", "QBOT"],
+           ["bc_a1_SRF", "dst_a1_SRF", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF"],
+           ["bc_a1_SRF", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX"]
            ]
 newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
             ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
@@ -41,8 +41,7 @@ newtimes = [[6],
 newtestset = ["1var",
               "1var",
               "1var",
-              "1var",
-              "1var",]
+              "1var"]
 
 # we need to write a new json file for each model configuration
 # so we need to loop over variables, component directories, and times simultaneously
