@@ -21,24 +21,24 @@ CompDirs = config['CompDirs']
 # get the list of times
 Times = config['Times']
 
-newnames = ["bigtest_2var",
-            "bigtest_5var",
-            "bigtest_10var",
-            "bigtest_15var",
-            "bigtest_2var",
-            "bigtest_5var",
-            "bigtest_10var",
-            "bigtest_15var",
-            "bigtest_allvar"]
-newvars = [["bc_a1_SRF", "dst_a1_SRF"],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC"],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC"],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
-           ["bc_a1_SRF", "Q850"],
-           ["bc_a1_SRF", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF"],
-           ["bc_a1_SRF", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500"],
-           ["bc_a1_SRF", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010"],
-           ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "UBOT", "V200", "V500", "V850", "VBOT", "WSPDSRFAV", "Z050", "Z500"]
+newnames = ["z_bigtest_2var",
+            "z_bigtest_5var",
+            "z_bigtest_10var",
+            "z_bigtest_15var",
+            "z_bigtest_2var",
+            "z_bigtest_5var",
+            "z_bigtest_10var",
+            "z_bigtest_15var",
+            "z_bigtest_allvar"]
+newvars = [["Z500", "dst_a1_SRF"],
+           ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC"],
+           ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC"],
+           ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
+           ["Z500", "Q850"],
+           ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF"],
+           ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500"],
+           ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010"],
+           ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500", "T850", "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200", "U500", "U850", "UBOT", "V200", "V500", "V850", "VBOT", "WSPDSRFAV", "Z050", "Z500"]
            ]
 newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
             ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
