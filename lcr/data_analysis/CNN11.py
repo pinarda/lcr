@@ -93,7 +93,7 @@ def compute_ssim_mat(dataset: xr.Dataset) -> np.ndarray:
 # average all the predictions to provide a DSSIM estimate for the entire dataset.
 # compare the DSSIM estimate to the actual DSSIM value
 # return the average error
-def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc, testset="random") -> float:
+def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc, testset="random", j=None, plotdir=None) -> float:
     if os.path.exists(f"{storageloc}{varname}_model.h5"):
         model = models.load_model(f"{storageloc}{varname}_model.h5")
         with open(f"{storageloc}average_error.txt", "r") as f:
@@ -104,6 +104,12 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
         av_preds = []
         av_dssims = []
         for comp in dssim.keys():
+            # begin by standardizing all data to have mean 0 and standard deviation 1
+            # this is done by subtracting the mean and dividing by the standard deviation
+            # of the training data
+
+            dataset = (dataset - np.mean(dataset)) / np.std(dataset)
+
             # use 90% of the data for training, 9% for validation, and 1% for testing
             if testset == "random":
                 train_data, test_data, train_labels, test_labels = train_test_split(dataset[0:(50596*time*nvar)], dssim[comp], test_size=0.1)
@@ -201,6 +207,9 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
             scores.append(score[1])
             av_preds.append(average_prediction)
             av_dssims.append(average_dssim)
+
+            # save the model
+            model.save(f"model_{j}.h5")
         return scores, model, av_preds, av_dssims, predictions
 
 
@@ -340,7 +349,7 @@ def parseArguments():
 #         errors, model, av_preds, av_dssims, predictions = fit_cnn(cut_dataset_orig, dssim_mats, time, varname, 1, storageloc)
 #     print(errors)
 
-def main1(timeoverride=None):
+def main1(timeoverride=None, j=0):
     args = parseArguments()
 
     json = args.json
@@ -412,7 +421,7 @@ def main1(timeoverride=None):
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, )
+    errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j)
     print(errors)
     return errors, av_preds, av_dssims, predictions
 
@@ -517,7 +526,7 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
     plt.savefig(f"{plotdir}/dssim-pred_all_vs_time_{j}.png")
     plt.clf()
 
-def p(times):
+def p(times, j):
     # Will need to perform a normalization step.
     errors = []
     av_preds = []
@@ -532,7 +541,7 @@ def p(times):
     av_dssims3 = []
 
     for i in times:
-        e, p, d, predictions = main1(i)
+        e, p, d, predictions = main1(i, j)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])
@@ -550,7 +559,7 @@ if __name__ == "__main__":
     args = parseArguments()
 
     j = args.json
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, n= read_jsonlist(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, n = read_jsonlist(j)
     # times = [2, 3, 4]
     # n = 2
 
@@ -567,7 +576,7 @@ if __name__ == "__main__":
     av_dssims3_all = []
 
     for i in range(n):
-        errors, av_preds, av_dssims, predictions, errors1, av_preds1, av_dssims1, errors3, av_preds3, av_dssims3 = p(times)
+        errors, av_preds, av_dssims, predictions, errors1, av_preds1, av_dssims1, errors3, av_preds3, av_dssims3 = p(times, j.split(".")[0])
         errors_all.append(errors)
         av_preds_all.append(av_preds)
         av_dssims_all.append(av_dssims)
@@ -578,6 +587,10 @@ if __name__ == "__main__":
         errors3_all.append(errors3)
         av_preds3_all.append(av_preds3)
         av_dssims3_all.append(av_dssims3)
+        # save the predictions to a file
+        with open(f"{opath}/predictions_{j.split('.')[0]}_{i}.txt", "w") as f:
+            for item in predictions:
+                f.write(f"{item}\n")
 
     test_slices = [x - 1 for x in times]
 
@@ -587,5 +600,4 @@ if __name__ == "__main__":
                       cdirs, j.split(".")[0], save)
 
     # Remaining to-do: test if the new test sets work properly
-    # average results over multiple fits and create boxplots
-    # plot actual predictions vs dssims spatially
+    # average results over multip
