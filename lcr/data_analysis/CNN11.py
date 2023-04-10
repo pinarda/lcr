@@ -278,8 +278,8 @@ def read_jsonlist(metajson):
 def parseArguments():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="./CNN11_local.json")
-    parser.add_argument("-t", "--testset", help="test set type", type=str, default="1var")
+    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="CNN11_local.json")
+    parser.add_argument("-t", "--testset", help="test set type", type=str, default="10pct")
     args = parser.parse_args()
 
     return args
@@ -349,14 +349,14 @@ def parseArguments():
 #         errors, model, av_preds, av_dssims, predictions = fit_cnn(cut_dataset_orig, dssim_mats, time, varname, 1, storageloc)
 #     print(errors)
 
-def main1(timeoverride=None, j=0):
+def main1(timeoverride=None, j=0, name=""):
     args = parseArguments()
 
     json = args.json
     testset = args.testset
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, navg = read_jsonlist(json)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg = read_jsonlist(json)
     if timeoverride is not None:
         time = timeoverride
     if ldcpypath:
@@ -405,7 +405,7 @@ def main1(timeoverride=None, j=0):
         for i, cdir in enumerate(cdirs):
             dssim_mats[cdir] = dssim_mats[cdir].flatten()
 
-        np.save(f"{storageloc}{varname}_dssim_mat_{time}.npy", dssim_mats)
+        np.save(f"{storageloc}{varname}_dssim_mat_{time}_{j}.npy", dssim_mats)
         # if not os.path.exists(f"{storageloc}{varname}_chunks_{time}.npy"):
         #     np.save(f"{storageloc}{varname}_chunks_{time}.npy", cut_dataset_orig)
 
@@ -423,10 +423,38 @@ def main1(timeoverride=None, j=0):
     # call fit_cnn on the 11x11 chunks and the dssim values
     errors, model, av_preds, av_dssims, predictions = fit_cnn(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j)
     print(errors)
+    # grab the first 50596 dssims for each compression level from dssim_mats
+    # dssim_mats = {cdir: dssim_mats[cdir][0:50596] for cdir in cdirs}
+    for cdir in cdirs:
+        if type(time) is list:
+            for t in time:
+                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final_dssim_mats[cdir][0:50596].reshape((182, 278)))
+                # also save the predictions
+                # and the errors
+                preds = np.zeros((182, 278)).flatten()
+                # set the values of mymap to the first 50596 values of predictions
+                if len(predictions) < 50596:
+                    preds[0:(len(predictions))] = predictions.squeeze()
+                    preds = preds.reshape((182, 278))
+                else:
+                    preds = predictions.squeeze()[0:50596].reshape((182, 278))
+                np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
+        else:
+            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final_dssim_mats[cdir][0:50596].reshape((182, 278)))
+            # also save the predictions
+            # and the errors
+            preds = np.zeros((182, 278)).flatten()
+            # set the values of mymap to the first 50596 values of predictions
+            if len(predictions) < 50596:
+                preds[0:(len(predictions))] = predictions.squeeze()
+                preds = preds.reshape((182, 278))
+            else:
+                preds = predictions.squeeze()[0:50596].reshape((182, 278))
+            np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
     return errors, av_preds, av_dssims, predictions
 
 
-def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
+def performance_plots(x, errors, dssims, preds, legend, j, plotdir, name):
     # create a plot of the errors, errors1, and errors3 vs. time
     num_colors = len(dssims)
     i=0
@@ -455,7 +483,7 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
     for item in legend:
         l.append(item + " error")
     plt.xlabel("Time Steps Used")
-    plt.ylabel("Prediction error for single timestep")
+    plt.ylabel("Prediction error for single timestep (log10 scale)")
     plt.title("DSSIM prediction error vs. Time Steps Used")
 
     plt.legend(l)
@@ -467,7 +495,7 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
         leg.legendHandles[i].set_color((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
 
-    plt.savefig(f"{plotdir}/error_all_vs_time_{j}.png")
+    plt.savefig(f"{storageloc}error_all_vs_time_{name}.png")
     plt.clf()
     # create a plot of the average dssim vs. time, and overlay the average prediction
 
@@ -483,7 +511,7 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
         ibin = bin(num_colors)[2:].zfill(3)
         ibin = bin(i)[2:].zfill(3)
         #plt.semilogy(x, pred, linestyle='dashed', color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
-        p = plt.boxplot(np.log10(np.array(pred)), positions=test_slices, patch_artist=True)
+        p = plt.boxplot(np.array(pred), positions=test_slices, patch_artist=True)
         for box in p['boxes']:
             box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
@@ -496,7 +524,7 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM/Prediction")
     plt.title("Average DSSIM/Prediction vs. Time Steps Used")
-    plt.savefig(f"{plotdir}/dssim_all_vs_time_{j}.png")
+    plt.savefig(f"{storageloc}dssim_all_vs_time_{name}.png")
     plt.clf()
 
     # crreate a plot of the difference between the average dssim and the average prediction vs. time
@@ -507,26 +535,26 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir):
         y = np.array(dssim) - np.array(pred)
         #plt.semilogy(x, y, color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
         # log the y values as long as they are positive and not nan
-        p = plt.boxplot(np.log10(np.array(y), where=(y>0)), positions=test_slices, patch_artist=True)
-        for box in p['boxes']:
-            box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
+        p = plt.semilogy(test_slices, np.array(y).squeeze())
+        # for box in p['boxes']:
+        #     box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
-    l = []
-    lines = []
-    i=0
-    for item in legend:
-        ibin = bin(i)[2:].zfill(3)
-        l.append(item + " tolerance")
-        lines.append(Line2D([0], [0], color=(int(ibin[0]), int(ibin[1]), int(ibin[2])), lw=4))
-        i=i+1
-    plt.legend(lines, l)
+    # l = []
+    # lines = []
+    # i=0
+    # for item in legend:
+    #     ibin = bin(i)[2:].zfill(3)
+    #     l.append(item + " tolerance")
+    #     lines.append(Line2D([0], [0], color=(int(ibin[0]), int(ibin[1]), int(ibin[2])), lw=4))
+    #     i=i+1
+    # plt.legend(lines, l)
     plt.xlabel("Time Steps Used")
     plt.ylabel("Average DSSIM - Average Prediction")
     plt.title("Average DSSIM - Average Prediction vs. Time Steps Used")
-    plt.savefig(f"{plotdir}/dssim-pred_all_vs_time_{j}.png")
+    plt.savefig(f"{storageloc}dssim-pred_all_vs_time_{name}.png")
     plt.clf()
 
-def p(times, j):
+def p(times, j, name):
     # Will need to perform a normalization step.
     errors = []
     av_preds = []
@@ -541,7 +569,7 @@ def p(times, j):
     av_dssims3 = []
 
     for i in times:
-        e, p, d, predictions = main1(i, j)
+        e, p, d, predictions = main1(i, j, name)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])
@@ -559,7 +587,7 @@ if __name__ == "__main__":
     args = parseArguments()
 
     j = args.json
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storageloc, n = read_jsonlist(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n = read_jsonlist(j)
     # times = [2, 3, 4]
     # n = 2
 
@@ -576,7 +604,7 @@ if __name__ == "__main__":
     av_dssims3_all = []
 
     for i in range(n):
-        errors, av_preds, av_dssims, predictions, errors1, av_preds1, av_dssims1, errors3, av_preds3, av_dssims3 = p(times, j.split(".")[0])
+        errors, av_preds, av_dssims, predictions, errors1, av_preds1, av_dssims1, errors3, av_preds3, av_dssims3 = p(time, j.split(".")[0], j.split(".")[0])
         errors_all.append(errors)
         av_preds_all.append(av_preds)
         av_dssims_all.append(av_dssims)
@@ -587,17 +615,101 @@ if __name__ == "__main__":
         errors3_all.append(errors3)
         av_preds3_all.append(av_preds3)
         av_dssims3_all.append(av_dssims3)
-        # save the predictions to a file
-        with open(f"{opath}/predictions_{j.split('.')[0]}_{i}.txt", "w") as f:
-            for item in predictions:
-                f.write(f"{item}\n")
+        # # save the predictions to a file
+        # preds = np.zeros((182, 278)).flatten()
+        # # set the values of mymap to the first 50596 values of predictions
+        # if len(predictions) < 50596:
+        #     preds[0:(len(predictions))] = predictions.squeeze()
+        #     preds.reshape((182, 278))
+        # else:
+        #     preds = predictions.squeeze()[0:50596].reshape((182, 278))
+        # # save the predictions to a file
+        # np.save(f"{storageloc}predictions_{j.split('.')[0]}_{i}.npy", preds)
+        # # also save the actual dssims
 
-    test_slices = [x - 1 for x in times]
+
+    test_slices = [x - 1 for x in time]
 
     performance_plots(test_slices, [errors_all, errors1_all, errors3_all],
                       [av_dssims_all, av_dssims1_all, av_dssims3_all],
                       [av_preds_all, av_preds1_all, av_preds3_all],
-                      cdirs, j.split(".")[0], save)
+                      cdirs, j.split(".")[0], save, j.split(".")[0])
+    import xarray as xr
+    import ldcpy
 
-    # Remaining to-do: test if the new test sets work properly
-    # average results over multip
+    name = j.split(".")[0]
+    for cdir in cdirs:
+        if type(time) == list:
+            for t in time:
+                # load the dssims and predictions
+                dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
+                preds = np.load(f"{storageloc}{cdir}_preds_{t}_{name}.npy")
+                # stick the dssims and predictions into an xarray DataArray
+                da_dssims = xr.DataArray(dssims)
+                da_preds = xr.DataArray(preds)
+                plt.imshow(da_dssims)
+                # add a colorbar
+                plt.colorbar()
+                # change the colorbar extent
+                plt.clim(0, 1)
+
+                # save the plots
+                plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.png")
+                plt.clf()
+
+                # replace any zeros with nans
+                da_preds = da_preds.where(da_preds != 0)
+                plt.imshow(da_preds)
+                # add a colorbar
+                plt.colorbar()
+                # change the colorbar extent
+                plt.clim(0, 1)
+
+                # save the plots
+                plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png")
+                plt.clf()
+                # also make an error plot
+                plt.imshow(da_dssims - da_preds)
+                # add a colorbar
+                plt.colorbar()
+                # change the colorbar extent
+                plt.clim(0, 1)
+
+                plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png")
+                plt.clf()
+        else:
+            dssims = f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy"
+            preds = f"{storageloc}{cdir}_preds_{time}_{name}.npy"
+            # stick the dssims and predictions into an xarray DataArray
+            da_dssims = xr.DataArray(dssims)
+            da_preds = xr.DataArray(preds)
+            # create an ldcpy datasetCalcs object
+            plt.imshow(da_dssims)
+            # add colorbar
+            plt.colorbar()
+            plt.clim(0, 1)
+            # save the plots
+            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.png")
+            plt.clf()
+            # replace any zeros with nans
+            da_preds = da_preds.where(da_preds != 0)
+            plt.imshow(da_preds)
+            # add a colorbar
+            plt.colorbar()
+            # change the colorbar extent
+            plt.clim(0, 1)
+
+            # save the plots
+            plt.savefig(f"{storageloc}{cdir}_preds_{time}_{name}.png")
+            plt.clf()
+
+            # also make an error plot
+            plt.imshow(da_dssims - da_preds)
+            # add a colorbar
+            plt.colorbar()
+            # change the colorbar extent
+            plt.clim(0, 1)
+
+            plt.savefig(f"{storageloc}{cdir}_error_{time}_{name}.png")
+            plt.clf()
+
