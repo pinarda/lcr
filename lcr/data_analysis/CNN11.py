@@ -108,7 +108,8 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
             # this is done by subtracting the mean and dividing by the standard deviation
             # of the training data
 
-            dataset = (dataset - np.mean(dataset)) / np.std(dataset)
+            for i in range(50596*time*nvar):
+                dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
 
             # use 90% of the data for training, 9% for validation, and 1% for testing
             if testset == "random":
