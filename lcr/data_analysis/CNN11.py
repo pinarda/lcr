@@ -27,7 +27,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras import models
 mpl.use('TKAgg')
 
-#os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 
 def actualsize(input_obj):
     memory_size = 0
@@ -528,37 +528,37 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir, name):
     plt.savefig(f"{storageloc}dssim_all_vs_time_{name}.png")
     plt.clf()
 
-    # crreate a plot of the difference between the average dssim and the average prediction vs. time
-    i=0
-    for dssim, pred in zip(dssims, preds):
-        ibin = bin(num_colors)[2:].zfill(3)
-        ibin = bin(i)[2:].zfill(3)
-        y = np.array(dssim) - np.array(pred)
-        #plt.semilogy(x, y, color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
-        # log the y values as long as they are positive and not nan
-        for j in range(len(y)):
-            if y[j] > 0 and not np.isnan(y[j]):
-                y[j] = np.log10(y[j])
-            else:
-                y[j] = 0
-        p = plt.semilogy(test_slices, np.array(y).squeeze().mean(), color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
-        # for box in p['boxes']:
-        #     box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
-        i += 1
-    # l = []
-    # lines = []
+    # # crreate a plot of the difference between the average dssim and the average prediction vs. time
     # i=0
-    # for item in legend:
+    # for dssim, pred in zip(dssims, preds):
+    #     ibin = bin(num_colors)[2:].zfill(3)
     #     ibin = bin(i)[2:].zfill(3)
-    #     l.append(item + " tolerance")
-    #     lines.append(Line2D([0], [0], color=(int(ibin[0]), int(ibin[1]), int(ibin[2])), lw=4))
-    #     i=i+1
-    # plt.legend(lines, l)
-    plt.xlabel("Time Steps Used")
-    plt.ylabel("Average DSSIM - Average Prediction")
-    plt.title("Average DSSIM - Average Prediction vs. Time Steps Used")
-    plt.savefig(f"{storageloc}dssim-pred_all_vs_time_{name}.png")
-    plt.clf()
+    #     y = np.array(dssim) - np.array(pred)
+    #     #plt.semilogy(x, y, color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
+    #     # log the y values as long as they are positive and not nan
+    #     for j in range(len(y)):
+    #         if np.all(y[j] > 0) and not np.any(np.isnan(y[j])):
+    #             y[j] = np.log10(y[j])
+    #         else:
+    #             y[j] = 0
+    #     p = plt.semilogy(test_slices, np.array(y).squeeze().mean(), color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
+    #     # for box in p['boxes']:
+    #     #     box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
+    #     i += 1
+    # # l = []
+    # # lines = []
+    # # i=0
+    # # for item in legend:
+    # #     ibin = bin(i)[2:].zfill(3)
+    # #     l.append(item + " tolerance")
+    # #     lines.append(Line2D([0], [0], color=(int(ibin[0]), int(ibin[1]), int(ibin[2])), lw=4))
+    # #     i=i+1
+    # # plt.legend(lines, l)
+    # plt.xlabel("Time Steps Used")
+    # plt.ylabel("Average DSSIM - Average Prediction")
+    # plt.title("Average DSSIM - Average Prediction vs. Time Steps Used")
+    # plt.savefig(f"{storageloc}dssim-pred_all_vs_time_{name}.png")
+    # plt.clf()
 
 def p(times, j, name):
     # Will need to perform a normalization step.
