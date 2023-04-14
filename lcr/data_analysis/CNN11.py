@@ -25,9 +25,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras import models
-#mpl.use('TKAgg')
+mpl.use('TKAgg')
 
-os.environ["HDF5_PLUGIN_PATH"]
+#os.environ["HDF5_PLUGIN_PATH"]
 
 def actualsize(input_obj):
     memory_size = 0
@@ -536,7 +536,12 @@ def performance_plots(x, errors, dssims, preds, legend, j, plotdir, name):
         y = np.array(dssim) - np.array(pred)
         #plt.semilogy(x, y, color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
         # log the y values as long as they are positive and not nan
-        p = plt.semilogy(test_slices, np.array(y).squeeze())
+        for j in range(len(y)):
+            if y[j] > 0 and not np.isnan(y[j]):
+                y[j] = np.log10(y[j])
+            else:
+                y[j] = 0
+        p = plt.semilogy(test_slices, np.array(y).squeeze().mean(), color=(int(ibin[0]), int(ibin[1]), int(ibin[2])))
         # for box in p['boxes']:
         #     box.set_facecolor((int(ibin[0]), int(ibin[1]), int(ibin[2])))
         i += 1
