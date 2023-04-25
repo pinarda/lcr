@@ -11,5 +11,5 @@
     "Times": [2, 6],
     "Navg": 2,
     "StorageLoc": "/glade/scratch/apinard/CNN11_store/",
-    "Stride": 1
+    "Stride": 3
 }
