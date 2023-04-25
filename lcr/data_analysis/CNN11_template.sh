@@ -4,7 +4,7 @@
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1:mem=109GB
+#PBS -l select=1:ngpus=1
 ### Specify that the GPUs will be V100s
 #PBS -l gpu_type=v100
 ### Allow job to run up to 12 hours
