@@ -21,18 +21,18 @@ CompDirs = config['CompDirs']
 # get the list of times
 Times = config['Times']
 
-newnames = ["z_bigtest_1var",
-            "z_bigtest_2var",
-            "z_bigtest_5var",
-            "z_bigtest_10var",
-            "z_bigtest_15var",
-            "z_bigtest_2var_alt",
-            "z_bigtest_5var_alt",
-            "z_bigtest_10var_alt",
-            "z_bigtest_15var_alt",
-            "z_bigtest_allvar"]
+newnames = ["dz_bigtest_1var",
+            "dz_bigtest_2var",
+            "dz_bigtest_5var",
+            "dz_bigtest_10var",
+            "dz_bigtest_15var",
+            "dz_bigtest_2var_alt",
+            "dz_bigtest_5var_alt",
+            "dz_bigtest_10var_alt",
+            "dz_bigtest_15var_alt",
+            "dz_bigtest_allvar"]
 newvars = [["Z500"],
-            ["Z500", "dst_a1_SRF"],
+           ["Z500", "dst_a1_SRF"],
            ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC"],
            ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC"],
            ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
