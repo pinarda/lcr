@@ -313,7 +313,7 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
                 f.write(str(score[1]))
 
             # classificaiton stuff
-            run_classification(predictions, test_labels)
+            # run_classification(predictions, test_labels)
 
             scores.append(score[1])
             av_preds.append(average_prediction)
