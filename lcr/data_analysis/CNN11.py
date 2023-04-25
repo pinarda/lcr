@@ -15,6 +15,7 @@ import os
 import gc
 import sys
 import argparse
+import math
 import json
 import typing
 import matplotlib.pyplot as plt
@@ -25,9 +26,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras import models
-#mpl.use('TKAgg')
+mpl.use('TKAgg')
 
-os.environ["HDF5_PLUGIN_PATH"]
+#os.environ["HDF5_PLUGIN_PATH"]
 
 def actualsize(input_obj):
     memory_size = 0
@@ -89,6 +90,138 @@ def compute_ssim_mat(dataset: xr.Dataset) -> np.ndarray:
     dssim = ssim_mat.isel(time=0, window=0)
     return dssim
 
+
+def run_classification(predicted_dssims, true_dssims):
+    # Calculate the average DSSIM for each time slice using the true values
+    true_averages = np.mean(true_dssims, axis=1)
+
+    # Calculate the average DSSIM for each time slice using the predicted values
+    predicted_averages = np.mean(predicted_dssims, axis=1)
+
+    # Compare true_averages and predicted_averages to the threshold (0.9995)
+    true_over_threshold = true_averages > 0.9995
+    predicted_over_threshold = predicted_averages > 0.9995
+
+    # Calculate the classification matrix
+    TP = np.sum(np.logical_and(true_over_threshold, predicted_over_threshold))
+    TN = np.sum(np.logical_and(~true_over_threshold, ~predicted_over_threshold))
+    FP = np.sum(np.logical_and(~true_over_threshold, predicted_over_threshold))
+    FN = np.sum(np.logical_and(true_over_threshold, ~predicted_over_threshold))
+
+    classification_matrix = np.array([[TP, FP], [FN, TN]])
+
+    print("Classification Matrix:")
+    print(classification_matrix)
+
+    return classification_matrix
+
+# A function that splits the data into training, testing and validation sets
+def split_data(dataset, dssim, time, nvar, testset, comp):
+    total_data_points = 50596 * time * nvar
+    # Calculate the indices corresponding to 60% and 75% of the data
+    index_60pct = int(total_data_points * 0.6)
+    index_75pct = int(total_data_points * 0.75)
+
+    # use 90% of the data for training, 9% for validation, and 1% for testing
+    if testset == "random":
+        train_data, test_data, train_labels, test_labels = train_test_split(dataset[0:(50596 * time * nvar)],
+                                                                            dssim[comp], test_size=0.1)
+        val_data, test_data, val_labels, test_labels = train_test_split(test_data, test_labels, test_size=0.1)
+    elif testset == "oneout":
+        # train_data = dataset[0:(50596*time*nvar-1)]
+        # train_labels = dssim[comp][0:(50596*time*nvar-1)]
+        val_data = dataset[(50596 * time * nvar - 2):(50596 * time * nvar - 1)]
+        val_labels = dssim[comp][(50596 * time * nvar - 2):(50596 * time * nvar - 1)]
+        # test_data = dataset[(50596*time*nvar-1):(50596*time*nvar)]
+        # test_labels = dssim[comp][(50596*time*nvar-1):(50596*time*nvar)]
+
+        # Currently, this will always make the first time slice of the data the test set for consistency
+        test_data = dataset[0:50596]
+        test_labels = dssim[comp][0:50596]
+        train_data = dataset[50596:(50596 * time * nvar)]
+        train_labels = dssim[comp][50596:(50596 * time * nvar)]
+    elif testset == "10pct":
+        # use the first 10% of the data for testing
+        test_data = dataset[0:int(50596 * time * nvar * 0.1)]
+        test_labels = dssim[comp][0:int(50596 * time * nvar * 0.1)]
+        # Note: this randomizes the training and validation data, an alternative would be to use the last 10% of the data for validation
+        train_data, val_data, train_labels, val_labels = train_test_split(
+            dataset[int(50596 * time * nvar * 0.1):(50596 * time * nvar)],
+            dssim[comp][int(50596 * time * nvar * 0.1):(50596 * time * nvar)], test_size=0.1)
+
+        # Alternatively, use the last 10% of the data for validation
+        # val_data = dataset[(50596*time*nvar*0.9):(50596*time*nvar)]
+        # val_labels = dssim[comp][(50596*time*nvar*0.9):(50596*time*nvar)]
+        # train_data = dataset[(50596*time*nvar*0.1):(50596*time*nvar*0.9)]
+        # train_labels = dssim[comp][(50596*time*nvar*0.1):(50596*time*nvar*0.9)]
+    elif testset == "1var":
+        # leave out a single variable for testing, and use the rest for training and validation
+        test_data = dataset[0:(50596 * time)]
+        test_labels = dssim[comp][0:(50596 * time)]
+
+        # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
+        train_data, val_data, train_labels, val_labels = train_test_split(dataset[(50596 * time):(50596 * time * nvar)],
+                                                                          dssim[comp][
+                                                                          (50596 * time):(50596 * time * nvar)],
+                                                                          test_size=0.1)
+
+        # Alternatively, use the last variable(s) for validation
+        # val_data = dataset[(50596*time*(nvar-1)):(50596*time*nvar)]
+        # val_labels = dssim[comp][(50596*time*(nvar-1)):(50596*time*nvar)]
+        # train_data = dataset[(50596*time):(50596*time*(nvar-1))]
+        # train_labels = dssim[comp][(50596*time):(50596*time*(nvar-1))]
+    elif testset == "60pct":
+        # Use the first 60% of the data for training
+        train_data = dataset[0:index_60pct]
+        train_labels = dssim[comp][0:index_60pct]
+
+        # Use the last 25% of the data for testing and validation
+        last_25pct_data = dataset[index_75pct:]
+        last_25pct_labels = dssim[comp][index_75pct:]
+
+        # Randomly split the last 25% into 10% for testing and 15% for validation
+        test_data, val_data, test_labels, val_labels = train_test_split(
+            last_25pct_data, last_25pct_labels, test_size=0.4)  # 10% of 25% is 40% of the last 25%
+
+    elif testset == "60_25_wholeslice":
+        # Calculate the number of time slices in the last 25% of the data (rounding down)
+        num_time_slices_last_25pct = (total_data_points - index_75pct) // 50596
+
+        # Calculate the number of time slices for test and validation (rounding down)
+        num_time_slices_test = num_time_slices_last_25pct * 40 // 100
+        num_time_slices_val = num_time_slices_last_25pct - num_time_slices_test
+
+        # Calculate the number of windows for test and validation
+        num_windows_test = num_time_slices_test * 50596
+        num_windows_val = num_time_slices_val * 50596
+
+        # Calculate the start index for the remaining time slice (if any)
+        remaining_start_index = index_75pct + num_windows_test + num_windows_val
+
+        # Use the first 60% of the data for training
+        train_data = dataset[0:index_60pct]
+        train_labels = dssim[comp][0:index_60pct]
+
+        # Use the calculated number of windows for test and validation
+        test_data = dataset[index_75pct:(index_75pct + num_windows_test)]
+        test_labels = dssim[comp][index_75pct:(index_75pct + num_windows_test)]
+        val_data = dataset[(index_75pct + num_windows_test):(index_75pct + num_windows_test + num_windows_val)]
+        val_labels = dssim[comp][(index_75pct + num_windows_test):(index_75pct + num_windows_test + num_windows_val)]
+
+        # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
+        if remaining_start_index < total_data_points:
+            remaining_windows = total_data_points - remaining_start_index
+            split_index = remaining_windows * 40 // 100
+            test_data = np.concatenate(
+                (test_data, dataset[remaining_start_index:(remaining_start_index + split_index)]))
+            test_labels = np.concatenate(
+                (test_labels, dssim[comp][remaining_start_index:(remaining_start_index + split_index)]))
+            val_data = np.concatenate((val_data, dataset[(remaining_start_index + split_index):]))
+            val_labels = np.concatenate((val_labels, dssim[comp][(remaining_start_index + split_index):]))
+
+
+    return train_data, train_labels, val_data, val_labels, test_data, test_labels
+
 # fit a CNN using the 11x11 chunk as training data and the dssim value as output
 # average all the predictions to provide a DSSIM estimate for the entire dataset.
 # compare the DSSIM estimate to the actual DSSIM value
@@ -105,68 +238,42 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
         av_dssims = []
         for comp in dssim.keys():
             # begin by standardizing all data to have mean 0 and standard deviation 1
-            # this is done by subtracting the mean and dividing by the standard deviation
+            # this is done by subtracting the mean and dividing bdatay the standard deviation
             # of the training data
-
             for i in range(time*nvar):
                 dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
-
-            # use 90% of the data for training, 9% for validation, and 1% for testing
-            if testset == "random":
-                train_data, test_data, train_labels, test_labels = train_test_split(dataset[0:(50596*time*nvar)], dssim[comp], test_size=0.1)
-                val_data, test_data, val_labels, test_labels = train_test_split(test_data, test_labels, test_size=0.1)
-            elif testset == "oneout":
-                # train_data = dataset[0:(50596*time*nvar-1)]
-                # train_labels = dssim[comp][0:(50596*time*nvar-1)]
-                val_data = dataset[(50596*time*nvar-2):(50596*time*nvar - 1)]
-                val_labels = dssim[comp][(50596*time*nvar-2):(50596*time*nvar-1)]
-                # test_data = dataset[(50596*time*nvar-1):(50596*time*nvar)]
-                # test_labels = dssim[comp][(50596*time*nvar-1):(50596*time*nvar)]
-
-                # Currently, this will always make the first time slice of the data the test set for consistency
-                test_data = dataset[0:50596]
-                test_labels = dssim[comp][0:50596]
-                train_data = dataset[50596:(50596*time*nvar)]
-                train_labels = dssim[comp][50596:(50596*time*nvar)]
-            elif testset == "10pct":
-                # use the first 10% of the data for testing
-                test_data = dataset[0:int(50596*time*nvar*0.1)]
-                test_labels = dssim[comp][0:int(50596*time*nvar*0.1)]
-                # Note: this randomizes the training and validation data, an alternative would be to use the last 10% of the data for validation
-                train_data, val_data, train_labels, val_labels = train_test_split(dataset[int(50596*time*nvar*0.1):(50596*time*nvar)], dssim[comp][int(50596*time*nvar*0.1):(50596*time*nvar)], test_size=0.1)
-
-                # Alternatively, use the last 10% of the data for validation
-                # val_data = dataset[(50596*time*nvar*0.9):(50596*time*nvar)]
-                # val_labels = dssim[comp][(50596*time*nvar*0.9):(50596*time*nvar)]
-                # train_data = dataset[(50596*time*nvar*0.1):(50596*time*nvar*0.9)]
-                # train_labels = dssim[comp][(50596*time*nvar*0.1):(50596*time*nvar*0.9)]
-            elif testset == "1var":
-                # leave out a single variable for testing, and use the rest for training and validation
-                test_data = dataset[0:(50596*time)]
-                test_labels = dssim[comp][0:(50596*time)]
-
-                # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
-                train_data, val_data, train_labels, val_labels = train_test_split(dataset[(50596*time):(50596*time*nvar)], dssim[comp][(50596*time):(50596*time*nvar)], test_size=0.1)
-
-                # Alternatively, use the last variable(s) for validation
-                # val_data = dataset[(50596*time*(nvar-1)):(50596*time*nvar)]
-                # val_labels = dssim[comp][(50596*time*(nvar-1)):(50596*time*nvar)]
-                # train_data = dataset[(50596*time):(50596*time*(nvar-1))]
-                # train_labels = dssim[comp][(50596*time):(50596*time*(nvar-1))]
+                train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, dssim, time, nvar, comp, testset)
 
             model = Sequential()
+            # model.add(Conv2D(16, (3, 3), input_shape=(11, 11, 1), name='conv1'))
+            # model.add(Activation('relu', name='relu1'))
+            # model.add(Conv2D(16, (3, 3), name='conv2'))
+            # model.add(Activation('relu', name='relu2'))
+            # model.add(MaxPooling2D(pool_size=(2, 2), name='maxpool1'))
+            # model.add(Dropout(0.25, name='dropout1'))
+            # model.add(Flatten(name='flatten1'))
+            # model.add(Dense(64, name='dense1'))
+            # model.add(Activation('relu', name='relu3'))
+            # model.add(Dropout(0.25, name='dropout2'))
+            # model.add(Dense(1, name='dense2'))
+            # model.add(Activation('linear', name='linear1'))
+
+            # let's try a deeper model.
             model.add(Conv2D(16, (3, 3), input_shape=(11, 11, 1), name='conv1'))
             model.add(Activation('relu', name='relu1'))
             model.add(Conv2D(16, (3, 3), name='conv2'))
             model.add(Activation('relu', name='relu2'))
             model.add(MaxPooling2D(pool_size=(2, 2), name='maxpool1'))
             model.add(Dropout(0.25, name='dropout1'))
+            model.add(Conv2D(32, (3, 3), name='conv3'))
+            model.add(Activation('relu', name='relu3'))
             model.add(Flatten(name='flatten1'))
             model.add(Dense(64, name='dense1'))
-            model.add(Activation('relu', name='relu3'))
-            model.add(Dropout(0.25, name='dropout2'))
+            model.add(Activation('relu', name='relu5'))
+            model.add(Dropout(0.25, name='dropout3'))
             model.add(Dense(1, name='dense2'))
             model.add(Activation('linear', name='linear1'))
+
 
             model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
 
@@ -205,6 +312,9 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
             with open(f"{storageloc}average_error.txt", "w") as f:
                 f.write(str(score[1]))
 
+            # classificaiton stuff
+            run_classification(predictions, test_labels)
+
             scores.append(score[1])
             av_preds.append(average_prediction)
             av_dssims.append(average_dssim)
@@ -228,6 +338,7 @@ def read_jsonlist(metajson):
     times = []
     storage = ""
     navg = 0
+    stride=1
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
@@ -261,6 +372,8 @@ def read_jsonlist(metajson):
             storage = metainfo['StorageLoc']
         if "Navg" in metainfo:
             navg = metainfo['Navg']
+        if "Stride" in metainfo:
+            stride = metainfo['Stride']
 
     print("Save directory: ", save)
     print("Variable list: ", vlist)
@@ -273,14 +386,15 @@ def read_jsonlist(metajson):
     print("Times: ", times)
     print("Storage location: ", storage)
     print("Navg: ", navg)
+    print("Stride: ", stride)
 
-    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg
+    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride
 
 def parseArguments():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json configuration file", type=str, default="CNN11_local.json")
-    parser.add_argument("-t", "--testset", help="test set type", type=str, default="10pct")
+    parser.add_argument("-t", "--testset", help="test set type", type=str, default="60_25_wholeslice")
     args = parser.parse_args()
 
     return args
@@ -350,14 +464,14 @@ def parseArguments():
 #         errors, model, av_preds, av_dssims, predictions = fit_cnn(cut_dataset_orig, dssim_mats, time, varname, 1, storageloc)
 #     print(errors)
 
-def main1(timeoverride=None, j=0, name=""):
+def main1(timeoverride=None, j=0, name="", stride=1):
     args = parseArguments()
 
     json = args.json
     testset = args.testset
     ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg = read_jsonlist(json)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_jsonlist(json)
     if timeoverride is not None:
         time = timeoverride
     if ldcpypath:
@@ -394,7 +508,7 @@ def main1(timeoverride=None, j=0, name=""):
             dataset_zfp = dataset_col.sel(collection=cdir).to_array().squeeze()
             dssim_mats[cdir] = np.empty((time, 50596))
             for t in range(0, time):
-                dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t), dataset_zfp.isel(time=t), data_type="cam-fv")
+                dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
                 dc.get_diff_calc("ssim_fp")
                 dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
 
@@ -593,7 +707,7 @@ if __name__ == "__main__":
     args = parseArguments()
 
     j = args.json
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n = read_jsonlist(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride = read_jsonlist(j)
     # times = [2, 3, 4]
     # n = 2
 

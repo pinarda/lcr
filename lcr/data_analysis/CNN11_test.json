@@ -8,5 +8,6 @@
     "CompDirs": ["br_2", "br_4", "br_6", "br_8", "br_10", "br_12", "br_14", "br_16", "br_18", "br_20"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Time": 1,
-    "StorageLoc": "/glade/scratch/apinard/CNN11_store/"
+    "StorageLoc": "/glade/scratch/apinard/CNN11_store/",
+    "Stride": 1
 }

@@ -10,5 +10,6 @@
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [2, 6, 11, 51, 100],
     "Navg": 3,
-    "StorageLoc": "./"
+    "StorageLoc": "./",
+    "Stride": 1
 }

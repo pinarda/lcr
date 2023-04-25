@@ -10,5 +10,6 @@
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [2, 6, 11, 16],
     "Navg": 2,
-    "StorageLoc": "/glade/scratch/apinard/CNN11_store/"
+    "StorageLoc": "/glade/scratch/apinard/CNN11_store/",
+    "Stride": 1
 }
