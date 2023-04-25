@@ -242,7 +242,7 @@ def fit_cnn(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storage
             # of the training data
             for i in range(time*nvar):
                 dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
-                train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, dssim, time, nvar, comp, testset)
+                train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, dssim, time, nvar,testset, comp)
 
             model = Sequential()
             # model.add(Conv2D(16, (3, 3), input_shape=(11, 11, 1), name='conv1'))
