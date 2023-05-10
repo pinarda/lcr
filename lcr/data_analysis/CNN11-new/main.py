@@ -5,7 +5,6 @@ from utils import parse_command_line_arguments, read_parameters_from_json
 from plotting import generate_performance_plots
 from model_training import build_and_evaluate_models_for_time_slices
 
-
 def convert_np_to_dssims(np_arrays, titles):
     das = []
     set_values = [f'set{i+1}' for i in range(len(np_arrays))]

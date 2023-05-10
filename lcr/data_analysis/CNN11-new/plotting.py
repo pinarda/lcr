@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
-mpl.use('TKAgg')
+# mpl.use('TKAgg')
 
 def generate_performance_plots(x, errors, dssims, preds, legend, j, plotdir, name, storageloc):
     # create a plot of the errors, errors1, and errors3 vs. time
