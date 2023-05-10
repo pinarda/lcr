@@ -6,7 +6,7 @@
     "FilenamePost": ".20060101-20071231.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/",
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/",
-    "CompDirs": ["zfp_p_10", "zfp_p_16"],
+    "CompDirs": ["zfp_p_10", "zfp_p_16", "zfp_p_22"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [2, 6],
     "Navg": 3,
