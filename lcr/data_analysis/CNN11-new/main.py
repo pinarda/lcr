@@ -149,44 +149,53 @@ if __name__ == "__main__":
 
 
         else:
-            dssims = f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy"
-            preds = f"{storageloc}{cdir}_preds_{time}_{name}.npy"
+            t = time
+            # load the dssims and predictions
+            dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
+            preds = np.load(f"{storageloc}{cdir}_preds_{t}_{name}.npy")
             # flips dssims and preds upside down
             dssims = np.flipud(dssims)
             preds = np.flipud(preds)
-            dssims = np.roll(dssims, 120)
-            preds = np.roll(preds, 120)
-            # stick the dssims and predictions into an xarray DataArray
-            da_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
+            # roll the dssims and preds by 10
+            dssims = np.pad(np.roll(dssims, 120), pad_width=5, mode='constant', constant_values=0)
+            preds = np.pad(np.roll(preds, 120), pad_width=5, mode='constant', constant_values=0)
+
+            ldcpy_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
+            ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0,
+                       short_title=True, cmax=1, cmin=0, vert_plot=True)
+
+            # save the plots
+            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.png", bbox_inches='tight')
+            plt.clf()
+
             da_preds = convert_np_to_dssims([preds], ["Model Predictions"])
-
-            #
-            ldcpy.plot(da_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0,
-                       short_title=True, cmax=1, cmin=0)
-
-            # save the plots
-            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.png")
-            plt.clf()
-
             ldcpy.plot(da_preds, "dssims", calc="mean", sets=["Model Predictions"], weighted=False, start=0, end=0,
-                       short_title=True, cmax=1, cmin=0)
+                       short_title=True, cmax=1, cmin=0, vert_plot=True)
 
-            # resize the plot to make it taller
-            plt.gcf().set_size_inches(10, 7)
             # save the plots
-            plt.savefig(f"{storageloc}{cdir}_preds_{time}_{name}.png")
+            plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png", bbox_inches='tight')
+
+            errors = [dssims - preds]
+            errors = convert_np_to_dssims(errors, ["Errors"])
+            ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True,
+                       vert_plot=True)
+            plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
             plt.clf()
 
-            errors = convert_np_to_dssims([dssims - preds], ["Errors"])
-            ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0,
-                          short_title=True, cmax=1, cmin=0)
-
-            plt.savefig(f"{storageloc}{cdir}_error_{time}_{name}.png")
+            allthings = convert_np_to_dssims([dssims, preds, dssims - preds],
+                                             ["Actual DSSIMs", "Model Predictions", "Error"])
+            ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"],
+                       weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
+            plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
             plt.clf()
 
-            allthings = convert_np_to_dssims([dssims, preds, dssims - preds], ["Actual DSSIMs", "Model Predictions", "Error"])
-            ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"], weighted=False, start=0, end=0,
-                       short_title=True, cmax=1, cmin=0)
-            plt.savefig(f"{storageloc}{cdir}_allthings_{t}_{name}.png")
+            ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
+                       weighted=False, start=t, end=t, short_title=True, vert_plot=True)
+            plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}.png", bbox_inches='tight')
+            plt.clf()
+
+            ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff",
+                       weighted=False, start=t, end=t, short_title=True, vert_plot=True)
+            plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}.png", bbox_inches='tight')
             plt.clf()
 
