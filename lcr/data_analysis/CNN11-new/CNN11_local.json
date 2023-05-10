@@ -1,7 +1,7 @@
 {
-    "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.TS.100days.nc",
+    "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
     "SaveDir": "/Users/alex/git/lcr/data/CNN11/",
-    "VarList":  ["TS"],
+    "VarList":  ["PRECT"],
     "FilenamePre":"",
     "FilenamePost": ".100days.nc",
     "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/orig/",
