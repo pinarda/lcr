@@ -1,0 +1,15 @@
+{
+    "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.TS.100days.nc",
+    "SaveDir": "/Users/alex/git/lcr/data/CNN11/",
+    "VarList":  ["TS"],
+    "FilenamePre":"",
+    "FilenamePost": ".100days.nc",
+    "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/orig/",
+    "CompPath":"/Users/alex/git/ldcpy/data/cam-fv/",
+    "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
+    "Times": [2, 3, 4],
+    "Navg": 2,
+    "StorageLoc": "./data/",
+    "Stride": 1
+}
