@@ -5,7 +5,7 @@ import ldcpy
 import sys
 import gc
 from sklearn.model_selection import train_test_split
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 11) -> np.ndarray:
     """
@@ -30,7 +30,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
     lat_vals = dataset.lat.values
     lon_vals = dataset.lon.values
 
-    num_windows = (len(lat_vals) - window_size + 1) * (len(lon_vals) - window_size + 1)
+    num_windows = (len(lat_vals) - window_size + 1) * (len(lon_vals))
 
     # Initialize an empty array to store the chunks.
     chunks = np.ndarray(shape=(num_windows, time, window_size, window_size))
@@ -38,10 +38,16 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
     # Convert the dataset to a numpy array for faster slicing.
     d = dataset.to_array().to_numpy()
 
+    # we want to pad the longitude values on the left and right side of the array by 5
+    # this is because the longitude values are not contiguous at the edges of the array
+    # so we want to pad the edges with the values from the opposite side of the array
+    # this will allow us to extract windows at the edges of the array
+    d = np.pad(d, ((0, 0), (0, 0), (0, 0), (5, 5)), mode='wrap')
+
     # Iterate over lat, lon, and time to extract 11x11 windows.
     idx = 0
     for i in range(len(lat_vals) - (window_size -1) ):
-        for j in range(len(lon_vals) - (window_size -1) ):
+        for j in range(len(lon_vals)):
             for k in range(time):
                 chunks[idx, k] = d[:, k, i:i + window_size, j:j + window_size]
             idx += 1

@@ -9,7 +9,10 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras import models
 from utils import parse_command_line_arguments, read_parameters_from_json
 from data_processing import cut_spatial_dataset_into_windows, split_data_into_train_val_test
-os.environ["HDF5_PLUGIN_PATH"]
+from sklearn.preprocessing import quantile_transform
+# import random forest regressor
+from sklearn.ensemble import RandomForestRegressor
+# os.environ["HDF5_PLUGIN_PATH"]
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
                                    testset="random", j=None, plotdir=None, window_size=11) -> float:
@@ -33,6 +36,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     model_path = os.path.join(storageloc, f"{varname}_model.h5")
     average_error_path = os.path.join(storageloc, "average_error.txt")
 
+
     if os.path.exists(model_path):
         model = models.load_model(model_path)
         with open(average_error_path, "r") as f:
@@ -43,56 +47,112 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
         av_preds = []
         av_dssims = []
         for comp in dssim.keys():
-            # begin by standardizing all data to have mean 0 and standard deviation 1
-            # this is done by subtracting the mean and dividing bdatay the standard deviation
-            # of the training data
+            # perform a quanitle transformation to make the data more Gaussian using the sklearn library
             for i in range(time*nvar):
-                dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
+                # dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
                 train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_into_train_val_test(dataset, dssim, time, nvar,testset, comp)
 
             model = Sequential()
 
             # let's try a deeper model.
-            model.add(Conv2D(16, (3, 3), input_shape=(11, 11, 1), name='conv1'))
+            model.add(Conv2D(16, (2, 2), input_shape=(11, 11, 1), name='conv1'))
             model.add(Activation('relu', name='relu1'))
-            model.add(Conv2D(16, (3, 3), name='conv2'))
+            model.add(Conv2D(16, (2, 2), name='conv2'))
             model.add(Activation('relu', name='relu2'))
             model.add(MaxPooling2D(pool_size=(2, 2), name='maxpool1'))
             model.add(Dropout(0.25, name='dropout1'))
-            model.add(Conv2D(32, (3, 3), name='conv3'))
-            model.add(Activation('relu', name='relu3'))
             model.add(Flatten(name='flatten1'))
             model.add(Dense(64, name='dense1'))
             model.add(Activation('relu', name='relu5'))
             model.add(Dropout(0.25, name='dropout3'))
             model.add(Dense(1, name='dense2'))
             model.add(Activation('linear', name='linear1'))
+            # set the learning rate to 0.001
 
 
-            model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+            model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['mean_absolute_error'])
 
             model.summary()
 
-            train_data = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
-            val_data = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
-            test_data = tf.data.Dataset.from_tensor_slices((test_data, test_labels))
+            # use a random forest regressor
+            # model = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=0)
 
-            train_data = train_data.map(lambda x, y: (tf.reshape(x, (11, 11, 1)), y)).batch(32).shuffle(10000).prefetch(1)
-            val_data = val_data.map(lambda x, y: (tf.reshape(x, (11, 11, 1)), y)).batch(32).shuffle(10000).prefetch(1)
-            test_data = test_data.map(lambda x, y: (tf.reshape(x, (11, 11, 1)), y)).batch(32).shuffle(10000).prefetch(1)
 
-            # model.fit(train_data, epochs=2, batch_size=32, validation_data=val_data)
-            model.fit(train_data, epochs=2, batch_size=32)
+
+            # apply a quantile transformation to each of the lat/lon slices of the data
+            # this will make the data more Gaussian
+            # first flatten the data
+            train_data = train_data.reshape(train_data.shape[0], -1)
+            val_data = val_data.reshape(val_data.shape[0], -1)
+            test_data_OLD = test_data.reshape(test_data.shape[0], -1)
+            train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+            val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+            test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
+            # then put the data back into the original shape
+            train_data = train_data.reshape(train_data.shape[0], 11, 11)
+            val_data = val_data.reshape(val_data.shape[0], 11, 11)
+            test_data = test_data.reshape(test_data.shape[0], 11, 11)
+            test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], 11, 11)
+
+            #plot the first 52416 values of test_labels in a 182*288 grid
+            # make this the first of a 1x4 subplot
+            import matplotlib.pyplot as plt
+            plt.subplot(1, 2, 1)
+            plt.imshow(test_labels[0:52416].reshape(182,288))
+            test_plot = test_labels[0:52416].reshape(182,288)
+            plt.show()
+
+            # fit the model
+            history = model.fit(train_data, train_labels, epochs=10, batch_size=128, validation_data=(val_data, val_labels))
 
             score = model.evaluate(test_data, verbose=0)
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
             predictions = model.predict(test_data)
+            plt.subplot(1, 2, 2)
+            plt.imshow(predictions[0:52416].reshape(182, 288, order='C'))
+            plt.show()
             average_prediction = np.mean(predictions)
             average_dssim = np.mean(test_labels)
             print("Average prediction: ", average_prediction)
             print("Average dssim: ", average_dssim)
+
+            # at this point there are several subplots that need to be saved
+            plt.subplot(2,3, 1)
+
+            plt.imshow(test_labels[0:52416].reshape(182,288))
+            # title the subplot
+            plt.title(f"Test labels for {comp}")
+            plt.subplot(2,3, 2)
+            plt.imshow(predictions[0:52416].reshape(182, 288, order='C'))
+            # title the subplot
+            plt.title(f"Predictions for {comp}")
+            plt.subplot(2,3, 3)
+            # plot the errors (preds - labels)
+            plt.imshow((predictions[0:52416].reshape(182, 288, order='C') - test_labels[0:52416].reshape(182,288)))
+            # title the subplot
+            plt.title(f"Errors for {comp}")
+            plt.subplot(2,3, 4)
+            # plot the test_data (only the center value of each 11x11 window)
+            # change the color map for this subplot
+
+
+            plt.imshow(test_data[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
+            # title the subplot
+            plt.title(f"Test data ({comp}, QT)")
+
+            plt.subplot(2,3, 5)
+            # plot the test_data (only the center value of each 11x11 window)
+            plt.imshow(test_data_OLD[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
+            # title the subplot
+            plt.title(f"Train data ({comp})")
+            # enlarge the figure so the subplots are not so close to each other
+            plt.gcf().set_size_inches(20, 10)
+
+
+            plt.savefig(f"{plotdir}{comp}_{j}.png")
+
 
             #model.save("model.h5")
             with open(f"{storageloc}average_error.txt", "w") as f:
@@ -107,7 +167,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
             # save the model
             model.save(f"model_{j}.h5")
-        return scores, model, av_preds, av_dssims, predictions
+        return scores, model, av_preds, av_dssims, predictions, test_plot
 
 
 def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.9995):
@@ -150,7 +210,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     json = args.json
     testset = args.testset
-    ### This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
+    # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
     if timeoverride is not None:
@@ -184,10 +244,14 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
         # extract the original and compressed dataarrays
         dataset_orig = dataset_col.sel(collection="orig").to_array().squeeze()
+        # pad the longitude dimension of the original dataset by 5 on each side (wrap around)
+        dataset_orig = xr.concat([dataset_orig[:, :, -5:], dataset_orig, dataset_orig[:, :, :5]], dim="lon")
         dssim_mats = {}
         for cdir in cdirs:
             dataset_zfp = dataset_col.sel(collection=cdir).to_array().squeeze()
-            dssim_mats[cdir] = np.empty((time, 50596))
+            # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
+            dataset_zfp = xr.concat([dataset_zfp[:, :, -5:], dataset_zfp, dataset_zfp[:, :, :5]], dim="lon")
+            dssim_mats[cdir] = np.empty((time, 52416))
             for t in range(0, time):
                 dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
                 dc.get_diff_calc("ssim_fp")
@@ -196,7 +260,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig"), time, varname, storageloc)
         # -1 means unspecified (should normally be 50596 * time unless
         # the number of time steps loaded by cut_dataset is different than time)
-        cut_dataset_orig = cut_dataset_orig.reshape((-1, 11, 11))
+        cut_dataset_orig = cut_dataset_orig.reshape((-1, 11, 11), order="F")
         # flatten dssim_mats over time
         for i, cdir in enumerate(cdirs):
             dssim_mats[cdir] = dssim_mats[cdir].flatten()
@@ -208,7 +272,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # hopefully, by this point dssim_mat contains all the dssims for a single variable at every compression level
             # and cut_dataset_orig contains all the uncompressed 11x11 chunks for a single variable
         #append cut_dataset_orig to final_cut_dataset_orig
-        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:(50596*time)], axis=0)
+        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:(52416*time)], axis=0)
         #append dssim_mats to final_dssim_mats
         for cdir in cdirs:
             if cdir not in final_dssim_mats:
@@ -217,37 +281,37 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    errors, model, av_preds, av_dssims, predictions = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j)
+    errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j)
     print(errors)
     # grab the first 50596 dssims for each compression level from dssim_mats
     # dssim_mats = {cdir: dssim_mats[cdir][0:50596] for cdir in cdirs}
     for cdir in cdirs:
         if type(time) is list:
             for t in time:
-                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final_dssim_mats[cdir][0:50596].reshape((182, 278)))
+                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final_dssim_mats[cdir][0:52416].reshape((182, 288)))
                 # also save the predictions
                 # and the errors
-                preds = np.zeros((182, 278)).flatten()
+                preds = np.zeros((182, 288)).flatten()
                 # set the values of mymap to the first 50596 values of predictions
-                if len(predictions) < 50596:
+                if len(predictions) < 52416:
                     preds[0:(len(predictions))] = predictions.squeeze()
-                    preds = preds.reshape((182, 278))
+                    preds = preds.reshape((182, 288))
                 else:
-                    preds = predictions.squeeze()[0:50596].reshape((182, 278))
+                    preds = predictions.squeeze()[0:52416].reshape((182, 288))
                 np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
         else:
-            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final_dssim_mats[cdir][0:50596].reshape((182, 278)))
+            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final_dssim_mats[cdir][0:52416].reshape((182, 288)))
             # also save the predictions
             # and the errors
-            preds = np.zeros((182, 278)).flatten()
+            preds = np.zeros((182, 288)).flatten()
             # set the values of mymap to the first 50596 values of predictions
-            if len(predictions) < 50596:
+            if len(predictions) < 52416:
                 preds[0:(len(predictions))] = predictions.squeeze()
-                preds = preds.reshape((182, 278))
+                preds = preds.reshape((182, 288))
             else:
-                preds = predictions.squeeze()[0:50596].reshape((182, 278))
+                preds = predictions.squeeze()[0:52416].reshape((182, 288))
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
-    return errors, av_preds, av_dssims, predictions
+    return errors, av_preds, av_dssims, predictions, test_dssims
 
 def build_and_evaluate_models_for_time_slices(times, j, name):
     # Will need to perform a normalization step.
@@ -264,16 +328,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name):
     av_dssims3 = []
 
     for i in times:
-        e, p, d, predictions = build_model_and_evaluate_performance(i, j, name)
+        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])
 
-        errors1.append(e[1])
-        av_preds1.append(p[1])
-        av_dssims1.append(d[1])
-
-        errors3.append(e[2])
-        av_preds3.append(p[2])
-        av_dssims3.append(d[2])
-    return errors, av_preds, av_dssims, predictions, errors1, av_preds1, av_dssims1, errors3, av_preds3, av_dssims3
+    return errors, av_preds, av_dssims, predictions, test_dssims
