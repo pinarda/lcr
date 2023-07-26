@@ -1,15 +1,15 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.TS.100days.nc",
     "SaveDir": "/glade/u/home/apinard/lcr/plots/CNN11/",
-    "VarList":  ["bc_a1_SRF", "FLNS", "FLUT", "ICEFRAC", "PSL", "TS"],
+    "VarList":  ["TS"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
     "FilenamePost": ".20060101-20071231.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/",
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/",
-    "CompDirs": ["zfp_p_10", "zfp_p_16", "zfp_p_22"],
+    "CompDirs": ["zfp_p_10"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "Times": [2, 6],
-    "Navg": 3,
+    "Times": [5],
+    "Navg": 1,
     "StorageLoc": "/glade/scratch/apinard/CNN11_store/",
     "Stride": 1
 }
