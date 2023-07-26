@@ -59,10 +59,7 @@ if __name__ == "__main__":
         sys.path.append(ldcpypath)
         import ldcpy
 
-    # dataset = ldcpy.open_datasets(list_of_files=[opath + "TS.100days.nc", cpath + cdirs[0] + "/TS.100days.nc"],
-    #                                   labels=["labels_orig", "labels_comp"],
-    #                                   data_type="cam-fv",
-    #                                   varnames=["TS"])
+    # dataset = ldcpy.open_datasets(list_of_files=[opath + "TSxf
 
     for i in range(n):
         errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0])
@@ -92,10 +89,10 @@ if __name__ == "__main__":
     test_slices = [x - 1 for x in time]
     print (time)
     print (errors_all)
-    generate_performance_plots(test_slices, [errors_all],
-                      [av_dssims_all],
-                      [av_preds_all],
-                      cdirs, j.split(".")[0], save, j.split(".")[0], storageloc)
+    # generate_performance_plots(test_slices, [errors_all],
+    #                   [av_dssims_all],
+    #                   [av_preds_all],
+    #                   cdirs, j.split(".")[0], save, j.split(".")[0], storageloc)
     import xarray as xr
 
 
