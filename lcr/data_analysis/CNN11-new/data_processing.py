@@ -1,7 +1,6 @@
 import xarray as xr
 import numpy as np
 import os
-import ldcpy
 import sys
 import gc
 from sklearn.model_selection import train_test_split

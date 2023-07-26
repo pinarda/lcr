@@ -54,7 +54,10 @@ if __name__ == "__main__":
     av_preds3_all = []
     av_dssims3_all = []
 
-    import ldcpy
+    if ldcpypath:
+        import sys
+        sys.path.append(ldcpypath)
+        import ldcpy
 
     dataset = ldcpy.open_datasets(list_of_files=[opath + "TS.100days.nc", cpath + cdirs[0] + "/TS.100days.nc"],
                                       labels=["labels_orig", "labels_comp"],
