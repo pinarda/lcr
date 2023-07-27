@@ -1,0 +1,20 @@
+path_save: "./data"
+seed: 1000
+
+learning_rate: 0.001
+batch_size: 32
+filter1: 32
+filter2: 64
+dropout: 0.2
+epochs: 200
+
+callbacks:
+  EarlyStopping:
+    monitor: "val_accuracy"
+    patience: 10
+  ReduceLROnPlateau:
+    monitor: "val_accuracy"
+    factor: 0.2
+    patience: 3
+    min_lr: 0.000000001
+    mode: "auto"
