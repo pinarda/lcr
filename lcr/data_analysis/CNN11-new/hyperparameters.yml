@@ -4,7 +4,7 @@ save_path: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave"
 pbs:
   jobs: 1
   trials_per_job: 1
-  bash: ["source ~/.bashrc", "conda activate echo"]
+  bash: ["source ~/.bashrc", "conda activate my-npl-ml"]
   batch:
     l: ["select=1:ncpus=8:ngpus=1:mem=64GB", "walltime=12:00:00"]
     A: "NTDD0005"
