@@ -88,6 +88,7 @@ class Objective(BaseObjective):
         # Load the data and split it between train and test sets
         (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 
+
         # Scale images to the [0, 1] range
         x_train = x_train.astype("float32") / 255
         x_test = x_test.astype("float32") / 255

@@ -20,7 +20,7 @@ optuna:
   objective: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/objective.py"
   direction: "maximize"
   metric: "val_accuracy"
-  n_trials: 500
+  n_trials: 50
   gpu: True
   sampler:
     type: "TPESampler"
