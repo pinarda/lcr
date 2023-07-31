@@ -125,9 +125,9 @@ class Objective(BaseObjective):
 
         # Compile
         model.compile(
-            lr=learning_rate,
+            # lr=learning_rate,
             loss="categorical_crossentropy",
-            optimizer="adam",
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
             metrics=["accuracy"],
         )
 
