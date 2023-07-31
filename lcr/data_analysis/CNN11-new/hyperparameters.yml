@@ -14,7 +14,7 @@ pbs:
     e: "./err"
 
 optuna:
-  study_name: "keras-cifar"
+  study_name: "CNN11_study"
   storage: "cifar.db"
   storage_type: "sqlite"
   objective: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/objective.py"
