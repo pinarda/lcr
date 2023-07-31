@@ -9,7 +9,7 @@ pbs:
     l: ["select=1:ncpus=8:ngpus=1:mem=64GB", "walltime=12:00:00"]
     A: "NTDD0005"
     q: "casper"
-    N: "keras_example"
+    N: "CNN11"
     o: "./out"
     e: "./err"
 
