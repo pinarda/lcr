@@ -88,10 +88,10 @@ class Objective(BaseObjective):
         # Load the data and split it between train and test sets
         # (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
         # load the numpy datasets train_data_CNN11_local.npy and test_data_CNN11_local.npy
-        x_train = np.load("bigdata/train_data_CNN11_local.npy")
-        x_test = np.load("bigdata/test_data_CNN11_local.npy")
-        y_train = np.load("bigdata/train_labels_CNN11_local.npy")
-        y_test = np.load("bigdata/test_labels_CNN11_local.npy")
+        x_train = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/train_data_CNN11_local.npy")
+        x_test = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/test_data_CNN11_local.npy")
+        y_train = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/train_labels_CNN11_local.npy")
+        y_test = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/test_labels_CNN11_local.npy")
 
 
         # Scale images to the [0, 1] range
