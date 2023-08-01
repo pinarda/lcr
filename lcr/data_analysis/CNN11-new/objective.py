@@ -83,7 +83,7 @@ class Objective(BaseObjective):
 
         # Load the CIFAR dataset
         num_classes = 10
-        input_shape = (32, 32, 3)
+        input_shape = (11, 11, 1)
 
         # Load the data and split it between train and test sets
         # (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
@@ -93,6 +93,9 @@ class Objective(BaseObjective):
         y_train = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/train_labels_CNN11_local.npy")
         y_test = np.load("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/data/TS100/test_labels_CNN11_local.npy")
 
+        # reshape the data to be 11x11x1
+        x_train = x_train.reshape(x_train.shape[0], 11, 11, 1)
+        x_test = x_test.reshape(x_test.shape[0], 11, 11, 1)
 
         # Scale images to the [0, 1] range
         # x_train = x_train.astype("float32") / 255
