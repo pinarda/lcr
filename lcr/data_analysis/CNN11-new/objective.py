@@ -86,22 +86,27 @@ class Objective(BaseObjective):
         input_shape = (32, 32, 3)
 
         # Load the data and split it between train and test sets
-        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+        # (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+        # load the numpy datasets train_data_CNN11_local.npy and test_data_CNN11_local.npy
+        x_train = np.load("bigdata/train_data_CNN11_local.npy")
+        x_test = np.load("bigdata/test_data_CNN11_local.npy")
+        y_train = np.load("bigdata/train_labels_CNN11_local.npy")
+        y_test = np.load("bigdata/test_labels_CNN11_local.npy")
 
 
         # Scale images to the [0, 1] range
-        x_train = x_train.astype("float32") / 255
-        x_test = x_test.astype("float32") / 255
-
-        x_train = np.expand_dims(x_train, -1)
-        x_test = np.expand_dims(x_test, -1)
-        logger.info(f"x_train/valid shape: {x_train.shape}")
-        logger.info(f"train/valid samples: {x_train.shape[0]}")
-        logger.info(f"test hold out samples: {x_test.shape[0]}")
-
-        # convert class vectors to binary class matrices
-        y_train = tf.keras.utils.to_categorical(y_train, num_classes)
-        y_test = tf.keras.utils.to_categorical(y_test, num_classes)
+        # x_train = x_train.astype("float32") / 255
+        # x_test = x_test.astype("float32") / 255
+        #
+        # x_train = np.expand_dims(x_train, -1)
+        # x_test = np.expand_dims(x_test, -1)
+        # logger.info(f"x_train/valid shape: {x_train.shape}")
+        # logger.info(f"train/valid samples: {x_train.shape[0]}")
+        # logger.info(f"test hold out samples: {x_test.shape[0]}")
+        #
+        # # convert class vectors to binary class matrices
+        # y_train = tf.keras.utils.to_categorical(y_train, num_classes)
+        # y_test = tf.keras.utils.to_categorical(y_test, num_classes)
 
         # Load the model
         model = tf.keras.Sequential(
@@ -113,7 +118,8 @@ class Objective(BaseObjective):
                 layers.MaxPooling2D(pool_size=(2, 2)),
                 layers.Flatten(),
                 layers.Dropout(dropout),
-                layers.Dense(num_classes, activation="softmax"),
+                # now make this a regression problem
+                layers.Dense(1, activation="linear"),
             ]
         )
 
