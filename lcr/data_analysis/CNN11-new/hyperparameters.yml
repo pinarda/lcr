@@ -19,7 +19,7 @@ optuna:
   storage_type: "sqlite"
   objective: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/objective.py"
   direction: "maximize"
-  metric: "val_accuracy"
+  metric: "mean_squared_error"
   n_trials: 10
   gpu: True
   sampler:
