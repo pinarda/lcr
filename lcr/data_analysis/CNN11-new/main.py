@@ -134,9 +134,9 @@ if __name__ == "__main__":
                 # plt.clf()
 
                 allthings = convert_np_to_dssims([test_dssims, preds, test_dssims - preds], ["Actual DSSIMs", "Model Predictions", "Error"])
-                # ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True, color="plasma")
-                # plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
-                # plt.clf()
+                ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True, color="plasma")
+                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
+                plt.clf()
 
                 # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
                 #            weighted=False, start=t, end=t, short_title=True, vert_plot=True)
