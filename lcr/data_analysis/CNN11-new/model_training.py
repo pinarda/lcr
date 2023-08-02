@@ -79,12 +79,12 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                     # for line in lines:
                     #     mse.append(float(line.split(",")[1]))
                     for line in lines[1:]:
-                        mse.append(float(line.split(",")[1]))
+                        mse.append(float(line.split(",")[7]))
                     min_mse = min(mse)
-                    min_mse_index = mse.index(min_mse)
-                    filter1 = int(lines[min_mse_index].split(",")[2])
-                    filter2 = int(lines[min_mse_index].split(",")[3])
-                    dropout = float(lines[min_mse_index].split(",")[4])
+                    min_mse_index = mse.index(min_mse) + 1
+                    filter1 = int(lines[min_mse_index].split(",")[3])
+                    filter2 = int(lines[min_mse_index].split(",")[4])
+                    dropout = float(lines[min_mse_index].split(",")[6])
                     batch_size = int(lines[min_mse_index].split(",")[5])
             else:
                 filter1 = 16
