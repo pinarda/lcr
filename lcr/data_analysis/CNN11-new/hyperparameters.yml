@@ -20,15 +20,15 @@ optuna:
   objective: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/objective.py"
   direction: "maximize"
   metric: "mean_squared_error"
-  n_trials: 10
+  n_trials: 5
   gpu: True
   sampler:
     type: "TPESampler"
-    n_startup_trials: 5
+    n_startup_trials: 3
   pruner:
     type: "MedianPruner"
-    n_startup_trials: 3
-    n_min_trials: 5
+    n_startup_trials: 2
+    n_min_trials: 3
   parameters:
     learning_rate:
       type: "loguniform"
