@@ -13,7 +13,7 @@ os.environ["HDF5_PLUGIN_PATH"]
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -130,6 +130,18 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             test_data = test_data.reshape(test_data.shape[0], 11, 11)
             test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], 11, 11)
 
+            # save train_data, train_labels, val_data, val_labels, test_data, test_labels
+            np.save(f"./data/TS100/train_data_CNN11_local.npy", train_data)
+            np.save(f"./data/TS100train_labels_CNN11_local.npy", train_labels)
+            np.save(f"./data/TS100val_data_CNN11_local.npy", val_data)
+            np.save(f"./data/TS100val_labels_CNN11_local.npy", val_labels)
+            np.save(f"./data/TS100test_data_CNN11_local.npy", test_data)
+            np.save(f"./data/TS100test_labels_CNN11_local.npy", test_labels)
+
+
+            if only_data:
+                return
+
             #plot the first 52416 values of test_labels in a 182*288 grid
             # make this the first of a 1x4 subplot
             import matplotlib.pyplot as plt
@@ -237,7 +249,7 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
     return classification_matrix
 
 
-def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1):
+def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False):
     args = parse_command_line_arguments()
 
     json = args.json
@@ -313,7 +325,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j)
+    if not only_data:
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False)
+    else:
+        return
     print(errors)
     # grab the first 50596 dssims for each compression level from dssim_mats
     # dssim_mats = {cdir: dssim_mats[cdir][0:50596] for cdir in cdirs}
@@ -345,7 +360,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
     return errors, av_preds, av_dssims, predictions, test_dssims
 
-def build_and_evaluate_models_for_time_slices(times, j, name):
+def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False):
     # Will need to perform a normalization step.
     errors = []
     av_preds = []
@@ -360,7 +375,7 @@ def build_and_evaluate_models_for_time_slices(times, j, name):
     av_dssims3 = []
 
     for i in times:
-        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name)
+        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])

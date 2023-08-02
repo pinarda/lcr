@@ -6,12 +6,12 @@ batch_size: 32
 filter1: 32
 filter2: 64
 dropout: 0.2
-epochs: 5
+epochs: 4
 
 callbacks:
   EarlyStopping:
     monitor: "mean_squared_error"
-    patience: 10
+    patience: 3
   ReduceLROnPlateau:
     monitor: "mean_squared_error"
     factor: 0.2
