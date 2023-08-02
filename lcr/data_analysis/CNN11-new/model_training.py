@@ -9,7 +9,7 @@ from sklearn.preprocessing import quantile_transform
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
