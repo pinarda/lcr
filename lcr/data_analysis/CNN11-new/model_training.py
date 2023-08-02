@@ -75,7 +75,10 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 with open(csv_path, "r") as f:
                     lines = f.readlines()
                     mse = []
-                    for line in lines:
+                    # remember to skip the first line
+                    # for line in lines:
+                    #     mse.append(float(line.split(",")[1]))
+                    for line in lines[1:]:
                         mse.append(float(line.split(",")[1]))
                     min_mse = min(mse)
                     min_mse_index = mse.index(min_mse)
