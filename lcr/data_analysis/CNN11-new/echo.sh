@@ -20,4 +20,6 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/CNN11-new
 
 echo-run hyperparameters.yml model_config.yml
+
+conda activate my-npl-ml
 python main.py
