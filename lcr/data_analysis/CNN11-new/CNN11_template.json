@@ -8,7 +8,7 @@
     "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/",
     "CompDirs": ["zfp_p_10"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "Times": [5],
+    "Times": [10],
     "Navg": 1,
     "StorageLoc": "/glade/scratch/apinard/CNN11_store/",
     "Stride": 1

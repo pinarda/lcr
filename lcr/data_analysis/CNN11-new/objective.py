@@ -157,7 +157,9 @@ class Objective(BaseObjective):
 
         # Return the validation accuracy for the last epoch.
         objective = max(history.history[self.metric])
-
         results_dictionary = {self.metric: objective}
+
+        # save the model to the models directory
+        model.save("/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/models/model_CNN11_local.h5")
 
         return results_dictionary

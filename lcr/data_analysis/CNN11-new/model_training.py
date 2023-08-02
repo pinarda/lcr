@@ -3,16 +3,14 @@ import xarray as xr
 import numpy as np
 import sys
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from tensorflow.keras import models
 from utils import parse_command_line_arguments, read_parameters_from_json
 from data_processing import cut_spatial_dataset_into_windows, split_data_into_train_val_test
 from sklearn.preprocessing import quantile_transform
+# import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
 # os.environ["HDF5_PLUGIN_PATH"]
+
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
                                    testset="random", j=None, plotdir=None, window_size=11) -> float:
@@ -38,7 +36,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
 
     if os.path.exists(model_path):
-        model = models.load_model(model_path)
+        model = tf.keras.models.load_model(model_path)
         with open(average_error_path, "r") as f:
             average_error = float(f.read())
         return model, average_error
@@ -52,22 +50,57 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 # dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
                 train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_into_train_val_test(dataset, dssim, time, nvar,testset, comp)
 
-            model = Sequential()
+            # model = Sequential()
 
             # let's try a deeper model.
-            model.add(Conv2D(16, (2, 2), input_shape=(11, 11, 1), name='conv1'))
-            model.add(Activation('relu', name='relu1'))
-            model.add(Conv2D(16, (2, 2), name='conv2'))
-            model.add(Activation('relu', name='relu2'))
-            model.add(MaxPooling2D(pool_size=(2, 2), name='maxpool1'))
-            model.add(Dropout(0.25, name='dropout1'))
-            model.add(Flatten(name='flatten1'))
-            model.add(Dense(64, name='dense1'))
-            model.add(Activation('relu', name='relu5'))
-            model.add(Dropout(0.25, name='dropout3'))
-            model.add(Dense(1, name='dense2'))
-            model.add(Activation('linear', name='linear1'))
+            # model.add(Conv2D(16, (2, 2), input_shape=(11, 11, 1), name='conv1'))
+            # model.add(Activation('relu', name='relu1'))
+            # model.add(Conv2D(16, (2, 2), name='conv2'))
+            # model.add(Activation('relu', name='relu2'))
+            # model.add(MaxPooling2D(pool_size=(2, 2), name='maxpool1'))
+            # model.add(Dropout(0.25, name='dropout1'))
+            # model.add(Flatten(name='flatten1'))
+            # model.add(Dense(64, name='dense1'))
+            # model.add(Activation('relu', name='relu5'))
+            # model.add(Dropout(0.25, name='dropout3'))
+            # model.add(Dense(1, name='dense2'))
+            # model.add(Activation('linear', name='linear1'))
             # set the learning rate to 0.001
+
+            # check the echosave directory, open trial_results.csv
+            # read the column mean_squared_error to find the row with the minimum value
+            # then set filter1, filter2, and dropout to the values in that row
+            csv_path = os.path.join("echosave/trial_results.csv")
+            if os.path.exists(csv_path):
+                with open(csv_path, "r") as f:
+                    lines = f.readlines()
+                    mse = []
+                    for line in lines:
+                        mse.append(float(line.split(",")[1]))
+                    min_mse = min(mse)
+                    min_mse_index = mse.index(min_mse)
+                    filter1 = int(lines[min_mse_index].split(",")[2])
+                    filter2 = int(lines[min_mse_index].split(",")[3])
+                    dropout = float(lines[min_mse_index].split(",")[4])
+                    batch_size = int(lines[min_mse_index].split(",")[5])
+            else:
+                filter1 = 16
+                filter2 = 16
+                dropout = 0.25
+                batch_size = 32
+
+            model = tf.keras.Sequential(
+                [
+                    tf.keras.Input(shape=(11, 11, 1)),
+                    tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu"),
+                    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+                    tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu"),
+                    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+                    tf.keras.layers.Flatten(),
+                    tf.keras.layers.Dropout(dropout),
+                    tf.keras.layers.Dense(1, activation="linear"),
+                ]
+            )
 
 
             model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['mean_absolute_error'])
@@ -103,7 +136,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             plt.show()
 
             # fit the model
-            history = model.fit(train_data, train_labels, epochs=10, batch_size=128, validation_data=(val_data, val_labels))
+            history = model.fit(train_data, train_labels, epochs=10, batch_size=batch_size, validation_data=(val_data, val_labels))
 
             score = model.evaluate(test_data, verbose=0)
             print('Test loss:', score[0])
@@ -118,20 +151,16 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             print("Average prediction: ", average_prediction)
             print("Average dssim: ", average_dssim)
 
-            # at this point there are several subplots that need to be saved
             plt.subplot(2,3, 1)
 
             plt.imshow(test_labels[0:52416].reshape(182,288))
-            # title the subplot
             plt.title(f"Test labels for {comp}")
             plt.subplot(2,3, 2)
             plt.imshow(predictions[0:52416].reshape(182, 288, order='C'))
-            # title the subplot
             plt.title(f"Predictions for {comp}")
             plt.subplot(2,3, 3)
             # plot the errors (preds - labels)
             plt.imshow((predictions[0:52416].reshape(182, 288, order='C') - test_labels[0:52416].reshape(182,288)))
-            # title the subplot
             plt.title(f"Errors for {comp}")
             plt.subplot(2,3, 4)
             # plot the test_data (only the center value of each 11x11 window)
