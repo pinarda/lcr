@@ -132,11 +132,11 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
             # save train_data, train_labels, val_data, val_labels, test_data, test_labels
             np.save(f"./data/TS100/train_data_CNN11_local.npy", train_data)
-            np.save(f"./data/TS100train_labels_CNN11_local.npy", train_labels)
-            np.save(f"./data/TS100val_data_CNN11_local.npy", val_data)
-            np.save(f"./data/TS100val_labels_CNN11_local.npy", val_labels)
-            np.save(f"./data/TS100test_data_CNN11_local.npy", test_data)
-            np.save(f"./data/TS100test_labels_CNN11_local.npy", test_labels)
+            np.save(f"./data/TS100/train_labels_CNN11_local.npy", train_labels)
+            np.save(f"./data/TS100/val_data_CNN11_local.npy", val_data)
+            np.save(f"./data/TS100/val_labels_CNN11_local.npy", val_labels)
+            np.save(f"./data/TS100/test_data_CNN11_local.npy", test_data)
+            np.save(f"./data/TS100/test_labels_CNN11_local.npy", test_labels)
 
 
             if only_data:

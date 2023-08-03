@@ -14,11 +14,12 @@
 ### Join output and error streams into single file
 #PBS -j oe
 
-conda activate my-npl-ml
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/CNN11-new
+rm -f echosave/*
 
+conda activate my-npl-ml
 python main.py --onlydata
 
 conda activate echo
