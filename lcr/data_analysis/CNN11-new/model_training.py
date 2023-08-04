@@ -9,7 +9,7 @@ from sklearn.preprocessing import quantile_transform
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
@@ -79,31 +79,50 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                     # for line in lines:
                     #     mse.append(float(line.split(",")[1]))
                     for line in lines[1:]:
-                        mse.append(float(line.split(",")[7]))
+                        mse.append(float(line.split(",")[8]))
                     min_mse = min(mse)
                     min_mse_index = mse.index(min_mse) + 1
                     filter1 = int(lines[min_mse_index].split(",")[3])
                     filter2 = int(lines[min_mse_index].split(",")[4])
                     dropout = float(lines[min_mse_index].split(",")[6])
                     batch_size = int(lines[min_mse_index].split(",")[5])
+                    conv_layers = int(lines[min_mse_index].split(",")[7])
             else:
                 filter1 = 16
                 filter2 = 16
                 dropout = 0.25
                 batch_size = 32
+                conv_layers=2
 
-            model = tf.keras.Sequential(
-                [
-                    tf.keras.Input(shape=(11, 11, 1)),
-                    tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu"),
-                    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-                    tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu"),
-                    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-                    tf.keras.layers.Flatten(),
-                    tf.keras.layers.Dropout(dropout),
-                    tf.keras.layers.Dense(1, activation="linear"),
-                ]
-            )
+            # model = tf.keras.Sequential(
+            #     [
+            #         tf.keras.Input(shape=(11, 11, 1)),
+            #         tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu"),
+            #         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+            #         tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu"),
+            #         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+            #         tf.keras.layers.Flatten(),
+            #         tf.keras.layers.Dropout(dropout),
+            #         tf.keras.layers.Dense(1, activation="linear"),
+            #     ]
+            # )
+            # build the model described above, using the functional API
+            inputs = tf.keras.Input(shape=(11, 11, 1))
+            x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu")(inputs)
+            # if conv_layers is 3, add another conv layer
+            if conv_layers == 3 || conv_layers == 4:
+                x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu")(x)
+            x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
+            x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
+            x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
+            if conv_layers == 4:
+                x = tf.keras.layers.Conv2D(filter2, kernel_size=(2, 2), activation="relu")(x)
+            x = tf.keras.layers.Flatten()(x)
+            x = tf.keras.layers.Dropout(dropout)(x)
+            outputs = tf.keras.layers.Dense(1, activation="linear")(x)
+            model = tf.keras.Model(inputs=inputs, outputs=outputs)
+
+
 
 
             model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['mean_absolute_error'])

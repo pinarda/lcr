@@ -2,7 +2,7 @@ log: True
 save_path: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave"
 
 pbs:
-  jobs: 3
+  jobs: 5
   trials_per_job: 1
   bash: ["source ~/.bashrc", "conda activate my-npl-ml"]
   batch:
@@ -34,7 +34,7 @@ optuna:
       type: "loguniform"
       settings:
         name: "learning_rate"
-        low: 0.00001
+        low: 0.0001
         high: 0.01
     filter1:
       type: "int"
@@ -60,3 +60,9 @@ optuna:
         name: "dropout"
         low: 0.0
         high: 0.5
+    conv_layers:
+      type: "int"
+      settings:
+        name: "conv_layers"
+        low: 2
+        high: 4

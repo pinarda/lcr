@@ -43,6 +43,7 @@ def custom_updates(trial, conf):
     learning_rate = trial.suggest_float(**hyperparameters["learning_rate"]["settings"])
     batch_size = trial.suggest_int(**hyperparameters["batch_size"]["settings"])
     dropout = trial.suggest_float(**hyperparameters["dropout"]["settings"])
+    conv_layers = trial.suggest_int(**hyperparameters["conv_layers"]["settings"])
 
     # Update the trial parameters in the configuration
     conf["filter1"] = filter1
@@ -50,6 +51,7 @@ def custom_updates(trial, conf):
     conf["learning_rate"] = learning_rate
     conf["batch_size"] = batch_size
     conf["dropout"] = dropout
+    conf["conv_layers"] = conv_layers
 
     return conf
 
@@ -75,6 +77,7 @@ class Objective(BaseObjective):
         learning_rate = conf["learning_rate"]
         batch_size = conf["batch_size"]
         dropout = conf["dropout"]
+        conv_layers = conf["conv_layers"]
         epochs = conf["epochs"]
         seed = conf["seed"]
 

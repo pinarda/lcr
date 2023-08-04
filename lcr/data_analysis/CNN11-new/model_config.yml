@@ -6,7 +6,8 @@ batch_size: 32
 filter1: 32
 filter2: 64
 dropout: 0.2
-epochs: 4
+conv_layers: 2
+epochs: 8
 
 callbacks:
   EarlyStopping:
