@@ -24,7 +24,14 @@ conda activate my-npl-ml
 python main.py --onlydata
 
 conda activate echo
-echo-run hyperparameters.yml model_config.yml
+alias postcmd 'set start_time=`date +%s`'
+alias precmd 'set end_time=`date +%s`; @ cmd_time= $end_time - $start_time; echo took $cmd_time seconds'
+
+# time the run and pipe the output to a file
+time echo-run hyperparameters.yml model_config.yml > echosave/echo-run.out
+
+# time the run
 
 conda activate my-npl-ml
 python main.py
+
