@@ -110,7 +110,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             inputs = tf.keras.Input(shape=(11, 11, 1))
             x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu")(inputs)
             # if conv_layers is 3, add another conv layer
-            if conv_layers == 3 || conv_layers == 4:
+            if conv_layers == 3 or conv_layers == 4:
                 x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu")(x)
             x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
             x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
