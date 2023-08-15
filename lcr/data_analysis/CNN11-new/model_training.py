@@ -213,8 +213,12 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # enlarge the figure so the subplots are not so close to each other
             plt.gcf().set_size_inches(20, 10)
 
+            # generate a random number between 0 and 1000000
+            # save the figure with that number as a suffix
+            import random
+            if plotdir is not None:
+                plt.savefig(f"{plotdir}{comp}_{j}_{random.randint(0, 1000000)}.png")
 
-            plt.savefig(f"{plotdir}{comp}_{j}.png")
 
 
             #model.save("model.h5")
