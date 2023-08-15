@@ -70,7 +70,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # check the echosave directory, open trial_results.csv
             # read the column mean_squared_error to find the row with the minimum value
             # then set filter1, filter2, and dropout to the values in that row
-            csv_path = os.path.join("echosave1/trial_results.csv")
+            csv_path = os.path.join("echosave2/trial_results.csv")
             if os.path.exists(csv_path):
                 with open(csv_path, "r") as f:
                     lines = f.readlines()

@@ -1,5 +1,5 @@
 log: True
-save_path: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave1"
+save_path: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave2"
 
 pbs:
   jobs: 10
