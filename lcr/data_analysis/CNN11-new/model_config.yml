@@ -1,4 +1,4 @@
-path_save: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave"
+path_save: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave1"
 seed: 1000
 
 learning_rate: 0.001
