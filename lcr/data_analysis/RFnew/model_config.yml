@@ -1,0 +1,21 @@
+path_save: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave2"
+seed: 1000
+
+learning_rate: 0.001
+batch_size: 32
+filter1: 32
+filter2: 64
+dropout: 0.2
+conv_layers: 2
+epochs: 8
+
+callbacks:
+  EarlyStopping:
+    monitor: "mean_squared_error"
+    patience: 3
+  ReduceLROnPlateau:
+    monitor: "mean_squared_error"
+    factor: 0.2
+    patience: 3
+    min_lr: 0.000000001
+    mode: "auto"

@@ -1,0 +1,68 @@
+log: True
+save_path: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/echosave2"
+
+pbs:
+  jobs: 10
+  trials_per_job: 1
+  bash: ["source ~/.bashrc", "conda activate my-npl-ml"]
+  batch:
+    l: ["select=1:ncpus=8:ngpus=1:mem=64GB", "walltime=12:00:00"]
+    A: "NTDD0005"
+    q: "casper"
+    N: "CNN11"
+    o: "./out"
+    e: "./err"
+
+optuna:
+  study_name: "CNN11_study"
+  storage: "cifar.db"
+  storage_type: "sqlite"
+  objective: "/glade/u/home/apinard/lcr/lcr/data_analysis/CNN11-new/objective.py"
+  direction: "maximize"
+  metric: "mean_squared_error"
+  n_trials: 10
+  gpu: True
+  sampler:
+    type: "TPESampler"
+    n_startup_trials: 3
+  pruner:
+    type: "MedianPruner"
+    n_startup_trials: 2
+    n_min_trials: 3
+  parameters:
+    learning_rate:
+      type: "loguniform"
+      settings:
+        name: "learning_rate"
+        low: 0.0001
+        high: 0.01
+    filter1:
+      type: "int"
+      settings:
+          name: "filter1"
+          low: 1
+          high: 512
+    filter2:
+      type: "int"
+      settings:
+          name: "filter2"
+          low: 1
+          high: 512
+    batch_size:
+      type: "int"
+      settings:
+        name: "batch_size"
+        low: 16
+        high: 512
+    dropout:
+      type: "float"
+      settings:
+        name: "dropout"
+        low: 0.0
+        high: 0.5
+    conv_layers:
+      type: "int"
+      settings:
+        name: "conv_layers"
+        low: 2
+        high: 4
