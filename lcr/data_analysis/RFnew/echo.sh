@@ -19,7 +19,7 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
-set model = "rf"
+set model = "cnn"
 
 if ($model == "cnn") then
   conda activate my-npl-ml
