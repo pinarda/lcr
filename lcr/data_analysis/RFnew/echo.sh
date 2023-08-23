@@ -23,7 +23,7 @@ set model = "rf"
 
 if ($model == "cnn") then
   conda activate my-npl-ml
-  python main.py --onlydata -j "CNN11_template.json" -m "'${model}'"
+  python main.py --onlydata -j "CNN11_template.json" -m "${model}"
 
   conda activate echo
   alias postcmd 'set start_time=`date +%s`'
@@ -36,5 +36,5 @@ if ($model == "cnn") then
 endif
 
 conda activate my-npl-ml
-python main.py -j "CNN11_template.json" -m "'${model}'"
+python main.py -j "CNN11_template.json" -m "${model}"
 
