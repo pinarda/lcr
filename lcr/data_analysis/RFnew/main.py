@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
     j = args.json
     only_data = args.onlydata
+    model = args.model
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride = read_parameters_from_json(j)
     # times = [2, 3, 4]
     # n = 2
