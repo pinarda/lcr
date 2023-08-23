@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn") -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -64,6 +64,8 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     """
     model_path = ""
     average_error_path = os.path.join(storageloc, "average_error.txt")
+    args = parse_command_line_arguments()
+    modeltype = args.model
 
     if os.path.exists(model_path):
         model = tf.keras.models.load_model(model_path)
