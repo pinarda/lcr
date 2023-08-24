@@ -9,7 +9,7 @@ from utils import parse_command_line_arguments, read_parameters_from_json
 from data_processing import cut_spatial_dataset_into_windows, split_data_into_train_val_test
 from sklearn.preprocessing import quantile_transform
 import sklearn
-
+import datetime
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn") -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -64,8 +64,6 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     """
     model_path = ""
     average_error_path = os.path.join(storageloc, "average_error.txt")
-    args = parse_command_line_arguments()
-    modeltype = args.model
 
     if os.path.exists(model_path):
         model = tf.keras.models.load_model(model_path)
@@ -192,7 +190,6 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             np.save(f"data/TS100/test_data_CNN11_local.npy", test_data)
             np.save(f"data/TS100/test_labels_CNN11_local.npy", test_labels)
 
-
             if only_data:
                 return
 
@@ -256,11 +253,12 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # enlarge the figure so the subplots are not so close to each other
             plt.gcf().set_size_inches(20, 10)
 
-            # generate a random number between 0 and 1000000
+            # generate a date string for the plot title
             # save the figure with that number as a suffix
-            import random
+            date = datetime.datetime.now()
+            date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
             if plotdir is not None:
-                plt.savefig(f"{plotdir}{comp}_{j}_{random.randint(0, 1000000)}.png")
+                plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}.png")
 
 
             if modeltype == "cnn":
@@ -315,7 +313,7 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
     return classification_matrix
 
 
-def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False):
+def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False, modeltype="cnn"):
     args = parse_command_line_arguments()
 
     json = args.json
@@ -392,7 +390,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     # call fit_cnn on the 11x11 chunks and the dssim values
     if not only_data:
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype)
     else:
         return
     print(errors)
@@ -426,7 +424,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
     return errors, av_preds, av_dssims, predictions, test_dssims
 
-def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False):
+def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn"):
     # Will need to perform a normalization step.
     errors = []
     av_preds = []
@@ -441,7 +439,7 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False):
     av_dssims3 = []
 
     for i in times:
-        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False)
+        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])

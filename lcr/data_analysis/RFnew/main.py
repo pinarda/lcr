@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # dataset = ldcpy.open_datasets(list_of_files=[opath + "TSxf
 
     for i in range(n):
-        errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False)
+        errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False, modeltype=model)
         if only_data:
             break
         errors_all.append(errors)
