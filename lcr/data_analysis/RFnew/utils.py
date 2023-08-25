@@ -1,7 +1,7 @@
 import argparse
 import os
 import json
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 def read_parameters_from_json(metajson):
     comp = ""
@@ -71,10 +71,10 @@ def read_parameters_from_json(metajson):
 
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="CNN11_template.json")
+    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local.json")
     parser.add_argument("-t", "--testset", help="test set type", type=str, default="60_25_wholeslice")
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=False)
-    parser.add_argument("-m", "--model", help="model type", type=str, default="rf")
+    parser.add_argument("-m", "--model", help="model type", type=str, default="cnn")
     args = parser.parse_args()
 
     return args

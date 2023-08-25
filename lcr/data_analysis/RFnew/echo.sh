@@ -19,22 +19,23 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
-set model = "cnn"
+set model = ("cnn" "rf")
 
-if ($model == "cnn") then
+foreach model ($models)
+  if ($model == "cnn") then
+    conda activate my-npl-ml
+    python main.py --onlydata -j RF_TEMPLATE -m "${model}"
+
+    conda activate echo
+    alias postcmd 'set start_time=`date +%s`'
+    alias precmd 'set end_time=`date +%s`; @ cmd_time= $end_time - $start_time; echo took $cmd_time seconds'
+
+    # time the run and pipe the output to a file
+    time echo-run hyperparameters.yml model_config.yml > echosave/echo-run.out
+
+    # time the run
+  endif
+
   conda activate my-npl-ml
-  python main.py --onlydata -j "CNN11_template.json" -m "${model}"
-
-  conda activate echo
-  alias postcmd 'set start_time=`date +%s`'
-  alias precmd 'set end_time=`date +%s`; @ cmd_time= $end_time - $start_time; echo took $cmd_time seconds'
-
-  # time the run and pipe the output to a file
-  time echo-run hyperparameters.yml model_config.yml > echosave/echo-run.out
-
-  # time the run
-endif
-
-conda activate my-npl-ml
-python main.py -j "CNN11_template.json" -m "${model}"
-
+  python main.py -j RF_TEMPLATE -m "${model}" --testset TESTSET
+end

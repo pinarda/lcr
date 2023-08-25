@@ -6,6 +6,7 @@ from plotting import generate_performance_plots
 from model_training import build_and_evaluate_models_for_time_slices
 import os
 # os.environ["HDF5_PLUGIN_PATH"]
+import datetime
 
 
 def convert_np_to_dssims(np_arrays, titles):
@@ -112,6 +113,8 @@ if __name__ == "__main__":
     for cdir in cdirs:
         if type(time) == list:
             for t in time:
+                date = datetime.datetime.now()
+                date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
 
                 # load the dssims and predictions
                 dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
@@ -145,9 +148,10 @@ if __name__ == "__main__":
                 # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
                 # plt.clf()
 
+
                 allthings = convert_np_to_dssims([test_dssims, preds, test_dssims - preds], ["Actual DSSIMs", "Model Predictions", "Error"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True, color="plasma")
-                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
+                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
                 plt.clf()
 
                 # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
@@ -175,7 +179,7 @@ if __name__ == "__main__":
                        short_title=True, cmax=1, cmin=0, vert_plot=True)
 
             # save the plots
-            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
             plt.clf()
 
             da_preds = convert_np_to_dssims([preds], ["Model Predictions"])
@@ -183,29 +187,29 @@ if __name__ == "__main__":
                        short_title=True, cmax=1, cmin=0, vert_plot=True)
 
             # save the plots
-            plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
 
             errors = [dssims - preds]
             errors = convert_np_to_dssims(errors, ["Errors"])
             ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True,
                        vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
             plt.clf()
 
             allthings = convert_np_to_dssims([dssims, preds, dssims - preds],
                                              ["Actual DSSIMs", "Model Predictions", "Error"])
             ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"],
                        weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
             plt.clf()
 
             ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
                        weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
             plt.clf()
 
             ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff",
                        weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
             plt.clf()
 
