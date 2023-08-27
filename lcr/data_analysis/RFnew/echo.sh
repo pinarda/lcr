@@ -19,12 +19,12 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
-set model = ("cnn" "rf")
+set models = ("cnn" "rf")
 
 foreach model ($models)
   if ($model == "cnn") then
     conda activate my-npl-ml
-    python main.py --onlydata -j RF_TEMPLATE -m "${model}"
+    python main.py --onlydata -j RF_TEMPLATE.json -m "${model}"
 
     conda activate echo
     alias postcmd 'set start_time=`date +%s`'
@@ -37,5 +37,5 @@ foreach model ($models)
   endif
 
   conda activate my-npl-ml
-  python main.py -j RF_TEMPLATE -m "${model}" --testset TESTSET
+  python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET
 end
