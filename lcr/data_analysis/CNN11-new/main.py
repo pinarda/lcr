@@ -63,8 +63,6 @@ if __name__ == "__main__":
         sys.path.append(ldcpypath)
         import ldcpy
 
-    # dataset = ldcpy.open_datasets(list_of_files=[opath + "TSxf
-
     for i in range(n):
         errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False)
         if only_data:
@@ -141,9 +139,17 @@ if __name__ == "__main__":
                 # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
                 # plt.clf()
 
-                allthings = convert_np_to_dssims([test_dssims, preds, test_dssims - preds], ["Actual DSSIMs", "Model Predictions", "Error"])
-                ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True, color="plasma")
-                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}.png", bbox_inches='tight')
+                allthings = convert_np_to_dssims([test_dssims, preds], ["Actual DSSIMs", "Model Predictions"])
+                ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True, color="plasma")
+                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_noerr.png", bbox_inches='tight')
+                plt.clf()
+
+                allthings = convert_np_to_dssims([test_dssims - preds],
+                                                 ["Error"])
+                ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
+                           weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True,
+                           color="plasma")
+                plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_erroronly.png", bbox_inches='tight')
                 plt.clf()
 
                 # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],

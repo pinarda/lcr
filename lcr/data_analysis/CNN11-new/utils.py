@@ -71,7 +71,7 @@ def read_parameters_from_json(metajson):
 
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="CNN11_template.json")
+    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="CNN11_local.json")
     parser.add_argument("-t", "--testset", help="test set type", type=str, default="60_25_wholeslice")
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=False)
     args = parser.parse_args()
