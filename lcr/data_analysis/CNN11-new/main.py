@@ -147,7 +147,7 @@ if __name__ == "__main__":
                 allthings = convert_np_to_dssims([test_dssims - preds],
                                                  ["Error"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
-                           weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True,
+                           weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=-1, vert_plot=True,
                            color="plasma")
                 plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_erroronly.png", bbox_inches='tight')
                 plt.clf()
