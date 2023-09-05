@@ -1,7 +1,7 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
     "SaveDir": "/glade/u/home/apinard/lcr/plots/CNN11/",
-    "VarList":  ["PRECT"],
+    "VarList":  ["TS"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
     "FilenamePost": ".20060101-20071231.nc",
     "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/",
