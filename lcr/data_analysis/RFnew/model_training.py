@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn") -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -145,41 +145,42 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             test_data = test_data.reshape(test_data.shape[0], 11, 11)
             test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], 11, 11)
 
+
             if modeltype == "rf":
-                train_data_xr = convert_np_to_xr(train_data)
-                dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
-                ns = dc.get_calc("ns_con_var")
-                ew = dc.get_calc("ew_con_var")
-                we_fd = dc.get_calc("w_e_first_differences")
-                ns_fd = dc.get_calc("n_s_first_differences")
-                fftr = dc.get_calc("fftratio")
-                mg = dc.get_calc("magnitude_range")
-                npns = ns.to_numpy()
-                npew = ew.to_numpy()
-                npwe_fd = we_fd.to_numpy()
-                npns_fd = ns_fd.to_numpy()
-                np_fftr = fftr.to_numpy()
-                np_mg = mg.to_numpy()
-                train_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
-                train_data = train_data.transpose()
+                if feature is not None:
+                    train_data_xr = convert_np_to_xr(train_data)
+                    dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
+                    ns = dc.get_calc("ns_con_var")
+                    ew = dc.get_calc("ew_con_var")
+                    we_fd = dc.get_calc("w_e_first_differences")
+                    ns_fd = dc.get_calc("n_s_first_differences")
+                    fftr = dc.get_calc("fftratio")
+                    mg = dc.get_calc("magnitude_range")
+                    npns = ns.to_numpy()
+                    npew = ew.to_numpy()
+                    npwe_fd = we_fd.to_numpy()
+                    npns_fd = ns_fd.to_numpy()
+                    np_fftr = fftr.to_numpy()
+                    np_mg = mg.to_numpy()
+                    train_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
+                    train_data = train_data.transpose()
 
 
-                test_data_xr = convert_np_to_xr(test_data)
-                dc = ldcpy.Datasetcalcs(test_data_xr.to_array(), test_data_xr.data_type, ["latitude", "longitude"], weighted=False)
-                ns = dc.get_calc("ns_con_var")
-                ew = dc.get_calc("ew_con_var")
-                we_fd = dc.get_calc("w_e_first_differences")
-                ns_fd = dc.get_calc("n_s_first_differences")
-                fftr = dc.get_calc("fftratio")
-                mg = dc.get_calc("magnitude_range")
-                npns = ns.to_numpy()
-                npew = ew.to_numpy()
-                npwe_fd = we_fd.to_numpy()
-                npns_fd = ns_fd.to_numpy()
-                np_fftr = fftr.to_numpy()
-                np_mg = mg.to_numpy()
-                test_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
-                test_data = test_data.transpose()
+                    test_data_xr = convert_np_to_xr(test_data)
+                    dc = ldcpy.Datasetcalcs(test_data_xr.to_array(), test_data_xr.data_type, ["latitude", "longitude"], weighted=False)
+                    ns = dc.get_calc(feature)
+                    npns = ns.to_numpy()
+                    test_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
+                    test_data = test_data.transpose()
+                    # save train_data, train_labels, val_data, val_labels, test_data, test_labels
+                    np.save(f"data/TS100/train_data_CNN11_local.npy", train_data)
+                    np.save(f"data/TS100/train_labels_CNN11_local.npy", train_labels)
+                    np.save(f"data/TS100/val_data_CNN11_local.npy", val_data)
+                    np.save(f"data/TS100/val_labels_CNN11_local.npy", val_labels)
+                    np.save(f"data/TS100/test_data_CNN11_local.npy", test_data)
+                    np.save(f"data/TS100/test_labels_CNN11_local.npy", test_labels)
+                    return
+
 
 
             # save train_data, train_labels, val_data, val_labels, test_data, test_labels
@@ -318,6 +319,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     json = args.json
     testset = args.testset
+    feature = args.feature
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
@@ -390,7 +392,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     # call fit_cnn on the 11x11 chunks and the dssim values
     if not only_data:
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature)
     else:
         return
     print(errors)

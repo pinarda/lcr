@@ -75,6 +75,7 @@ def parse_command_line_arguments():
     parser.add_argument("-t", "--testset", help="test set type", type=str, default="60_25_wholeslice")
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=False)
     parser.add_argument("-m", "--model", help="model type", type=str, default="cnn")
+    parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default=None)
     args = parser.parse_args()
 
     return args

@@ -16,8 +16,8 @@ def convert_np_to_dssims(np_arrays, titles):
     for i in range(len(np_arrays)):
         # stick the dssims and predictions into an xarray DataArray
         dssims_da = xr.DataArray(np_arrays[i])
-        lat_values = np.linspace(-90, 90, dssims.shape[0])
-        lon_values = np.linspace(0, 360, dssims.shape[1])
+        lat_values = np.linspace(-90, 90, np.shape(np_arrays)[1])
+        lon_values = np.linspace(0, 360, np.shape(np_arrays)[2])
         # Rotate the longitude values by 180 degrees
         lon_values = np.where(lon_values > 180, lon_values - 360, lon_values)
         dssims_da.coords['latitude'] = (('dim_0'), lat_values)
