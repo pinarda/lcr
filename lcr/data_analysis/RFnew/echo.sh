@@ -42,14 +42,14 @@ foreach model ($models)
   if ($model == "rf") then
     foreach feature ($features)
       # save all ids for line 48
-      set newid = `printf "tcsh -c 'python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
+      set newid = `printf "tcsh -c 'python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
       set ids = ( $ids $newid )
     end
     conda activate my-npl-ml
 
     # I need a long string consisting of all the ids in the ids array, separated by commas, in tcsh
     set joblist = `printf '%s,' "$ids[-]"`
-    echo ${joblist}
+    printf '%s,' ${joblist}
 
     #`printf "tcsh -c 'python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   endif
