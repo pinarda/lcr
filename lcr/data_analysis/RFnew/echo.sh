@@ -53,6 +53,8 @@ foreach model ($models)
     set joblist = `printf '%s,' "$ids[-]"`
     # remove any trailing commas (may be more than one)
     set joblist = `echo $joblist | sed 's/,*$//'`
+    set joblist = `echo $joblist | sed 's/,*$//'`
+
 
     printf '%s,' ${joblist}
 
