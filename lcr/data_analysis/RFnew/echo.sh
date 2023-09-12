@@ -14,7 +14,7 @@
 ### Join output and error streams into single file
 #PBS -j oe
 
-
+module load conda
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
@@ -43,7 +43,7 @@ foreach model ($models)
     conda activate my-npl-ml
     foreach feature ($features)
       # save all ids for line 48
-      set newid = `printf "tcsh -c 'python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
+      set newid = `printf "tcsh -c 'module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
       # remove the period and everything after it
       set newid = `echo $newid | sed 's/\..*//'`
       set ids = ( $ids $newid )

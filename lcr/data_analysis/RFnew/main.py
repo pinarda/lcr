@@ -11,7 +11,7 @@ import datetime
 
 def convert_np_to_dssims(np_arrays, titles):
     das = []
-    # set_values = [f'set{i+1}' for i in range(len(np_arrays))]
+    set_values = [f'set{i+1}' for i in range(len(np_arrays))]
     set_values = titles
     for i in range(len(np_arrays)):
         # stick the dssims and predictions into an xarray DataArray
