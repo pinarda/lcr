@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -148,39 +148,54 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
             if modeltype == "rf":
                 if feature is not None:
-                    train_data_xr = convert_np_to_xr(train_data)
-                    dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
-                    ns = dc.get_calc("ns_con_var")
-                    ew = dc.get_calc("ew_con_var")
-                    we_fd = dc.get_calc("w_e_first_differences")
-                    ns_fd = dc.get_calc("n_s_first_differences")
-                    fftr = dc.get_calc("fftratio")
-                    mg = dc.get_calc("magnitude_range")
-                    npns = ns.to_numpy()
-                    npew = ew.to_numpy()
-                    npwe_fd = we_fd.to_numpy()
-                    npns_fd = ns_fd.to_numpy()
-                    np_fftr = fftr.to_numpy()
-                    np_mg = mg.to_numpy()
-                    train_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
-                    train_data = train_data.transpose()
+                    # train_data_xr = convert_np_to_xr(train_data)
+                    # dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
+                    # ns = dc.get_calc("ns_con_var")
+                    # ew = dc.get_calc("ew_con_var")
+                    # we_fd = dc.get_calc("w_e_first_differences")
+                    # ns_fd = dc.get_calc("n_s_first_differences")
+                    # fftr = dc.get_calc("fftratio")
+                    # mg = dc.get_calc("magnitude_range")
+                    # npns = ns.to_numpy()
+                    # npew = ew.to_numpy()
+                    # npwe_fd = we_fd.to_numpy()
+                    # npns_fd = ns_fd.to_numpy()
+                    # np_fftr = fftr.to_numpy()
+                    # np_mg = mg.to_numpy()
+                    # train_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
+                    # train_data = train_data.transpose()
 
-
-                    test_data_xr = convert_np_to_xr(test_data)
-                    dc = ldcpy.Datasetcalcs(test_data_xr.to_array(), test_data_xr.data_type, ["latitude", "longitude"], weighted=False)
-                    ns = dc.get_calc(feature)
-                    npns = ns.to_numpy()
-                    test_data = np.concatenate((npns, npew, npwe_fd, npns_fd, np_fftr, np_mg.reshape(1, np_mg.shape[0])), axis=0)
-                    test_data = test_data.transpose()
-                    # save train_data, train_labels, val_data, val_labels, test_data, test_labels
-                    np.save(f"data/TS100/train_data_CNN11_local.npy", train_data)
-                    np.save(f"data/TS100/train_labels_CNN11_local.npy", train_labels)
-                    np.save(f"data/TS100/val_data_CNN11_local.npy", val_data)
-                    np.save(f"data/TS100/val_labels_CNN11_local.npy", val_labels)
-                    np.save(f"data/TS100/test_data_CNN11_local.npy", test_data)
-                    np.save(f"data/TS100/test_labels_CNN11_local.npy", test_labels)
+                    for type in ["train", "test"]:
+                        if type == "test":
+                            test_data_xr = convert_np_to_xr(test_data)
+                            dc = ldcpy.Datasetcalcs(test_data_xr.to_array(), test_data_xr.data_type, ["latitude", "longitude"], weighted=False)
+                        elif type == "train":
+                            train_data_xr = convert_np_to_xr(train_data)
+                            dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
+                        ns = dc.get_calc(feature)
+                        npns = ns.to_numpy()
+                        # save train_data, train_labels, val_data, val_labels, test_data, test_labels
+                        np.save(f"data/TS100/{feature}_{type}.npy", npns)
                     return
 
+                for type in ["train", "test"]:
+                    list = None
+                    for f in featurelist:
+                        if list is None:
+                            list = np.load(f"data/TS100/{f}_{type}.npy")
+                        elif f == "magnitude_range":
+                            feat = np.load(f"data/TS100/{f}_{type}.npy")
+                            list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
+                        else:
+                            feat = np.load(f"data/TS100/{f}_{type}.npy")
+                            list = np.concatenate((list, feat), axis=0)
+                        if type == "train":
+                            train_data = list
+                        elif type == "test":
+                            test_data = list
+
+                train_data = train_data.transpose()
+                test_data = test_data.transpose()
 
 
             # save train_data, train_labels, val_data, val_labels, test_data, test_labels
@@ -247,13 +262,22 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # plot the test_data (only the center value of each 11x11 window)
             if modeltype == "cnn":
                 plt.imshow(test_data_OLD[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
-            # plt.imshow(test_data_OLD[0:52416, 0].reshape(182, 288, order='C'), cmap='coolwarm')
+            elif modeltype == "rf":
+                plt.imshow(test_data_OLD[0:52416, 5,5].reshape(182, 288, order='C'), cmap='coolwarm')
 
             # title the subplot
-            plt.title(f"Train data ({comp})")
+            plt.title(f"Test data ({comp}, untransformed)")
+
+            plt.subplot(2,3, 6)
+            if modeltype == "cnn":
+                plt.imshow(train_data[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
+            elif modeltype == "rf":
+                plt.imshow(train_data[0:52416, 0].reshape(182, 288, order='C'), cmap='coolwarm')
+
+            plt.title(f"Train data ({comp}, untransformed)")
+
             # enlarge the figure so the subplots are not so close to each other
             plt.gcf().set_size_inches(20, 10)
-
             # generate a date string for the plot title
             # save the figure with that number as a suffix
             date = datetime.datetime.now()
@@ -320,6 +344,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     json = args.json
     testset = args.testset
     feature = args.feature
+    featurelist = args.listfeatures
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
@@ -392,7 +417,12 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     # call fit_cnn on the 11x11 chunks and the dssim values
     if not only_data:
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature)
+        if feature is not None:
+            train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
+                                           storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
+                                           feature=feature, featurelist=featurelist)
+            return
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist)
     else:
         return
     print(errors)
@@ -426,8 +456,9 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
     return errors, av_preds, av_dssims, predictions, test_dssims
 
-def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn"):
+def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn", feature=None):
     # Will need to perform a normalization step.
+
     errors = []
     av_preds = []
     av_dssims = []
@@ -441,6 +472,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
     av_dssims3 = []
 
     for i in times:
+        if only_data or feature:
+            build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype)
+            return
         e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype)
         errors.append(e[0])
         av_preds.append(p[0])

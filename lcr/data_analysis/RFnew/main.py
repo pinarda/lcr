@@ -47,6 +47,7 @@ if __name__ == "__main__":
     j = args.json
     only_data = args.onlydata
     model = args.model
+    feature = args.feature
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride = read_parameters_from_json(j)
     # times = [2, 3, 4]
     # n = 2
@@ -71,9 +72,11 @@ if __name__ == "__main__":
     # dataset = ldcpy.open_datasets(list_of_files=[opath + "TSxf
 
     for i in range(n):
-        errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False, modeltype=model)
-        if only_data:
+        if feature or only_data:
+            build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False,
+                                                      modeltype=model, feature=feature)
             break
+        errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False, modeltype=model, feature=feature)
         errors_all.append(errors)
         av_preds_all.append(av_preds)
         av_dssims_all.append(av_dssims)
@@ -96,7 +99,7 @@ if __name__ == "__main__":
         # np.save(f"{storageloc}predictions_{j.split('.')[0]}_{i}.npy", preds)
         # # also save the actual dssims
 
-    if only_data:
+    if only_data or feature:
         exit()
 
     test_slices = [x - 1 for x in time]

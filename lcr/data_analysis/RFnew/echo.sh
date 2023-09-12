@@ -4,7 +4,7 @@
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1
+#PBS -l select=1:ngpus=1:mem=40GB
 ### Specify that the GPUs will be V100s
 #PBS -l gpu_type=v100
 ### Allow job to run up to 12 hours
@@ -19,7 +19,9 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
-set models = ("cnn" "rf")
+set models = ("rf")
+set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
+set ids = ()
 
 foreach model ($models)
   if ($model == "cnn") then
@@ -34,8 +36,20 @@ foreach model ($models)
     time echo-run hyperparameters.yml model_config.yml > echosave/echo-run.out
 
     # time the run
+    conda activate my-npl-ml
+    python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET
   endif
+  if model == "rf" then
+    forreach feature ($features)
+      # save all ids for line 48
+      set ids = ( $ids `printf "tcsh -c 'python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1` )
+    end
+    conda activate my-npl-ml
 
-  conda activate my-npl-ml
-  python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET
+    # I need a long string consisting of all the ids in the ids array, separated by commas, in tcsh
+    set joblist = `printf '%s,' "$ids[-]"`
+    echo ${joblist}
+
+    #`printf "tcsh -c 'python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+  endif
 end

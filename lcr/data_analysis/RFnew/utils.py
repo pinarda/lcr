@@ -69,6 +69,9 @@ def read_parameters_from_json(metajson):
 
     return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride
 
+def list_of_strings(arg):
+    return arg.split(',')
+
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local.json")
@@ -76,6 +79,7 @@ def parse_command_line_arguments():
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=False)
     parser.add_argument("-m", "--model", help="model type", type=str, default="cnn")
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default=None)
+    parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default=None)
     args = parser.parse_args()
 
     return args
