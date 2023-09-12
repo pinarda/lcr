@@ -40,9 +40,10 @@ foreach model ($models)
     python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET
   endif
   if ($model == "rf") then
-    forreach feature ($features)
+    foreach feature ($features)
       # save all ids for line 48
-      set ids = ( $ids `printf "tcsh -c 'python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1` )
+      set newid = `printf "tcsh -c 'python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+      set ids = ( $ids $newid )
     end
     conda activate my-npl-ml
 
