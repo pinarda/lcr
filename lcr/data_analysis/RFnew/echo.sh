@@ -4,13 +4,11 @@
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1:mem=40GB
-### Specify that the GPUs will be V100s
-#PBS -l gpu_type=v100
+#PBS -l select=1:ncpus=1
 ### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
 ### Route the job to the casper queue
-#PBS -q casper
+#PBS -q regular
 ### Join output and error streams into single file
 #PBS -j oe
 
@@ -43,7 +41,7 @@ foreach model ($models)
     conda activate my-npl-ml
     foreach feature ($features)
       # save all ids for line 48
-      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
+      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1 -q casper`
       # remove the period and everything after it
       set newid = `echo $newid | sed 's/\..*//'`
       set ids = ( $ids $newid )
@@ -56,6 +54,6 @@ foreach model ($models)
 
     printf '%s,' ${joblist}
 
-    #`printf "tcsh -c 'python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB:gpu_type=v100`
   endif
 end
