@@ -19,7 +19,7 @@ setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
-set models = ("rf" "test")
+set models = ("rf")
 set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
 set ids = ()
 
@@ -39,7 +39,7 @@ foreach model ($models)
     conda activate my-npl-ml
     python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET
   endif
-  if model == "rf" then
+  if ($model == "rf") then
     forreach feature ($features)
       # save all ids for line 48
       set ids = ( $ids `printf "tcsh -c 'python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q regular -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1` )
