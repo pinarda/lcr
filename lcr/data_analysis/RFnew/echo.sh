@@ -45,6 +45,7 @@ foreach model ($models)
       set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" -f "${feature}"'" | qsub -A NTDD0005 -N feature -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       # remove the period and everything after it
       set newid = `echo $newid | sed 's/\..*//'`
+      printf '%s\n' ${newid}
       set ids = ( $ids $newid )
     end
 
