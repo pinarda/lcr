@@ -56,6 +56,6 @@ foreach model ($models)
 
     #printf '%s,' ${joblist}
 
-    "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}' | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
   endif
 end
