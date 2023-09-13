@@ -18,7 +18,8 @@ cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
 set models = ("rf")
-set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
+set features = ("ns_con_var")
+#set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
 set ids = ()
 
 foreach model ($models)
