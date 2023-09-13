@@ -50,9 +50,9 @@ foreach model ($models)
     end
 
     # I need a long string consisting of all the ids in the ids array, separated by commas, in tcsh
-    set joblist = `printf '%s,' "$ids[-]"`
+    #set joblist = `printf '%s,' "$ids[-]"`
     # remove any trailing commas (may be more than one)
-    set joblist = `echo $joblist | sed 's/,*$//'`
+    #set joblist = `echo $joblist | sed 's/,*$//'`
 
     #printf '%s,' ${joblist}
 
