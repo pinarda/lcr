@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, xform="quantile", jobid=0) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -137,7 +137,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             val_data = val_data.reshape(val_data.shape[0], -1)
             test_data_OLD = test_data.reshape(test_data.shape[0], -1)
 
-            if xform == "quantile":
+            if transform == "quantile":
                 train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
                 val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
                 test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
