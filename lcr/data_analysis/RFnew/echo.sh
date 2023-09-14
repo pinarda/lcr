@@ -18,7 +18,7 @@ cd ~/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
 set models = ("cnn" "rf")
-set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
+set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio")
 #set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio" "magnitude_range")
 set ids = ()
 
