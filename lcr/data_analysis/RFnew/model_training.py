@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, xform="quantile") -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -136,9 +136,11 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             train_data = train_data.reshape(train_data.shape[0], -1)
             val_data = val_data.reshape(val_data.shape[0], -1)
             test_data_OLD = test_data.reshape(test_data.shape[0], -1)
-            train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-            val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-            test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
+
+            if xform == "quantile":
+                train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+                val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+                test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
             # then put the data back into the original shape
             train_data = train_data.reshape(train_data.shape[0], 11, 11)
             val_data = val_data.reshape(val_data.shape[0], 11, 11)
@@ -345,6 +347,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     testset = args.testset
     feature = args.feature
     featurelist = args.listfeatures
+    xform = args.transform
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
@@ -422,7 +425,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                            storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
                                            feature=feature, featurelist=featurelist)
             return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform)
     else:
         return
     print(errors)
