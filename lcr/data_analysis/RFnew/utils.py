@@ -81,6 +81,7 @@ def parse_command_line_arguments():
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default=None)
     parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default=None)
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
+    parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
     args = parser.parse_args()
 
     return args

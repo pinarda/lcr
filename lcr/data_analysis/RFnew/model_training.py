@@ -44,7 +44,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, xform="quantile") -> float:
+                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, xform="quantile", jobid=0) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -177,6 +177,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                         ns = dc.get_calc(feature)
                         npns = ns.to_numpy()
                         # save train_data, train_labels, val_data, val_labels, test_data, test_labels
+
                         np.save(f"data/TS100/{feature}_{type}.npy", npns)
                     return
 
@@ -348,6 +349,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     feature = args.feature
     featurelist = args.listfeatures
     xform = args.transform
+    jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
@@ -425,7 +427,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                            storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
                                            feature=feature, featurelist=featurelist)
             return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
     else:
         return
     print(errors)

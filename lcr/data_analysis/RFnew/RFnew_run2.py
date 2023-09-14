@@ -82,6 +82,18 @@ newtestset = ["60_25_wholeslice",
               "1var",
               "1var",
               "1var"]
+jobids = [1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12]
 
 
 # we need to write a new json file for each model configuration
@@ -104,6 +116,8 @@ for i in range(len(newnames)):
     batch = re.sub('TEMPLATE', newnames[i], batch)
     # replace the test set with the new test set enclosed in quotes
     batch = re.sub('TESTSET', '"' + newtestset[i] + '"', batch)
+    # replace the job id with the new job id
+    batch = re.sub('JOBID', str(jobids[i]), batch)
 
 
     with open('RF_' + newnames[i] + '.sh', 'w') as f:
