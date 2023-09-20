@@ -11,5 +11,6 @@
     "Times": [5],
     "Navg": 1,
     "StorageLoc": "/glade/scratch/apinard/RF_store/",
-    "Stride": 3
+    "Stride": 3,
+    "Metric": "dssim"
 }

@@ -18,6 +18,7 @@ def read_parameters_from_json(metajson):
     storage = ""
     navg = 0
     stride=1
+    metric = "dssim"
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
@@ -53,6 +54,8 @@ def read_parameters_from_json(metajson):
             navg = metainfo['Navg']
         if "Stride" in metainfo:
             stride = metainfo['Stride']
+        if "Metric" in metainfo:
+            metric = metainfo['Metric']
 
     print("Save directory: ", save)
     print("Variable list: ", vlist)
@@ -66,8 +69,9 @@ def read_parameters_from_json(metajson):
     print("Storage location: ", storage)
     print("Navg: ", navg)
     print("Stride: ", stride)
+    print("Metric: ", metric)
 
-    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride
+    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride, metric
 
 def list_of_strings(arg):
     return arg.split(',')
@@ -82,6 +86,7 @@ def parse_command_line_arguments():
     parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default=None)
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
     parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
+    parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="dssim")
     args = parser.parse_args()
 
     return args

@@ -31,7 +31,7 @@ def convert_np_to_xr(np_arrays, titles=None):
     da.coords['longitude'] = (('dim_2'), lon_values)
     # da = da.expand_dims({'length': len_values})
     # Convert the DataArray to a Dataset
-    da = da.rename({'dim_0': 'time', 'dim_1': 'latitude', 'dim_2': 'longitude'})
+    da = da.rename({'dim_0': 'time', 'dimh_1': 'latitude', 'dim_2': 'longitude'})
     # Assuming dssims_da is your DataArray and you've renamed the dimensions to 'latitude' and 'longitude'
     da['latitude'].attrs['units'] = 'degrees_north'
     da['longitude'].attrs['units'] = 'degrees_east'
@@ -341,7 +341,7 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
     return classification_matrix
 
 
-def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False, modeltype="cnn"):
+def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False, modeltype="cnn", metric="dssim"):
     args = parse_command_line_arguments()
 
     json = args.json
@@ -394,8 +394,20 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             dssim_mats[cdir] = np.empty((time, 52416))
             for t in range(0, time):
                 dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
-                dc.get_diff_calc("ssim_fp")
-                dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
+
+                if metric == "dssim":
+                    dc.get_diff_calc("ssim_fp")
+                    dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
+                elif metric == "mse":
+                    dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
+                    mse = dc2.get_calc("mean_squared_error")
+                    dssim_mats[cdir][t] = mse.to_numpy().flatten()
+                else:
+                    dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t * stride) - dataset_zfp.isel(time=t * stride),
+                                             data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
+                    dc2.get_calc("mean_squared_error")
+
+
 
         cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig"), time, varname, storageloc)
         # -1 means unspecified (should normally be 50596 * time unless
@@ -461,7 +473,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
     return errors, av_preds, av_dssims, predictions, test_dssims
 
-def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn", feature=None):
+def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn", feature=None, metric="dssim"):
     # Will need to perform a normalization step.
 
     errors = []
@@ -478,9 +490,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
 
     for i in times:
         if only_data or feature:
-            build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype)
+            build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
             return
-        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype)
+        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])

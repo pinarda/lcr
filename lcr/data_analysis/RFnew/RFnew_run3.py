@@ -23,10 +23,10 @@ if __name__ == '__main__':
     Times = config['Times']
 
     newnames = ["RF1"]
-    newvars = [["Z500"]]
+    newvars = [["TS", "T500", "TSMX", "TSMN"]]
     newcomps = [["zfp_p_10"]]
     newtimes = [[6]]
-    newtestset = ["60_25_wholeslice"]
+    newtestset = ["1var"]
 
 
     # we need to write a new json file for each model configuration
