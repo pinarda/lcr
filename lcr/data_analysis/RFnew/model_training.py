@@ -352,7 +352,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride = read_parameters_from_json(json)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric = read_parameters_from_json(json)
     if timeoverride is not None:
         time = timeoverride
     if ldcpypath:
