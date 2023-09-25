@@ -26,7 +26,7 @@ if __name__ == '__main__':
                 "RF2",
                 "RF3",]
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
-               ["PRECT"]
+               ["PRECT"],
                ["PRECT"],
                ["PRECT"]]
     newcomps = [["zfp_p_10"],
