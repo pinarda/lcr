@@ -13,7 +13,7 @@ import datetime
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 def convert_np_to_xr(np_arrays, titles=None):
     das = []
@@ -31,7 +31,7 @@ def convert_np_to_xr(np_arrays, titles=None):
     da.coords['longitude'] = (('dim_2'), lon_values)
     # da = da.expand_dims({'length': len_values})
     # Convert the DataArray to a Dataset
-    da = da.rename({'dim_0': 'time', 'dimh_1': 'latitude', 'dim_2': 'longitude'})
+    da = da.rename({'dim_0': 'time', 'dim_1': 'latitude', 'dim_2': 'longitude'})
     # Assuming dssims_da is your DataArray and you've renamed the dimensions to 'latitude' and 'longitude'
     da['latitude'].attrs['units'] = 'degrees_north'
     da['longitude'].attrs['units'] = 'degrees_east'
@@ -127,23 +127,23 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 model.summary()
             elif modeltype == "rf":
                 import ldcpy
-                model = sklearn.ensemble.RandomForestRegressor(n_estimators=100, max_depth=10, random_state=1)
+                model = sklearn.ensemble.RandomForestRegressor(n_estimators=10, max_depth=10, random_state=1)
 
 
             # apply a quantile transformation to each of the lat/lon slices of the data
             # this will make the data more Gaussian
             # first flatten the data
             train_data = train_data.reshape(train_data.shape[0], -1)
-            val_data = val_data.reshape(val_data.shape[0], -1)
+            # val_data = val_data.reshape(val_data.shape[0], -1)
             test_data_OLD = test_data.reshape(test_data.shape[0], -1)
 
             if transform == "quantile":
                 train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-                val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+                # val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
                 test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
             # then put the data back into the original shape
             train_data = train_data.reshape(train_data.shape[0], 11, 11)
-            val_data = val_data.reshape(val_data.shape[0], 11, 11)
+            # val_data = val_data.reshape(val_data.shape[0], 11, 11)
             test_data = test_data.reshape(test_data.shape[0], 11, 11)
             test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], 11, 11)
 
@@ -222,7 +222,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
             # fit the model
             if modeltype == "cnn":
-                history = model.fit(train_data, train_labels, epochs=10, batch_size=batch_size, validation_data=(val_data, val_labels))
+                history = model.fit(train_data, train_labels, epochs=2, batch_size=batch_size, validation_data=(val_data, val_labels))
                 score = model.evaluate(test_data, verbose=0)
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
@@ -387,10 +387,15 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         # pad the longitude dimension of the original dataset by 5 on each side (wrap around)
         dataset_orig = xr.concat([dataset_orig[:, :, -5:], dataset_orig, dataset_orig[:, :, :5]], dim="lon")
         dssim_mats = {}
+        # roll orig dataset using the xarray roll function
+        num = -48
+        dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
+
         for cdir in cdirs:
             dataset_zfp = dataset_col.sel(collection=cdir).to_array().squeeze()
             # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
             dataset_zfp = xr.concat([dataset_zfp[:, :, -5:], dataset_zfp, dataset_zfp[:, :, :5]], dim="lon")
+            dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
             dssim_mats[cdir] = np.empty((time, 52416))
             for t in range(0, time):
                 dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
@@ -402,6 +407,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
                     mse = dc2.get_calc("mean_squared_error")
                     dssim_mats[cdir][t] = mse.to_numpy().flatten()
+                elif metric == "logdssim":
+                    dc.get_diff_calc("ssim_fp")
+                    dc._ssim_mat_fp[0] = np.log(1 - dc._ssim_mat_fp[0])
+                    dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
                 else:
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t * stride) - dataset_zfp.isel(time=t * stride),
                                              data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
@@ -409,9 +418,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
 
 
-        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig"), time, varname, storageloc)
+        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig").roll(lat=num, roll_coords=True), time, varname, storageloc)
         # -1 means unspecified (should normally be 50596 * time unless
         # the number of time steps loaded by cut_dataset is different than time)
+
         cut_dataset_orig = cut_dataset_orig.reshape((-1, 11, 11), order="F")
         # flatten dssim_mats over time
         for i, cdir in enumerate(cdirs):
@@ -446,9 +456,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     # grab the first 50596 dssims for each compression level from dssim_mats
     # dssim_mats = {cdir: dssim_mats[cdir][0:50596] for cdir in cdirs}
     for cdir in cdirs:
+        final = final_dssim_mats[cdir][0:52416].reshape((182, 288))
         if type(time) is list:
             for t in time:
-                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final_dssim_mats[cdir][0:52416].reshape((182, 288)))
+                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final)
                 # also save the predictions
                 # and the errors
                 preds = np.zeros((182, 288)).flatten()
@@ -460,14 +471,13 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     preds = predictions.squeeze()[0:52416].reshape((182, 288))
                 np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
         else:
-            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final_dssim_mats[cdir][0:52416].reshape((182, 288)))
+            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final)
             # also save the predictions
             # and the errors
             preds = np.zeros((182, 288)).flatten()
             # set the values of mymap to the first 50596 values of predictions
             if len(predictions) < 52416:
                 preds[0:(len(predictions))] = predictions.squeeze()
-                preds = preds.reshape((182, 288))
             else:
                 preds = predictions.squeeze()[0:52416].reshape((182, 288))
             np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)

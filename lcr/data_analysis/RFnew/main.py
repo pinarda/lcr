@@ -5,7 +5,7 @@ from utils import parse_command_line_arguments, read_parameters_from_json
 from plotting import generate_performance_plots
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 
 
@@ -14,6 +14,9 @@ def convert_np_to_dssims(np_arrays, titles):
     set_values = [f'set{i+1}' for i in range(len(np_arrays))]
     set_values = titles
     for i in range(len(np_arrays)):
+        # first, flip the np array upside down
+        # np_arrays[i] = np.flipud(np_arrays[i])
+        # and roll it vertically by 10
         # stick the dssims and predictions into an xarray DataArray
         dssims_da = xr.DataArray(np_arrays[i])
         lat_values = np.linspace(-90, 90, np.shape(np_arrays)[1])
@@ -39,6 +42,14 @@ def convert_np_to_dssims(np_arrays, titles):
     ldcpy_dssims = ds.to_dataset(name='dssims')
     ldcpy_dssims.attrs['data_type'] = 'cam-fv'
     ds.coords["collection"] = titles
+
+    # plot the dssims using matplotlib
+    # plt.figure(figsize=(10, 5))
+    # plt.imshow(ldcpy_dssims['dssims'].values.squeeze(), cmap='plasma')
+    # plt.colorbar()
+    # plt.title('DSSIMs')
+    # plt.show()
+
     return ldcpy_dssims
 
 if __name__ == "__main__":
@@ -123,13 +134,16 @@ if __name__ == "__main__":
                 dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
                 preds = np.load(f"{storageloc}{cdir}_preds_{t}_{name}.npy")
                 # flips dssims and preds upside down
-                dssims = np.flipud(dssims)
-                test_dssims = np.flipud(test_dssims)
-                preds = np.flipud(preds)
+                # dssims = np.flipud(dssims)
+                # test_dssims = np.flipud(test_dssims)
+                # preds = np.flipud(preds)
                 # pad the top and bottom of dssims and preds with 5 0s
+
+
                 dssims = np.pad(dssims, ((5, 5), (0, 0)), 'constant', constant_values=0)
                 test_dssims = np.pad(test_dssims, ((5, 5), (0, 0)), 'constant', constant_values=0)
                 preds = np.pad(preds, ((5, 5), (0, 0)), 'constant', constant_values=0)
+
 
                 ldcpy_dssims = convert_np_to_dssims([test_dssims], ["Actual DSSIMs"])
                 # ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)

@@ -25,7 +25,7 @@ set ids = ()
 foreach model ($models)
   if ($model == "cnn") then
     conda activate my-npl-ml
-    python main.py --onlydata -j RF_TEMPLATE.json -m "${model}" -r METRIC
+    python main.py --onlydata -j RF_TEMPLATE.json -m "${model}"
 
     conda activate echo
     alias postcmd 'set start_time=`date +%s`'

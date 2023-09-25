@@ -8,7 +8,7 @@
     "CompPath":"/Users/alex/git/ldcpy/data/cam-fv/",
     "CompDirs": ["zfp_1.0"],
     "OptLdcpyDevPath": "/Users/alex/git/ldcpy",
-    "Times": [6],
+    "Times": [8],
     "Navg": 1,
     "StorageLoc": "./data/",
     "Stride": 1
