@@ -35,9 +35,9 @@ if __name__ == '__main__':
     newtimes = [[6],
                 [6],
                 [6]]
-    newtestset = ["65_25_wholeslice",
-                  "65_25_wholeslice",
-                  "65_25_wholeslice"]
+    newtestset = ["60_25_wholeslice",
+                  "60_25_wholeslice",
+                  "60_25_wholeslice"]
     jobids = [1,
               2,
               3]
