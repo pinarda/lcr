@@ -22,11 +22,28 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["RF1"]
-    newvars = [["TS", "T500", "TSMX", "TSMN"]]
-    newcomps = [["zfp_p_10"]]
-    newtimes = [[6]]
-    newtestset = ["1var"]
+    newnames = ["RF1",
+                "RF2",
+                "RF3",]
+    newvars = [#["TS", "T500", "TSMX", "TSMN"],
+               ["PRECT"]
+               ["PRECT"],
+               ["PRECT"]]
+    newcomps = [["zfp_p_10"],
+                 ["zfp_p_10"],
+                 ["zfp_p_10"]]
+    newtimes = [[6],
+                [6],
+                [6]]
+    newtestset = ["65_25_wholeslice",
+                  "65_25_wholeslice",
+                  "65_25_wholeslice"]
+    jobids = [1,
+              2,
+              3]
+    metrics = ["dssim",
+               "mse",
+               "logdssim"]
 
 
     # we need to write a new json file for each model configuration
