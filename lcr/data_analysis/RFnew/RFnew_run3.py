@@ -67,6 +67,11 @@ if __name__ == '__main__':
         # replace the test set with the new test set enclosed in quotes
         batch = re.sub('TESTSET', '"' + newtestset[i] + '"', batch)
 
+        # replace the job id with the new job id
+        batch = re.sub('JOBID', str(jobids[i]), batch)
+        # replace the metric with the new metric
+        batch = re.sub('METRIC', metrics[i], batch)
+
 
         with open('RF_' + newnames[i] + '.sh', 'w') as f:
             f.write(batch)
