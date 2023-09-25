@@ -80,7 +80,7 @@ newvars = [["Z500"],
             ["Z500", "dst_a1_SRF", "dst_a3_SRF", "FLNS", "FLNSC", "FLUT", "FSNS", "FSNSC", "FSNTOA", "ICEFRAC", "LHFLX", "pom_a1_SRF", "PRECL", "PRECSC", "PRECSL", "PRECT", "PRECTMX", "PSL", "Q200", "Q500"],
             ["Z500", "Q850"],
             ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF"],
-            ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500"]
+            ["Z500", "Q850", "QBOT", "SHFLX", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "T200", "T500"],
            ["Z500"],
            ["TS"],
            ["PRECL"],
