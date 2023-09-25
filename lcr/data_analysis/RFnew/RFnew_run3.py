@@ -22,13 +22,13 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["RF1",
-                "RF2",
-                "RF3",]
+    newnames = ["TS1_jfl",
+                "TS2_jfl",
+                "TS3_jfl",]
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
-               ["PRECT"],
-               ["PRECT"],
-               ["PRECT"]]
+               ["TS"],
+               ["TS"],
+               ["TS"]]
     newcomps = [["zfp_p_10"],
                  ["zfp_p_10"],
                  ["zfp_p_10"]]
