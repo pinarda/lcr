@@ -353,6 +353,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric = read_parameters_from_json(json)
+    metric = args.metric
     if timeoverride is not None:
         time = timeoverride
     if ldcpypath:
@@ -405,7 +406,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
                 elif metric == "mse":
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
-                    mse = dc2.get_calc("mean_squared_error")
+                    mse = dc2.get_calc("mean_squared")
                     dssim_mats[cdir][t] = mse.to_numpy().flatten()
                 elif metric == "logdssim":
                     dc.get_diff_calc("ssim_fp")
@@ -414,7 +415,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 else:
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t * stride) - dataset_zfp.isel(time=t * stride),
                                              data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
-                    dc2.get_calc("mean_squared_error")
+                    dc2.get_calc("mean_squared")
 
 
 
