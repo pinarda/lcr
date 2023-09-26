@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
                 allthings = convert_np_to_dssims([test_dssims, preds], ["Actual DSSIMs", "Model Predictions"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
-                           weighted=False, start=0, end=0, short_title=False, cmax=1, cmin=0, vert_plot=True,
+                           weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                            color="plasma")
                 plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_noerr.png", bbox_inches='tight')
                 plt.clf()
@@ -175,7 +175,7 @@ if __name__ == "__main__":
                 allthings = convert_np_to_dssims([test_dssims - preds],
                                                  ["Error"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
-                           weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=-1, vert_plot=True,
+                           weighted=False, start=0, end=0, short_title=True, vert_plot=True,
                            color="PiYG")
                 plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_erroronly.png", bbox_inches='tight')
                 plt.clf()
