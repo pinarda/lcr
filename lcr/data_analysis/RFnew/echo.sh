@@ -42,7 +42,7 @@ foreach model ($models)
     conda activate my-npl-ml
     foreach feature ($features)
       # save all ids for line 48
-      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -x none -m "${model}" -r METRIC -f "${feature}"'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -x none -m "${model}" -r METRIC -x TRANSFORM -f "${feature}"'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
       # remove the period and everything after it
       set newid = `echo $newid | sed 's/\..*//'`
       printf '%s,' ${newid}
@@ -63,6 +63,6 @@ foreach model ($models)
 #    printf '%s\n' ${str}
     set features_csv = `echo $features | sed 's/ /,/g'`
 
-    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -x none -d JOBID -m "${model}" -r METRIC --testset TESTSET -l "${features_csv}"'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -x none -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM -l "${features_csv}"'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
   endif
 end

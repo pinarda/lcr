@@ -24,26 +24,61 @@ if __name__ == '__main__':
 
     newnames = ["TS1_jfl",
                 "TS2_jfl",
-                "TS3_jfl",]
+                "TS3_jfl",
+                "TS4_jfl",
+                "TS5_jfl",
+                "TS6_jfl",
+                "TS7_jfl",]
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
-               ["TS"],
-               ["TS"],
-               ["TS"]]
+                ["TS"],
+                ["TS"],
+                ["TS"],
+                ["TS"],
+                ["TS"],
+                ["TS"],
+                ["TS", "T010", "T200", "T500", "T850", "TREFHTMN", "TREFHT"]]
     newcomps = [["zfp_p_10"],
-                 ["zfp_p_10"],
-                 ["zfp_p_10"]]
-    newtimes = [[6],
+                ["zfp_p_10"],
+                ["zfp_p_10"],
+                ["zfp_p_10"],
+                ["zfp_p_10"],
+                ["zfp_p_10"],
+                ["zfp_p_10"]]
+    newtimes = [[6, 11, 16],
+                [6, 11, 16],
+                [6, 11, 16],
+                [6],
+                [6],
                 [6],
                 [6]]
     newtestset = ["60_25_wholeslice",
                   "60_25_wholeslice",
-                  "60_25_wholeslice"]
+                  "60_25_wholeslice",
+                  "60_25_wholeslice",
+                  "60_25_wholeslice",
+                  "60_25_wholeslice",
+                  "1var"]
     jobids = [1,
               2,
-              3]
+              3,
+              4,
+              5,
+              6,
+              7]
     metrics = ["dssim",
                "mse",
-               "logdssim"]
+               "logdssim",
+               "dssim",
+               "mse",
+               "logdssim",
+               "dssim"]
+    transforms = ["quantile",
+                    "quantile",
+                    "quantile",
+                    "none",
+                    "none",
+                    "none",
+                    "quantile"]
 
 
     # we need to write a new json file for each model configuration
@@ -71,6 +106,8 @@ if __name__ == '__main__':
         batch = re.sub('JOBID', str(jobids[i]), batch)
         # replace the metric with the new metric
         batch = re.sub('METRIC', metrics[i], batch)
+        # replace the transform with the new transform
+        batch = re.sub('TRANSFORM', transforms[i], batch)
 
 
         with open('RF_' + newnames[i] + '.sh', 'w') as f:
