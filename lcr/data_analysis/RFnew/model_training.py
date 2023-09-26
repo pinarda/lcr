@@ -389,7 +389,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         dataset_orig = xr.concat([dataset_orig[:, :, -5:], dataset_orig, dataset_orig[:, :, :5]], dim="lon")
         dssim_mats = {}
         # roll orig dataset using the xarray roll function
-        num = -48
+        num = -100
         dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
 
         for cdir in cdirs:
@@ -407,6 +407,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 elif metric == "mse":
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
                     mse = dc2.get_calc("mean_squared")
+                    # ignore the top and bottom 5 rows and columns
+                    mse = mse[5:-5, 5:-5]
                     dssim_mats[cdir][t] = mse.to_numpy().flatten()
                 elif metric == "logdssim":
                     dc.get_diff_calc("ssim_fp")
