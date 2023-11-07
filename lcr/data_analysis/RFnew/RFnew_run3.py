@@ -45,7 +45,7 @@ if __name__ == '__main__':
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
-                ["zfp_p_18"]
+                ["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newtimes = [[10, 20, 50, 100],
                 [20],
