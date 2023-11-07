@@ -1,15 +1,16 @@
 {
     "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.TS.100days.nc",
     "SaveDir": "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/",
-    "VarList":  ["PRECT"],
+    "VarList":  ["TS"],
     "FilenamePre":"",
     "FilenamePost": ".100days.nc",
     "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/orig/",
     "CompPath":"/Users/alex/git/ldcpy/data/cam-fv/",
     "CompDirs": ["zfp_1.0"],
     "OptLdcpyDevPath": "/Users/alex/git/ldcpy",
-    "Times": [8],
+    "Times": [40],
     "Navg": 1,
     "StorageLoc": "./data/",
-    "Stride": 1
+    "Stride": 1,
+    "CutDataset": 0
 }

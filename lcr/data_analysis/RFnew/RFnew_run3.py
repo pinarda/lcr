@@ -22,13 +22,14 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["TS1_jfl",
-                "TS2_jfl",
-                "TS3_jfl",
-                "TS4_jfl",
-                "TS5_jfl",
-                "TS6_jfl",
-                "TS7_jfl",]
+    newnames = ["TS1_jflj",
+                "TS2_jflj",
+                "TS3_jflj",
+                "TS4_jflj",
+                "TS5_jflj",
+                "TS6_jflj",
+                "TS7_jflj",
+                "TS8_jflj"]
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
                 ["TS"],
                 ["TS"],
@@ -36,49 +37,66 @@ if __name__ == '__main__':
                 ["TS"],
                 ["TS"],
                 ["TS"],
-                ["TS", "T010", "T200", "T500", "T850", "TREFHTMN", "TREFHT"]]
-    newcomps = [["zfp_p_10"],
-                ["zfp_p_10"],
-                ["zfp_p_10"],
-                ["zfp_p_10"],
-                ["zfp_p_10"],
-                ["zfp_p_10"],
-                ["zfp_p_10"]]
-    newtimes = [[6, 11, 16],
-                [6, 11, 16],
-                [6, 11, 16],
-                [6],
-                [6],
-                [6],
-                [6]]
-    newtestset = ["60_25_wholeslice",
-                  "60_25_wholeslice",
-                  "60_25_wholeslice",
-                  "60_25_wholeslice",
-                  "60_25_wholeslice",
-                  "60_25_wholeslice",
-                  "1var"]
+                ["TS"],
+                ["TS"]]
+    newcomps = [["zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_18"]
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
+    newtimes = [[10, 20, 50, 100],
+                [20],
+                [10, 20, 50, 100],
+                [20],
+                [10, 20, 50, 100],
+                [20],
+                [10, 20, 50, 100],
+                [20]]
+    newtestset = ["10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice",
+                  "10_90_wholeslice"]
     jobids = [1,
               2,
               3,
               4,
               5,
               6,
-              7]
+              7,
+              8]
     metrics = ["dssim",
-               "mse",
-               "logdssim",
                "dssim",
-               "mse",
-               "logdssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
                "dssim"]
     transforms = ["quantile",
                     "quantile",
                     "quantile",
+                    "quantile",
                     "none",
                     "none",
                     "none",
-                    "quantile"]
+                    "none"]
+    cutdatasets = [
+        True,
+        True,
+        False,
+        False,
+        True,
+        True,
+        False,
+        False
+    ]
 
 
     # we need to write a new json file for each model configuration
@@ -88,6 +106,7 @@ if __name__ == '__main__':
         newconfig['VarList'] = newvars[i]
         newconfig['CompDirs'] = newcomps[i]
         newconfig['Times'] = newtimes[i]
+        newconfig['CutDataset'] = cutdatasets[i]
         # write the new json file
         with open('RF_' + newnames[i] + '.json', 'w') as f:
             json.dump(newconfig, f)

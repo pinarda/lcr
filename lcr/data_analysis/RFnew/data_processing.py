@@ -2,11 +2,11 @@ import xarray as xr
 import numpy as np
 import os
 import sys
-import gc
 from sklearn.model_selection import train_test_split
-os.environ["HDF5_PLUGIN_PATH"]
+from math import floor
+# os.environ["HDF5_PLUGIN_PATH"]
 
-def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 11) -> np.ndarray:
+def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12) -> np.ndarray:
     """
     Extracts every possible contiguous lat-lon chunk from the input dataset.
 
@@ -41,7 +41,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
     # this is because the longitude values are not contiguous at the edges of the array
     # so we want to pad the edges with the values from the opposite side of the array
     # this will allow us to extract windows at the edges of the array
-    d = np.pad(d, ((0, 0), (0, 0), (0, 0), (5, 5)), mode='wrap')
+    d = np.pad(d, ((0, 0), (0, 0), (0, 0), (floor(window_size), floor(window_size))), mode='wrap')
 
     # Iterate over lat, lon, and time to extract 11x11 windows.
     idx = 0
@@ -56,7 +56,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
 
     return chunks
 
-def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time: int, nvar: int, testset: str, comp: int, window_size: int = 11) -> tuple:
+def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time: int, nvar: int, testset: str, comp: int, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11) -> tuple:
     """
     Splits the dataset into training, validation, and testing sets based on the specified testset parameter.
 
@@ -72,12 +72,13 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
      tuple: A tuple containing the training, validation, and testing data and labels.
     """
     # Calculate the number of windows based on the dataset's dimensions
-    num_windows = 50596
+    num_windows = lats * lons # 182 * 288
 
     total_data_points = num_windows * time * nvar
     # Calculate the indices corresponding to 60% and 75% of the data
     index_60pct = int(total_data_points * 0.6)
     index_75pct = int(total_data_points * 0.75)
+    index_10pct = int(total_data_points * 0.1)
 
     # use 90% of the data for training, 9% for validation, and 1% for testing
     if testset == "random":
@@ -171,6 +172,53 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
             val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
             val_labels = np.concatenate((val_labels, dssim[comp][int(remaining_start_index + split_index):]))
 
+
+    elif testset == "10_90_wholeslice":
+        # Calculate the number of time slices in the last 90% of the data (rounding down)
+        num_time_slices_last_90pct = (total_data_points - index_10pct) // num_windows
+
+        # Calculate the number of time slices for test and validation (rounding down)
+
+
+        num_time_slices_val = num_time_slices_last_90pct // 9
+        num_time_slices_test = num_time_slices_last_90pct - num_time_slices_val
+        num_time_slices_train = time*nvar - num_time_slices_last_90pct
+
+        # Calculate the number of windows for test and validation
+        num_windows_test = num_time_slices_test * num_windows
+        num_windows_val = num_time_slices_val * num_windows
+
+        # Calculate the start index for the remaining time slice (if any)
+        remaining_start_index = index_10pct + num_windows_test + num_windows_val
+
+        # Use the first 10% of the data for training
+        train_data = dataset[0:index_10pct]
+        train_labels = dssim[comp][0:index_10pct]
+
+        # Use the calculated number of windows for test and validation
+        test_data = dataset[index_10pct:int(index_10pct + num_windows_test)]
+        test_labels = dssim[comp][index_10pct:int(index_10pct + num_windows_test)]
+        val_data = dataset[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
+        val_labels = dssim[comp][int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
+
+        # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
+        if remaining_start_index < total_data_points:
+            remaining_windows = total_data_points - remaining_start_index
+            split_index = remaining_windows * 90 // 100
+            test_data = np.concatenate(
+                (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
+            test_labels = np.concatenate(
+                (test_labels, dssim[comp][int(remaining_start_index):int(remaining_start_index + split_index)]))
+            val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
+            val_labels = np.concatenate((val_labels, dssim[comp][int(remaining_start_index + split_index):]))
+
+        if not cut_windows:
+            train_data = dataset[0:int(index_10pct/num_windows)]
+            train_labels = dssim[comp][0:int(index_10pct/num_windows)]
+            val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+            val_labels = dssim[comp][int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+            test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+            test_labels = dssim[comp][(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
     return train_data, train_labels, val_data, val_labels, test_data, test_labels
 

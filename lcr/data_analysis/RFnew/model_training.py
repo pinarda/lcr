@@ -3,6 +3,9 @@ import xarray as xr
 import numpy as np
 import sys
 import tensorflow as tf
+import pickle
+from math import floor
+import matplotlib.pyplot as plt
 tf.keras.backend.clear_session()
 
 from utils import parse_command_line_arguments, read_parameters_from_json
@@ -13,7 +16,11 @@ import datetime
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
+
+LATS = 182
+LONS = 288
+WINDOWSIZE = 11
 
 def convert_np_to_xr(np_arrays, titles=None):
     das = []
@@ -44,7 +51,7 @@ def convert_np_to_xr(np_arrays, titles=None):
 
 
 def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=11, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=WINDOWSIZE, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0, cut_windows=True) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -62,23 +69,34 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     Returns:
         float: The average error.
     """
-    model_path = ""
+    # model_path = f"model_{j}{comp}.h5"
+    # model_path = ""
     average_error_path = os.path.join(storageloc, "average_error.txt")
 
-    if os.path.exists(model_path):
-        model = tf.keras.models.load_model(model_path)
-        with open(average_error_path, "r") as f:
-            average_error = float(f.read())
-        return model, average_error
-    else:
-        scores = []
-        av_preds = []
-        av_dssims = []
-        for comp in dssim.keys():
+
+    scores = []
+    av_preds = []
+    av_dssims = []
+    for comp in dssim.keys():
+        model_path = f"model_{j}{comp}{time}{modeltype}.h5"
+        if os.path.exists(model_path):
+            model = tf.keras.models.load_model(model_path)
+            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}", "rb") as f:
+                av_preds = pickle.load(f)
+            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}", "rb") as f:
+                av_dssims = pickle.load(f)
+            with open(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", "rb") as f:
+                predictions = np.load(f)
+            with open(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", "rb") as f:
+                test_plot = np.load(f, allow_pickle=True)
+            if modeltype == "cnn":
+                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}", "rb") as f:
+                    scores = pickle.load(f)
+        else:
             # perform a quanitle transformation to make the data more Gaussian using the sklearn library
             for i in range(time*nvar):
                 # dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
-                train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_into_train_val_test(dataset, dssim, time, nvar, testset, comp)
+                train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_into_train_val_test(dataset, dssim, time, nvar, testset, comp, LATS, LONS, cut_windows)
 
             # check the echosave directory, open trial_results.csv
             # read the column mean_squared_error to find the row with the minimum value
@@ -109,7 +127,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
             if modeltype == "cnn":
                 # build the model described above, using the functional API
-                i = tf.keras.Input(shape=(11, 11, 1))
+                i = tf.keras.Input(shape=(np.shape(train_data)[1], np.shape(train_data)[2], 1))
                 x = tf.keras.layers.Conv2D(filter1, kernel_size=(2, 2), activation="relu")(i)
                 # if conv_layers is 3, add another conv layer
                 if conv_layers == 3 or conv_layers == 4:
@@ -133,6 +151,8 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # apply a quantile transformation to each of the lat/lon slices of the data
             # this will make the data more Gaussian
             # first flatten the data
+            savelats = train_data.shape[1]
+            savelons = train_data.shape[2]
             train_data = train_data.reshape(train_data.shape[0], -1)
             # val_data = val_data.reshape(val_data.shape[0], -1)
             test_data_OLD = test_data.reshape(test_data.shape[0], -1)
@@ -142,10 +162,10 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 # val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
                 test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
             # then put the data back into the original shape
-            train_data = train_data.reshape(train_data.shape[0], 11, 11)
-            # val_data = val_data.reshape(val_data.shape[0], 11, 11)
-            test_data = test_data.reshape(test_data.shape[0], 11, 11)
-            test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], 11, 11)
+            train_data = train_data.reshape(train_data.shape[0], savelats, savelons)
+            # val_data = val_data.reshape(val_data.shape[0], WINDOWSIZE, WINDOWSIZE)
+            test_data = test_data.reshape(test_data.shape[0], savelats, savelons)
+            test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], savelats, savelons)
 
 
             if modeltype == "rf":
@@ -212,15 +232,9 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             if only_data:
                 return
 
-            #plot the first 52416 values of test_labels in a 182*288 grid
+            #plot the first (LATS * LONS) values of test_labels in a 182*288 grid
             # make this the first of a 1x4 subplot
-            import matplotlib.pyplot as plt
-            plt.subplot(1, 2, 1)
-            plt.imshow(test_labels[0:52416].reshape(182,288))
-            test_plot = test_labels[0:52416].reshape(182,288)
-            plt.show()
-
-            # fit the model
+                # fit the model
             if modeltype == "cnn":
                 history = model.fit(train_data, train_labels, epochs=2, batch_size=batch_size, validation_data=(val_data, val_labels))
                 score = model.evaluate(test_data, verbose=0)
@@ -230,63 +244,73 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 model.fit(train_data, train_labels)
 
             predictions = model.predict(test_data)
-            plt.subplot(1, 2, 2)
-            plt.imshow(predictions[0:52416].reshape(182, 288, order='C'))
-            plt.show()
             average_prediction = np.mean(predictions)
             average_dssim = np.mean(test_labels)
-            print("Average prediction: ", average_prediction)
-            print("Average dssim: ", average_dssim)
+            test_plot = None
 
-            plt.subplot(2,3, 1)
+            if cut_windows:
+                import matplotlib.pyplot as plt
+                plt.subplot(1, 2, 1)
+                plt.imshow(test_labels[0:(LATS*LONS)].reshape(LATS,LONS))
+                test_plot = test_labels[0:(LATS*LONS)].reshape(LATS,LONS)
+                plt.show()
 
-            plt.imshow(test_labels[0:52416].reshape(182,288))
-            plt.title(f"Test labels for {comp}")
-            plt.subplot(2,3, 2)
-            plt.imshow(predictions[0:52416].reshape(182, 288, order='C'))
-            plt.title(f"Predictions for {comp}")
-            plt.subplot(2,3, 3)
-            # plot the errors (preds - labels)
-            plt.imshow((predictions[0:52416].reshape(182, 288, order='C') - test_labels[0:52416].reshape(182,288)))
-            plt.title(f"Errors for {comp}")
-            plt.subplot(2,3, 4)
-            # plot the test_data (only the center value of each 11x11 window)
-            # change the color map for this subplot
+                plt.subplot(1, 2, 2)
+                plt.imshow(predictions[0:(LATS*LONS)].reshape(LATS, LONS, order='C'))
+                plt.show()
 
-            if modeltype == "cnn":
-                plt.imshow(test_data[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
-            elif modeltype == "rf":
-                plt.imshow(test_data[0:52416, 0].reshape(182, 288, order='C'), cmap='coolwarm')
+                print("Average prediction: ", average_prediction)
+                print("Average dssim: ", average_dssim)
 
-            # title the subplot
-            plt.title(f"Test data ({comp}, QT)")
+                plt.subplot(2,3, 1)
 
-            plt.subplot(2,3, 5)
-            # plot the test_data (only the center value of each 11x11 window)
-            if modeltype == "cnn":
-                plt.imshow(test_data_OLD[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
-            elif modeltype == "rf":
-                plt.imshow(test_data_OLD[0:52416, 5,5].reshape(182, 288, order='C'), cmap='coolwarm')
+                plt.imshow(test_labels[0:(LATS*LONS)].reshape(LATS, LONS))
+                plt.title(f"Test labels for {comp}")
+                plt.subplot(2,3, 2)
+                plt.imshow(predictions[0:(LATS*LONS)].reshape(LATS, LONS, order='C'))
+                plt.title(f"Predictions for {comp}")
+                plt.subplot(2,3, 3)
+                # plot the errors (preds - labels)
+                plt.imshow((predictions[0:(LATS*LONS)].reshape(LATS, LONS, order='C') - test_labels[0:(LATS * LONS)].reshape(LATS, LONS)))
+                plt.title(f"Errors for {comp}")
+                plt.subplot(2,3, 4)
+                # plot the test_data (only the center value of each 11x11 window)
+                # change the color map for this subplot
 
-            # title the subplot
-            plt.title(f"Test data ({comp}, untransformed)")
+                if modeltype == "cnn":
+                    plt.imshow(test_data[0:(LATS * LONS),(floor(WINDOWSIZE/2)),(floor(WINDOWSIZE/2))].reshape(LATS, LONS, order='C'), cmap='coolwarm')
+                elif modeltype == "rf":
+                    plt.imshow(test_data[0:(LATS * LONS), 0].reshape(LATS, LONS, order='C'), cmap='coolwarm')
 
-            plt.subplot(2,3, 6)
-            if modeltype == "cnn":
-                plt.imshow(train_data[0:52416,5,5].reshape(182, 288, order='C'), cmap='coolwarm')
-            elif modeltype == "rf":
-                plt.imshow(train_data[0:52416, 0].reshape(182, 288, order='C'), cmap='coolwarm')
+                # title the subplot
+                plt.title(f"Test data ({comp}, QT)")
 
-            plt.title(f"Train data ({comp}, untransformed)")
+                plt.subplot(2,3, 5)
+                # plot the test_data (only the center value of each 11x11 window)
+                if modeltype == "cnn":
+                    plt.imshow(test_data_OLD[0:(LATS*LONS),(floor(WINDOWSIZE/2)),(floor(WINDOWSIZE/2))].reshape(LATS, LONS, order='C'), cmap='coolwarm')
+                elif modeltype == "rf":
+                    plt.imshow(test_data_OLD[0:(LATS*LONS), (floor(WINDOWSIZE/2)),(floor(WINDOWSIZE/2))].reshape(LATS, LONS, order='C'), cmap='coolwarm')
 
-            # enlarge the figure so the subplots are not so close to each other
-            plt.gcf().set_size_inches(20, 10)
-            # generate a date string for the plot title
-            # save the figure with that number as a suffix
-            date = datetime.datetime.now()
-            date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
-            if plotdir is not None:
-                plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}.png")
+                # title the subplot
+                plt.title(f"Test data ({comp}, untransformed)")
+
+                plt.subplot(2,3, 6)
+                if modeltype == "cnn":
+                    plt.imshow(train_data[0:(LATS * LONS),(floor(WINDOWSIZE/2)),(floor(WINDOWSIZE/2))].reshape(LATS, LONS, order='C'), cmap='coolwarm')
+                elif modeltype == "rf":
+                    plt.imshow(train_data[0:(LATS * LONS), 0].reshape(LATS, LONS, order='C'), cmap='coolwarm')
+
+                plt.title(f"Train data ({comp}, untransformed)")
+
+                # enlarge the figure so the subplots are not so close to each other
+                plt.gcf().set_size_inches(20, 10)
+                # generate a date string for the plot title
+                # save the figure with that number as a suffix
+                date = datetime.datetime.now()
+                date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
+                if plotdir is not None:
+                    plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}{time}.png")
 
 
             if modeltype == "cnn":
@@ -300,11 +324,34 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             av_dssims.append(average_dssim)
 
             # save the model
-            # model.save(f"model_{j}.h5")
-        if modeltype == "cnn":
-            return scores, model, av_preds, av_dssims, predictions, test_plot
-        elif modeltype == "rf":
-            return (0,0), model, av_preds, av_dssims, predictions, test_plot
+            if modeltype == "cnn":
+                model.save(f"model_{j}{comp}{time}{modeltype}.h5")
+            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}", "wb") as fp:
+                pickle.dump(av_preds, fp)
+            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}", "wb") as fp:
+                pickle.dump(av_dssims, fp)
+            if cut_windows:
+                predictions = predictions.squeeze().reshape(-1, LATS, LONS, order='C')
+                # reorder the dimensions of predictions so that the time dimension is last
+                predictions = np.moveaxis(predictions, 0, -1)
+            if modeltype == "cnn":
+                np.save(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", predictions)
+                np.save(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", test_plot)
+            # also save scores, av_preds, av_dssims, predictions, test_plot in .npy files
+            if cut_windows:
+                labels = test_labels.squeeze().reshape(-1, LATS, LONS, order='C')
+                # reorder the dimensions of labels so that the time dimension is last
+                labels = np.moveaxis(labels, 0, -1)
+            if modeltype == "cnn":
+                if cut_windows:
+                    np.save(f"{storageloc}labels_{j}{comp}{time}{modeltype}.npy", labels)
+            if modeltype == "cnn":
+                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}", "wb") as fp:  # Pickling
+                    pickle.dump(scores, fp)
+    if modeltype == "cnn":
+        return scores, model, av_preds, av_dssims, predictions, test_plot
+    elif modeltype == "rf":
+        return (0,0), model, av_preds, av_dssims, predictions, test_plot
 
 def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.9995):
     """
@@ -352,7 +399,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric = read_parameters_from_json(json)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric, cut_dataset = read_parameters_from_json(json)
     metric = args.metric
     if timeoverride is not None:
         time = timeoverride
@@ -364,11 +411,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     # add opath to the beginning of cpaths
     paths = [opath] + cpaths
 
-    # check that dssim_mat, dssim_mat_1e_1, dssim_mat_1e_3, cut_dataset_orig exist in the current directory, and if so, load them
-
-    # for every variable
-    final_cut_dataset_orig = np.empty((0, 11, 11))
+    # this is not a good way to initialize final_cut_dataset_orig
+    final_cut_dataset_orig = np.empty((0, WINDOWSIZE, WINDOWSIZE))
     final_dssim_mats = {}
+    average_dssims = {}
     for varname in vlist:
         files = []
         for path in paths:
@@ -383,32 +429,36 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                           data_type="cam-fv",
                                           varnames=[varname])
 
+        ldcpy.plot(dataset_col, varname, "mean", labels, start=0, end=0)
+        plt.savefig(f"{storageloc}test.png", bbox_inches='tight')
+
         # extract the original and compressed dataarrays
         dataset_orig = dataset_col.sel(collection="orig").to_array().squeeze()
         # pad the longitude dimension of the original dataset by 5 on each side (wrap around)
-        dataset_orig = xr.concat([dataset_orig[:, :, -5:], dataset_orig, dataset_orig[:, :, :5]], dim="lon")
+        dataset_orig = xr.concat([dataset_orig[:, :, (-1 * floor(WINDOWSIZE/2)):], dataset_orig, dataset_orig[:, :, :(floor(WINDOWSIZE/2))]], dim="lon")
         dssim_mats = {}
         # roll orig dataset using the xarray roll function
-        num = -100
-        dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
-
+        # num = 0
+        # dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
         for cdir in cdirs:
+            average_dssims[cdir] = np.empty((time))
             dataset_zfp = dataset_col.sel(collection=cdir).to_array().squeeze()
             # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
-            dataset_zfp = xr.concat([dataset_zfp[:, :, -5:], dataset_zfp, dataset_zfp[:, :, :5]], dim="lon")
-            dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
-            dssim_mats[cdir] = np.empty((time, 52416))
+            dataset_zfp = xr.concat([dataset_zfp[:, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :(floor(WINDOWSIZE/2))]], dim="lon")
+            # dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
+            dssim_mats[cdir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
+
             for t in range(0, time):
                 dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
 
                 if metric == "dssim":
-                    dc.get_diff_calc("ssim_fp")
+                    average_dssims[cdir][t] = dc.get_diff_calc("ssim_fp", xsize=11, ysize=11)
                     dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
                 elif metric == "mse":
                     dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
                     mse = dc2.get_calc("mean_squared")
                     # ignore the top and bottom 5 rows and columns
-                    mse = mse[5:-5, 5:-5]
+                    mse = mse[(floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2))]
                     dssim_mats[cdir][t] = mse.to_numpy().flatten()
                 elif metric == "logdssim":
                     dc.get_diff_calc("ssim_fp")
@@ -421,11 +471,13 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
 
 
-        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig").roll(lat=num, roll_coords=True), time, varname, storageloc)
-        # -1 means unspecified (should normally be 50596 * time unless
+        # cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig").roll(lat=num, roll_coords=True), time, varname, storageloc)
+        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig"), time, varname, storageloc, window_size=WINDOWSIZE)
+
+        # -1 means unspecified (should normally be (LATS * LONS) * time unless
         # the number of time steps loaded by cut_dataset is different than time)
 
-        cut_dataset_orig = cut_dataset_orig.reshape((-1, 11, 11), order="F")
+        cut_dataset_orig = cut_dataset_orig.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
         # flatten dssim_mats over time
         for i, cdir in enumerate(cdirs):
             dssim_mats[cdir] = dssim_mats[cdir].flatten()
@@ -437,7 +489,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # hopefully, by this point dssim_mat contains all the dssims for a single variable at every compression level
             # and cut_dataset_orig contains all the uncompressed 11x11 chunks for a single variable
         #append cut_dataset_orig to final_cut_dataset_orig
-        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:(52416*time)], axis=0)
+        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:((LATS * LONS)*time)], axis=0)
         #append dssim_mats to final_dssim_mats
         for cdir in cdirs:
             if cdir not in final_dssim_mats:
@@ -445,46 +497,68 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             else:
                 final_dssim_mats[cdir] = np.append(final_dssim_mats[cdir], dssim_mats[cdir], axis=0)
 
+    #append all elements in average_dssims to a single array
+    # average_dssims = np.array([average_dssims[cdir] for cdir in cdirs])
+
     # call fit_cnn on the 11x11 chunks and the dssim values
     if not only_data:
-        if feature is not None:
-            train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
-                                           storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist)
-            return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
+        if cut_dataset:
+            if feature is not None:
+                train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
+                                               storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
+                                               feature=feature, featurelist=featurelist)
+                return
+            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
+        else:
+            if feature is not None:
+                train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist),
+                                               storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
+                                               feature=feature, featurelist=featurelist, cut_windows=False)
+                return
+            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False)
     else:
         return
     print(errors)
-    # grab the first 50596 dssims for each compression level from dssim_mats
-    # dssim_mats = {cdir: dssim_mats[cdir][0:50596] for cdir in cdirs}
+    # grab the first (LATS * LONS) dssims for each compression level from dssim_mats
+    # dssim_mats = {cdir: dssim_mats[cdir][0:(LATS * LONS)] for cdir in cdirs}
+    preds_files = {}
+    dssims_files = {}
+
     for cdir in cdirs:
-        final = final_dssim_mats[cdir][0:52416].reshape((182, 288))
+        final = final_dssim_mats[cdir][0:(LATS * LONS)].reshape((LATS, LONS))
         if type(time) is list:
             for t in time:
                 np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final)
                 # also save the predictions
                 # and the errors
-                preds = np.zeros((182, 288)).flatten()
-                # set the values of mymap to the first 50596 values of predictions
-                if len(predictions) < 52416:
+                preds = np.zeros((LATS, LONS)).flatten()
+                # set the values of mymap to the first (LATS * LONS) values of predictions
+                if len(predictions) < (LATS * LONS):
                     preds[0:(len(predictions))] = predictions.squeeze()
-                    preds = preds.reshape((182, 288))
+                    preds = preds.reshape((LATS, LONS))
                 else:
-                    preds = predictions.squeeze()[0:52416].reshape((182, 288))
+                    preds = predictions.squeeze()[0:(LATS * LONS)].reshape((LATS, LONS))
                 np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
         else:
             np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final)
+            np.save(f"{storageloc}{cdir}_dssim_mat_alltime_{name}.npy", final_dssim_mats[cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
             # also save the predictions
             # and the errors
-            preds = np.zeros((182, 288)).flatten()
-            # set the values of mymap to the first 50596 values of predictions
-            if len(predictions) < 52416:
-                preds[0:(len(predictions))] = predictions.squeeze()
-            else:
-                preds = predictions.squeeze()[0:52416].reshape((182, 288))
-            np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
-    return errors, av_preds, av_dssims, predictions, test_dssims
+            # preds = np.zeros((LATS, LONS)).flatten()
+            # set the values of mymap to the first (LATS * LONS) values of predictions
+            # if len(predictions) < (LATS * LONS):
+            #     preds[0:(len(predictions))] = predictions.squeeze()
+            # else:
+                # preds = predictions.squeeze()[0:(LATS * LONS)].reshape((LATS, LONS))
+            # np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
+            # np.save(f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy", predictions.squeeze().reshape(LATS, LONS, -1))
+            # preds_file = f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy"
+            dssims_file = f"{storageloc}{cdir}_dssim_mat_alltime_{name}.npy"
+            # preds_files[cdir] = preds_file
+            dssims_files[cdir] = dssims_file
+
+
+    return errors, av_preds, av_dssims, test_dssims, dssims_files
 
 def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn", feature=None, metric="dssim"):
     # Will need to perform a normalization step.
@@ -505,9 +579,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
         if only_data or feature:
             build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
             return
-        e, p, d, predictions, test_dssims = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
+        e, p, d, test_dssims, dssim_fs = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])
 
-    return errors, av_preds, av_dssims, predictions, test_dssims
+    return errors, av_preds, av_dssims, test_dssims, dssim_fs

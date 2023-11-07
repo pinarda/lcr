@@ -19,6 +19,7 @@ def read_parameters_from_json(metajson):
     navg = 0
     stride=1
     metric = "dssim"
+    cutdataset = True
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):
@@ -56,6 +57,8 @@ def read_parameters_from_json(metajson):
             stride = metainfo['Stride']
         if "Metric" in metainfo:
             metric = metainfo['Metric']
+        if "CutDataset" in metainfo:
+            cutdataset = metainfo['CutDataset']
 
     print("Save directory: ", save)
     print("Variable list: ", vlist)
@@ -70,8 +73,9 @@ def read_parameters_from_json(metajson):
     print("Navg: ", navg)
     print("Stride: ", stride)
     print("Metric: ", metric)
+    print("CutDataset: ", cutdataset)
 
-    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride, metric
+    return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride, metric, cutdataset
 
 def list_of_strings(arg):
     return arg.split(',')
@@ -79,14 +83,17 @@ def list_of_strings(arg):
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local.json")
-    parser.add_argument("-t", "--testset", help="test set type", type=str, default="60_25_wholeslice")
+    parser.add_argument("-t", "--testset", help="test set type", type=str, default="10_90_wholeslice")
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=False)
-    parser.add_argument("-m", "--model", help="model type", type=str, default="cnn")
+    parser.add_argument("-m", "--model", help="model type", type=str, default="rf")
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default=None)
-    parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default=None)
+    parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default="mean")
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
     parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
     parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="dssim")
+    parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=False)
+
+    # let's add a -v option as well to add debug messages
     args = parser.parse_args()
 
     return args

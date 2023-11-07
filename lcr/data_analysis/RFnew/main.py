@@ -5,8 +5,11 @@ from utils import parse_command_line_arguments, read_parameters_from_json
 from plotting import generate_performance_plots
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 import datetime
+from math import floor
+
+WINDOWSIZE = 12
 
 
 def convert_np_to_dssims(np_arrays, titles):
@@ -19,18 +22,22 @@ def convert_np_to_dssims(np_arrays, titles):
         # and roll it vertically by 10
         # stick the dssims and predictions into an xarray DataArray
         dssims_da = xr.DataArray(np_arrays[i])
-        lat_values = np.linspace(-90, 90, np.shape(np_arrays)[1])
-        lon_values = np.linspace(0, 360, np.shape(np_arrays)[2])
+        lat_values = np.linspace(-90, 90, np.shape(dssims_da)[0])
+        lon_values = np.linspace(0, 360, np.shape(dssims_da)[1])
         # Rotate the longitude values by 180 degrees
         lon_values = np.where(lon_values > 180, lon_values - 360, lon_values)
         dssims_da.coords['latitude'] = (('dim_0'), lat_values)
         dssims_da.coords['longitude'] = (('dim_1'), lon_values)
         # Add new dimensions 'time' and 'sets'
         # Replace 'time_values' and 'set_values' with your actual time and set values
-        time_values = np.array([0])  # replace with your actual time values
-        dssims_da = dssims_da.expand_dims({'time': time_values})
+        if np.ndim(dssims_da) == 2:
+            time_values = np.array([0])  # replace with your actual time values
+            dssims_da = dssims_da.expand_dims({'time': time_values})
+            dssims_da = dssims_da.rename({'dim_0': 'latitude', 'dim_1': 'longitude'})
+        else:
+            dssims_da = dssims_da.rename({'dim_0': 'latitude', 'dim_1': 'longitude', 'dim_2': 'time'})
+
         # Convert the DataArray to a Dataset
-        dssims_da = dssims_da.rename({'dim_0': 'latitude', 'dim_1': 'longitude'})
         # Assuming dssims_da is your DataArray and you've renamed the dimensions to 'latitude' and 'longitude'
         dssims_da['latitude'].attrs['units'] = 'degrees_north'
         dssims_da['longitude'].attrs['units'] = 'degrees_east'
@@ -52,6 +59,17 @@ def convert_np_to_dssims(np_arrays, titles):
 
     return ldcpy_dssims
 
+def find_first_true_cdir(truepass_dict, cdirs, i):
+    first_true_cdirs = [None] * len(truepass_dict[cdirs[0]][i]['truepass']) # assuming 32 elements in the truepass array
+
+    for idx in range(len(truepass_dict[cdirs[0]][i]['truepass'])):
+        for cdir in cdirs:
+            if truepass_dict[cdir][i]['truepass'][idx]:
+                first_true_cdirs[idx] = cdir
+                break
+
+    return first_true_cdirs
+
 if __name__ == "__main__":
     args = parse_command_line_arguments()
 
@@ -59,7 +77,7 @@ if __name__ == "__main__":
     only_data = args.onlydata
     model = args.model
     feature = args.feature
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric = read_parameters_from_json(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset = read_parameters_from_json(j)
     # times = [2, 3, 4]
     # n = 2
 
@@ -81,34 +99,144 @@ if __name__ == "__main__":
         import ldcpy
 
     # dataset = ldcpy.open_datasets(list_of_files=[opath + "TSxf
+    truepred_dict = {}
+    truedssim_dict = {}
 
-    for i in range(n):
+    for i in time:
         if feature or only_data:
+            # j.split(".")[0] is the name of the json template
             build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False,
                                                       modeltype=model, feature=feature, metric=metric)
             break
-        errors, av_preds, av_dssims, predictions, test_dssims= build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False, modeltype=model, feature=feature, metric=metric)
+        errors, av_preds, av_dssims, test_dssims, dssim_fs = build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=False, modeltype=model, feature=feature, metric=metric)
         errors_all.append(errors)
         av_preds_all.append(av_preds)
         av_dssims_all.append(av_dssims)
-        predictions_all.append(predictions)
-        # errors1_all.append(errors1)
-        # av_preds1_all.append(av_preds1)
-        # av_dssims1_all.append(av_dssims1)
-        # errors3_all.append(errors3)
-        # av_preds3_all.append(av_preds3)
-        # av_dssims3_all.append(av_dssims3)
-        # # save the predictions to a file
-        # preds = np.zeros((182, 278)).flatten()
-        # # set the values of mymap to the first 50596 values of predictions
-        # if len(predictions) < 50596:
-        #     preds[0:(len(predictions))] = predictions.squeeze()
-        #     preds.reshape((182, 278))
-        # else:
-        #     preds = predictions.squeeze()[0:50596].reshape((182, 278))
-        # # save the predictions to a file
-        # np.save(f"{storageloc}predictions_{j.split('.')[0]}_{i}.npy", preds)
-        # # also save the actual dssims
+        # predictions_all.append(predictions)
+
+        for cdir in cdirs:
+            # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
+            # preds = np.load(pred_fs[cdir])
+            dssims = np.load(dssim_fs[cdir])
+            fname = j.split(".")[0]
+            preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}.npy")
+
+            # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
+            # first, strip the top and bottom 5 rows from the dssims
+            steps = [int(i * 0.2) for i in time]
+            # errs = preds - dssims[:,5:-5,steps[0]:]
+            # # now if the value is greater than 0, set it to 1, otherwise set it to 0
+            # truepass = np.where(errs > 0, 1, 0)
+            # compute the average dssim over the entire time slice
+            adssims = np.mean(dssims[:,:,steps[0]:], axis=(0,1))
+            # compute the average prediction over the entire time slice
+            apreds = np.mean(preds, axis=(0,1))
+
+            threshold = 0.995
+
+            truepred = apreds > threshold
+            if cdir not in truepred_dict:
+                truepred_dict[cdir] = {}
+                if i not in truepred_dict[cdir]:
+                    truepred_dict[cdir][i] = {}
+            truepred_dict[cdir][i]['truepass'] = truepred
+
+            # compute the average dssim over the entire time slice
+            truedssim = adssims > threshold
+            if cdir not in truedssim_dict:
+                truedssim_dict[cdir] = {}
+                if i not in truedssim_dict[cdir]:
+                    truedssim_dict[cdir][i] = {}
+            truedssim_dict[cdir][i]['truepass'] = truedssim
+
+
+
+    predresult = {}
+    dssimresult = {}
+    for i in time:
+        predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
+        dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
+
+    # convert the strings to integers based on their index in cdirs
+    predints = {}
+    dssimints = {}
+    for cdir in cdirs:
+        for i in time:
+
+            predints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in predresult[i]]
+            dssimints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in dssimresult[i]]
+
+    # compute true positives ( if predresult - dssimresult = 0)
+    # and true
+    true_positives = {}
+    false_positives = {}
+    false_negatives = {}
+    for i in time:
+        true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+
+    # now sum up the true positives, false positives, and false negatives
+    accuracy = {}
+    false_negative_fraction = {}
+    false_positive_fraction = {}
+    for i in time:
+        true_positives_sum = sum(true_positives[i])
+        false_positives_sum = sum(false_positives[i])
+        false_negatives_sum = sum(false_negatives[i])
+
+        # compute accuracy as true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
+        accuracy[i] = true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
+        false_positive_fraction[i] = false_positives_sum / (true_positives_sum + false_negatives_sum)
+        false_negative_fraction[i] = false_negatives_sum / (true_positives_sum + false_negatives_sum)
+
+    # build a histogram of predresult[i]
+
+    for i in time:
+        # replace and potential Nones in predresult[i] with "None"
+        predresult[i] = ["Lossless" if x is None else x for x in predresult[i]]
+        frequencies, bins = np.histogram(predresult[i], bins=np.arange(len(set(predresult[i])) + 1) - 0.5)
+        unique_elements, frequencies = np.unique(predresult[i], return_counts=True)
+
+        # Define colors for each unique label
+        unique_labels = list(set(predresult[i]))
+        colorints = np.array(predints[i]) - np.array(dssimints[i])
+        colors = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+
+        plt.clf()
+
+        # Plot the histogram using plt.bar with individual colors
+        plt.bar(bins[:-1], frequencies, color=colors, align='center', width=np.diff(bins))
+
+        plt.xticks(bins[:-1], unique_labels, rotation=45)
+        plt.title(f"Predictions for total # of time slices: {i}")
+        plt.xlabel("Compression Level")
+        plt.ylabel("Frequency")
+        plt.tight_layout()
+        plt.savefig(f"{storageloc}histogram_preds_{i}_{j.split('.')[0]}.png", bbox_inches='tight')
+        plt.clf()
+
+    # do the same for dssimresult[i]
+    for i in time:
+        dssimresult[i] = ["Lossless" if x is None else x for x in dssimresult[i]]
+        frequencies, bins = np.histogram(dssimresult[i], bins=np.arange(len(set(dssimresult[i])) + 1) - 0.5)
+        unique_elements, frequencies = np.unique(predresult[i], return_counts=True)
+
+        # Define colors for each unique label
+        unique_labels = list(set(dssimresult[i]))
+        colorints = np.array(dssimints[i]) - np.array(dssimints[i])
+        colors = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+
+        # Plot the histogram using plt.bar with individual colors
+        plt.bar(bins[:-1], frequencies, color=colors, align='center', width=np.diff(bins))
+
+        plt.xticks(bins[:-1], unique_labels, rotation=45)
+        plt.title(f"Predictions for # of time slices: {i}")
+        plt.xlabel("Compression Level")
+        plt.ylabel("Frequency")
+        plt.tight_layout()
+        plt.savefig(f"{storageloc}histogram_dssims_{i}_{j.split('.')[0]}.png", bbox_inches='tight')
+        plt.clf()
 
     if only_data or feature:
         exit()
@@ -129,10 +257,12 @@ if __name__ == "__main__":
             for t in time:
                 date = datetime.datetime.now()
                 date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
-
+                fname = j.split(".")[0]
                 # load the dssims and predictions
-                dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
-                preds = np.load(f"{storageloc}{cdir}_preds_{t}_{name}.npy")
+                # dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
+                dssims = np.load(f"{storageloc}labels_{fname}{cdir}{t}.npy")
+                preds = np.load(f"{storageloc}predictions_{fname}{cdir}{t}.npy")
+
                 # flips dssims and preds upside down
                 # dssims = np.flipud(dssims)
                 # test_dssims = np.flipud(test_dssims)
@@ -140,12 +270,12 @@ if __name__ == "__main__":
                 # pad the top and bottom of dssims and preds with 5 0s
 
 
-                dssims = np.pad(dssims, ((5, 5), (0, 0)), 'constant', constant_values=0)
-                test_dssims = np.pad(test_dssims, ((5, 5), (0, 0)), 'constant', constant_values=0)
-                preds = np.pad(preds, ((5, 5), (0, 0)), 'constant', constant_values=0)
+                dssims = np.pad(dssims, (((floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2))), (0, 0), (0, 0)), 'constant', constant_values=0)
+                # test_dssims = np.pad(test_dssims, (((floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2))), (0, 0)), 'constant', constant_values=0)
+                preds = np.pad(preds, (((floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2))), (0, 0), (0, 0)), 'constant', constant_values=0)
 
 
-                ldcpy_dssims = convert_np_to_dssims([test_dssims], ["Actual DSSIMs"])
+                ldcpy_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
                 # ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
 
                 # save the plots
@@ -159,23 +289,24 @@ if __name__ == "__main__":
                 # save the plots
                 # plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png", bbox_inches='tight')
 
-                errors = [test_dssims - preds]
+                errors = [dssims - preds]
                 errors = convert_np_to_dssims(errors, ["Errors"])
                 # ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True, vert_plot=True)
                 # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
                 # plt.clf()
 
-                allthings = convert_np_to_dssims([test_dssims, preds], ["Actual DSSIMs", "Model Predictions"])
+                allthings =convert_np_to_dssims([dssims, preds], ["Actual DSSIMs", "Model Predictions"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
-                           weighted=False, start=0, end=0, short_title=False, vert_plot=True,
+                           weighted=False, start=1, end=1, short_title=False, vert_plot=True,
                            color="plasma")
                 plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_noerr.png", bbox_inches='tight')
                 plt.clf()
 
-                allthings = convert_np_to_dssims([test_dssims - preds],
+
+                allthings = convert_np_to_dssims([dssims - preds],
                                                  ["Error"])
                 ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
-                           weighted=False, start=0, end=0, short_title=True, vert_plot=True,
+                           weighted=False, start=1, end=1, short_title=True, vert_plot=True,
                            color="PiYG")
                 plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_erroronly.png", bbox_inches='tight')
                 plt.clf()
@@ -188,54 +319,3 @@ if __name__ == "__main__":
                 # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff", weighted=False, start=t, end=t, short_title=True, vert_plot=True)
                 # plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}.png", bbox_inches='tight')
                 # plt.clf()
-
-
-        else:
-            t = time
-            # load the dssims and predictions
-            dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
-            preds = np.load(f"{storageloc}{cdir}_preds_{t}_{name}.npy")
-            # flips dssims and preds upside down
-            dssims = np.flipud(dssims)
-            preds = np.flipud(preds)
-            # roll the dssims and preds by 10
-
-            ldcpy_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
-            ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0,
-                       short_title=True, cmax=1, cmin=0, vert_plot=True)
-
-            # save the plots
-            plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-            plt.clf()
-
-            da_preds = convert_np_to_dssims([preds], ["Model Predictions"])
-            ldcpy.plot(da_preds, "dssims", calc="mean", sets=["Model Predictions"], weighted=False, start=0, end=0,
-                       short_title=True, cmax=1, cmin=0, vert_plot=True)
-
-            # save the plots
-            plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-
-            errors = [dssims - preds]
-            errors = convert_np_to_dssims(errors, ["Errors"])
-            ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True,
-                       vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-            plt.clf()
-
-            allthings = convert_np_to_dssims([dssims, preds, dssims - preds],
-                                             ["Actual DSSIMs", "Model Predictions", "Error"])
-            ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions", "Error"],
-                       weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-            plt.clf()
-
-            ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
-                       weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-            plt.clf()
-
-            ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff",
-                       weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-            plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}_{date_string}_{model}.png", bbox_inches='tight')
-            plt.clf()
-
