@@ -119,7 +119,7 @@ if __name__ == "__main__":
             # preds = np.load(pred_fs[cdir])
             dssims = np.load(dssim_fs[cdir])
             fname = j.split(".")[0]
-            preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}.npy")
+            preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}{model}.npy")
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
