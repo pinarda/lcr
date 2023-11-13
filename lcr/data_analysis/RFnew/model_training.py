@@ -351,7 +351,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     if modeltype == "cnn":
         return scores, model, av_preds, av_dssims, predictions, test_plot
     elif modeltype == "rf":
-        if only_data:
+        if only_data or feature is not None:
             return (0,0), None, None, None, None, None
         return (0,0), model, av_preds, av_dssims, predictions, test_plot
 
