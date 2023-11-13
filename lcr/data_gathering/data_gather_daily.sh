@@ -110,7 +110,7 @@ cat
     if ("$out" == "" && "$out2" == "") then
       break
     endif
-    sleep 10
+    sleep 30
   end
 endif
 

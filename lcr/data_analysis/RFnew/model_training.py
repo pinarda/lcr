@@ -198,19 +198,19 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                         npns = ns.to_numpy()
                         # save train_data, train_labels, val_data, val_labels, test_data, test_labels
 
-                        np.save(f"data/TS100/{feature}_{type}.npy", npns)
-                    return
+                        np.save(f"data/TS100/{feature}_{type}{time}{comp}.npy", npns)
+                    continue
 
                 for type in ["train", "test"]:
                     list = None
                     for f in featurelist:
                         if list is None:
-                            list = np.load(f"data/TS100/{f}_{type}.npy")
+                            list = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
                         elif f == "magnitude_range":
-                            feat = np.load(f"data/TS100/{f}_{type}.npy")
+                            feat = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
                             list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
                         else:
-                            feat = np.load(f"data/TS100/{f}_{type}.npy")
+                            feat = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
                             list = np.concatenate((list, feat), axis=0)
                         if type == "train":
                             train_data = list
@@ -334,15 +334,15 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 predictions = predictions.squeeze().reshape(-1, LATS, LONS, order='C')
                 # reorder the dimensions of predictions so that the time dimension is last
                 predictions = np.moveaxis(predictions, 0, -1)
-            if modeltype == "cnn":
-                np.save(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", predictions)
-                np.save(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", test_plot)
+            # if modeltype == "cnn":
+            np.save(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", predictions)
+            np.save(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", test_plot)
             # also save scores, av_preds, av_dssims, predictions, test_plot in .npy files
             if cut_windows:
                 labels = test_labels.squeeze().reshape(-1, LATS, LONS, order='C')
                 # reorder the dimensions of labels so that the time dimension is last
                 labels = np.moveaxis(labels, 0, -1)
-            if modeltype == "cnn":
+            if modeltype == "cnn" or modeltype == "rf":
                 if cut_windows:
                     np.save(f"{storageloc}labels_{j}{comp}{time}{modeltype}.npy", labels)
             if modeltype == "cnn":
@@ -351,6 +351,8 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     if modeltype == "cnn":
         return scores, model, av_preds, av_dssims, predictions, test_plot
     elif modeltype == "rf":
+        if only_data:
+            return (0,0), None, None, None, None, None
         return (0,0), model, av_preds, av_dssims, predictions, test_plot
 
 def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.9995):
@@ -501,23 +503,22 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     # average_dssims = np.array([average_dssims[cdir] for cdir in cdirs])
 
     # call fit_cnn on the 11x11 chunks and the dssim values
-    if not only_data:
-        if cut_dataset:
-            if feature is not None:
-                train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
-                                               storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
-                                               feature=feature, featurelist=featurelist)
-                return
-            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
-        else:
-            if feature is not None:
-                train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist),
-                                               storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save,
-                                               feature=feature, featurelist=featurelist, cut_windows=False)
-                return
-            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist), storageloc, testset, j, only_data=False, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False)
+
+    if cut_dataset:
+        if feature is not None:
+            train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
+                                           storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save,
+                                           feature=feature, featurelist=featurelist)
+            return
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
     else:
-        return
+        if feature is not None:
+            train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist),
+                                           storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save,
+                                           feature=feature, featurelist=featurelist, cut_windows=False)
+            return
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist), storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False)
+
     print(errors)
     # grab the first (LATS * LONS) dssims for each compression level from dssim_mats
     # dssim_mats = {cdir: dssim_mats[cdir][0:(LATS * LONS)] for cdir in cdirs}
@@ -541,7 +542,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
         else:
             np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final)
-            np.save(f"{storageloc}{cdir}_dssim_mat_alltime_{name}.npy", final_dssim_mats[cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
+            np.save(f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}.npy", final_dssim_mats[cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
             # also save the predictions
             # and the errors
             # preds = np.zeros((LATS, LONS)).flatten()
@@ -553,7 +554,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
             # np.save(f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy", predictions.squeeze().reshape(LATS, LONS, -1))
             # preds_file = f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy"
-            dssims_file = f"{storageloc}{cdir}_dssim_mat_alltime_{name}.npy"
+            dssims_file = f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}.npy"
             # preds_files[cdir] = preds_file
             dssims_files[cdir] = dssims_file
 
@@ -566,22 +567,20 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
     errors = []
     av_preds = []
     av_dssims = []
-
-    errors1 = []
-    av_preds1 = []
-    av_dssims1 = []
-
-    errors3 = []
-    av_preds3 = []
-    av_dssims3 = []
+    dssim_fs = {}
 
     for i in times:
         if only_data or feature:
-            build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
-            return
-        e, p, d, test_dssims, dssim_fs = build_model_and_evaluate_performance(i, j, name, only_data=False, modeltype=modeltype, metric=metric)
+            build_model_and_evaluate_performance(i, j, name, only_data=only_data, modeltype=modeltype, metric=metric)
+            continue
+        e, p, d, test_dssims, dssim_f = build_model_and_evaluate_performance(i, j, name, only_data, modeltype=modeltype, metric=metric)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])
+        dssim_fs[i] = dssim_f
+
+
+    if only_data or feature:
+        exit()
 
     return errors, av_preds, av_dssims, test_dssims, dssim_fs
