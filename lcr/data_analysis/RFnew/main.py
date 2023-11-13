@@ -191,9 +191,18 @@ if __name__ == "__main__":
         false_negatives_sum = sum(false_negatives[i])
 
         # compute accuracy as true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
-        accuracy[i] = true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
-        false_positive_fraction[i] = false_positives_sum / (true_positives_sum + false_negatives_sum)
-        false_negative_fraction[i] = false_negatives_sum / (true_positives_sum + false_negatives_sum)
+        if (true_positives_sum + false_positives_sum + false_negatives_sum) > 0:
+            accuracy[i] = true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
+        else:
+            accuracy[i] = 0
+        if (true_positives_sum + false_negatives_sum) > 0:
+            false_positive_fraction[i] = false_positives_sum / (true_positives_sum + false_negatives_sum)
+        else:
+            false_positive_fraction[i] = 0
+        if (true_positives_sum + false_negatives_sum) > 0:
+            false_negative_fraction[i] = false_negatives_sum / (true_positives_sum + false_negatives_sum)
+        else:
+            false_negative_fraction[i] = 0
 
     # build a histogram of predresult[i]
 
