@@ -267,7 +267,9 @@ if __name__ == "__main__":
 
     name = j.split(".")[0]
     for cdir in cdirs:
+        print("Outside\n\n")
         if type(time) == list:
+            print("Inside\n\n")
             for t in time:
                 if cut_dataset:
                     date = datetime.datetime.now()
