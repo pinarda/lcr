@@ -92,7 +92,7 @@ def parse_command_line_arguments():
     parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
     parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="dssim")
     parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=False)
-
+    print(f"Only Data Status: {parser.parse_args().onlydata}")
     # let's add a -v option as well to add debug messages
     args = parser.parse_args()
 
