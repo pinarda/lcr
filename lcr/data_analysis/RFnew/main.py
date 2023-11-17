@@ -218,15 +218,44 @@ if __name__ == "__main__":
         colors = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
 
         plt.clf()
+        #get 80% of the total number of slices i
+        nslices = int(i * 0.8)
 
         # Plot the histogram using plt.bar with individual colors
+        # set the max height of the histogram to be 80% of the total number of slices
         plt.bar(bins[:-1], frequencies, color=colors, align='center', width=np.diff(bins))
-
+        plt.ylim(0, nslices)
         plt.xticks(bins[:-1], unique_labels, rotation=45)
-        plt.title(f"Predictions for total # of time slices: {i}")
-        plt.xlabel("Compression Level")
-        plt.ylabel("Frequency")
+        # for each item in vlist, append to a string separated by a comma and space
+        vliststring = ""
+        for v in vlist:
+            vliststring += v + ", "
+        vliststring = vliststring[:-2]
+        # for each cdir in cdirs, append to a string separated by a comma and space
+        nlevels = len(cdirs)
+        if cut_dataset:
+            windowed = "true"
+        else:
+            windowed = "false"
+
+        plt.title(f"Predictions for {vliststring} with {nlevels} levels, \n windowed = {windowed}, total # of test slices: {nslices}", fontsize=18)
+
         plt.tight_layout()
+        # change plot font size to be much larger
+        plt.rcParams.update({'font.size': 22})
+        # change the text size of the x and y labels to be much larger
+        plt.xlabel("Compression Level", fontsize=18)
+        plt.ylabel("Frequency", fontsize=22)
+        # also do this for the x and y tick labels
+        plt.xticks(fontsize=18)
+        plt.yticks(fontsize=22)
+        # can we shrink the plot size both horizontally and vertically?
+        plt.gcf().subplots_adjust(bottom=0.3)
+        plt.gcf().subplots_adjust(left=0.15)
+
+
+        plt.show()
+
         plt.savefig(f"{storageloc}histogram_preds_{i}_{j.split('.')[0]}.png", bbox_inches='tight')
         plt.clf()
 
@@ -312,7 +341,7 @@ if __name__ == "__main__":
                     # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
                     # plt.clf()
 
-                    allthings =convert_np_to_dssims([dssims, preds], ["Actual DSSIMs", "Model Predictions"])
+                    allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIM ({fname} {cdir} {t} {model})", f"Model Predictions ({fname} {cdir} {t} {model})"])
                     ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
                                weighted=False, start=1, end=1, short_title=False, vert_plot=True,
                                color="plasma")
@@ -320,13 +349,26 @@ if __name__ == "__main__":
                     plt.clf()
 
 
+
                     allthings = convert_np_to_dssims([dssims - preds],
-                                                     ["Error"])
+                                                     [f"Error ({fname} {cdir} {t} {model})"])
                     ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
                                weighted=False, start=1, end=1, short_title=True, vert_plot=True,
                                color="PiYG")
                     plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_erroronly.png", bbox_inches='tight')
                     plt.clf()
+
+                    try:
+                        allthings_zoom = convert_np_to_dssims([1-dssims, 1-preds], ["1-log(True DSSIM)", "1-log(Model Predictions)"])
+                        ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
+                                   weighted=False, start=0.000001, end=1, scale="log", short_title=False, vert_plot=True,
+                                   color="plasma")
+                        plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
+                                    bbox_inches='tight')
+                        plt.clf()
+                    except:
+                        pass
+
 
                     # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
                     #            weighted=False, start=t, end=t, short_title=True, vert_plot=True)

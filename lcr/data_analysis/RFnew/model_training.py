@@ -236,7 +236,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # make this the first of a 1x4 subplot
                 # fit the model
             if modeltype == "cnn":
-                history = model.fit(train_data, train_labels, epochs=2, batch_size=batch_size, validation_data=(val_data, val_labels))
+                history = model.fit(train_data, train_labels, epochs=10, batch_size=batch_size, validation_data=(val_data, val_labels))
                 score = model.evaluate(test_data, verbose=0)
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
@@ -311,6 +311,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
                 if plotdir is not None:
                     plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}{time}.png")
+                plt.clf()
 
 
             if modeltype == "cnn":
@@ -324,8 +325,21 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             av_dssims.append(average_dssim)
 
             # save the model
-            if modeltype == "cnn":
-                model.save(f"model_{j}{comp}{time}{modeltype}.h5")
+            try:
+                if modeltype == "cnn":
+                    model.save(f"model_{j}{comp}{time}{modeltype}.h5")
+                    plt.plot(history.history['accuracy'])
+                    plt.plot(history.history['val_accuracy'])
+                    plt.title('model accuracy')
+                    plt.ylabel('accuracy')
+                    plt.xlabel('epoch')
+                    plt.legend(['train', 'test'], loc='upper left')
+                    plt.show()
+                    plt.savefig(f"{storageloc}acc_history_{j}{comp}{time}{modeltype}.png")
+                    plt.clf()
+            except:
+                pass
+
             with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}", "wb") as fp:
                 pickle.dump(av_preds, fp)
             with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}", "wb") as fp:

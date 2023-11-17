@@ -30,6 +30,10 @@ if __name__ == '__main__':
                 "TS6_jflj",
                 "TS7_jflj",
                 "TS8_jflj"]
+    # append PRECT1 ... PRECT8 to newnames
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            newnames.append(f"{varname}" + str(i) + "_jflj")
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
                 ["TS"],
                 ["TS"],
@@ -39,6 +43,10 @@ if __name__ == '__main__':
                 ["TS"],
                 ["TS"],
                 ["TS"]]
+    # append PRECT to newvars
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            newvars.append(["PRECT"])
     newcomps = [["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_18"],
@@ -47,14 +55,28 @@ if __name__ == '__main__':
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-    newtimes = [[10, 20, 50, 100],
-                [20],
-                [10, 20, 50, 100],
-                [20],
-                [10, 20, 50, 100],
-                [20],
-                [10, 20, 50, 100],
-                [20]]
+    # repeat the above for PRECT
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            if i % 2 == 0:
+                newcomps.append(["zfp_p_18"])
+            else:
+                newcomps.append(["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"])
+    newtimes = [[10, 30, 50, 100],
+                [30],
+                [10, 30, 50, 100],
+                [30],
+                [10, 30, 50, 100],
+                [30],
+                [10, 30, 50, 100],
+                [30]]
+    # repeat the above for PRECT
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            if i % 2 == 0:
+                newtimes.append([20])
+            else:
+                newtimes.append([10, 20, 50, 100])
     newtestset = ["10_90_wholeslice",
                   "10_90_wholeslice",
                   "10_90_wholeslice",
@@ -63,6 +85,10 @@ if __name__ == '__main__':
                   "10_90_wholeslice",
                   "10_90_wholeslice",
                   "10_90_wholeslice"]
+    # repeat the above for PRECT
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            newtestset.append("10_90_wholeslice")
     jobids = [1,
               2,
               3,
@@ -71,14 +97,21 @@ if __name__ == '__main__':
               6,
               7,
               8]
-    metrics = ["dssim",
-               "dssim",
-               "dssim",
-               "dssim",
-               "dssim",
-               "dssim",
-               "dssim",
-               "dssim"]
+    # repeat the above for PRECT
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            jobids.append(i+9)
+        metrics = ["dssim",
+                   "dssim",
+                   "dssim",
+                   "dssim",
+                   "dssim",
+                   "dssim",
+                   "dssim",
+                   "dssim"]
+    # repeat the above for PRECT
+    for i in range(1, 9):
+        metrics.append("dssim")
     transforms = ["quantile",
                     "quantile",
                     "quantile",
@@ -87,6 +120,13 @@ if __name__ == '__main__':
                     "none",
                     "none",
                     "none"]
+    # repeat the above for PRECT
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            if i < 5:
+                transforms.append("quantile")
+            else:
+                transforms.append("none")
     cutdatasets = [
         True,
         True,
@@ -97,6 +137,13 @@ if __name__ == '__main__':
         False,
         False
     ]
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        # repeat the above for PRECT, should be two True, two False, repeated twice
+        for i in range(1, 9):
+            cutdatasets.append(cutdatasets[i-1])
+
+
+
 
 
     # we need to write a new json file for each model configuration
