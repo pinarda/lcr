@@ -110,8 +110,9 @@ if __name__ == '__main__':
                    "dssim",
                    "dssim"]
     # repeat the above for PRECT
-    for i in range(1, 9):
-        metrics.append("dssim")
+    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
+        for i in range(1, 9):
+            metrics.append("dssim")
     transforms = ["quantile",
                     "quantile",
                     "quantile",
