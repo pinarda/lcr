@@ -341,7 +341,8 @@ if __name__ == "__main__":
                     # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
                     # plt.clf()
 
-                    allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIM ({fname} {cdir} {t} {model})", f"Model Predictions ({fname} {cdir} {t} {model})"])
+                    # allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIM ({fname} {cdir} {t} {model})", f"Model Predictions ({fname} {cdir} {t} {model})"])
+                    allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIMs", f"Model Predictions"])
                     ldcpy.plot(allthings, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
                                weighted=False, start=1, end=1, short_title=False, vert_plot=True,
                                color="plasma")
@@ -359,7 +360,7 @@ if __name__ == "__main__":
                     plt.clf()
 
                     try:
-                        allthings_zoom = convert_np_to_dssims([1-dssims, 1-preds], ["1-log(True DSSIM)", "1-log(Model Predictions)"])
+                        allthings_zoom = convert_np_to_dssims([1-dssims, 1-preds], ["Actual DSSIMs", "Model Predictions"])
                         ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=["Actual DSSIMs", "Model Predictions"],
                                    weighted=False, start=0.000001, end=1, scale="log", short_title=False, vert_plot=True,
                                    color="plasma")
