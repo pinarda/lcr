@@ -14,7 +14,7 @@
 
 #module load conda
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
-cd ~/lcr/lcr/data_analysis/RFnew
+cd ~/lcr2/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
 set models = ("cnn" "rf")
