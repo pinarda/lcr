@@ -1,6 +1,6 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
-    "SaveDir": "/glade/scratch/apinard/RF_store2/",
+    "SaveDir": "/glade/scratch/apinard/RF_store3/",
     "VarList":  ["PSL", "TREFHTMX", "TREFHT", "TREFHTMN", "TS", "U850", "V850"],
     "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
     "FilenamePost": ".20060101-20071231.nc",
