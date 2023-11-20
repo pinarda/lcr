@@ -30,10 +30,6 @@ if __name__ == '__main__':
                 "TS6_jflj",
                 "TS7_jflj",
                 "TS8_jflj"]
-    # append PRECT1 ... PRECT8 to newnames
-    for varname in ["PRECT", "PS", "FLUT", "Z500"]:
-        for i in range(1, 9):
-            newnames.append(f"{varname}" + str(i) + "_jflj")
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
                 ["TS"],
                 ["TS"],
