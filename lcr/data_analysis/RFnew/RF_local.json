@@ -12,5 +12,5 @@
     "Navg": 1,
     "StorageLoc": "./data/",
     "Stride": 1,
-    "CutDataset": 0
+    "CutDataset": 1
 }

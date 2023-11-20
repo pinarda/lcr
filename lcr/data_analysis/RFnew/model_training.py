@@ -198,19 +198,19 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                         npns = ns.to_numpy()
                         # save train_data, train_labels, val_data, val_labels, test_data, test_labels
 
-                        np.save(f"data/TS100/{feature}_{type}{time}{comp}.npy", npns)
+                        np.save(f"{storageloc}{feature}_{type}{time}{comp}.npy", npns)
                     continue
 
                 for type in ["train", "test"]:
                     list = None
                     for f in featurelist:
                         if list is None:
-                            list = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
+                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
                         elif f == "magnitude_range":
-                            feat = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
+                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
                             list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
                         else:
-                            feat = np.load(f"data/TS100/{f}_{type}{time}{comp}.npy")
+                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
                             list = np.concatenate((list, feat), axis=0)
                         if type == "train":
                             train_data = list
@@ -222,12 +222,12 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
 
 
             # save train_data, train_labels, val_data, val_labels, test_data, test_labels
-            np.save(f"data/TS100/train_data_CNN11_local.npy", train_data)
-            np.save(f"data/TS100/train_labels_CNN11_local.npy", train_labels)
-            np.save(f"data/TS100/val_data_CNN11_local.npy", val_data)
-            np.save(f"data/TS100/val_labels_CNN11_local.npy", val_labels)
-            np.save(f"data/TS100/test_data_CNN11_local.npy", test_data)
-            np.save(f"data/TS100/test_labels_CNN11_local.npy", test_labels)
+            np.save(f"{storageloc}train_data_CNN11_local.npy", train_data)
+            np.save(f"{storageloc}train_labels_CNN11_local.npy", train_labels)
+            np.save(f"{storageloc}val_data_CNN11_local.npy", val_data)
+            np.save(f"{storageloc}val_labels_CNN11_local.npy", val_labels)
+            np.save(f"{storageloc}test_data_CNN11_local.npy", test_data)
+            np.save(f"{storageloc}test_labels_CNN11_local.npy", test_labels)
 
             if only_data:
                 return
