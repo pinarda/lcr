@@ -353,7 +353,7 @@ if __name__ == "__main__":
 
                     allthings = convert_np_to_dssims([dssims - preds],
                                                      [f"Error ({fname} {cdir} {t} {model})"])
-                    ldcpy.plot(allthings, "dssims", calc="mean", sets=["Error"],
+                    ldcpy.plot(allthings, "dssims", calc="mean", sets=[f"Error ({fname} {cdir} {t} {model})"],
                                weighted=False, start=1, end=1, short_title=True, vert_plot=True,
                                color="PiYG")
                     plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_{t}_{name}_{date_string}_{model}_erroronly.png", bbox_inches='tight')

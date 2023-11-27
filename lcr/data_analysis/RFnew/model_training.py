@@ -204,8 +204,11 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 for type in ["train", "test"]:
                     list = None
                     for f in featurelist:
-                        if list is None:
+                        if list is None and f != "magnitude_range":
                             list = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                        elif list is None and f == "magnitude_range":
+                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                            list = list.reshape(1, list.shape[0])
                         elif f == "magnitude_range":
                             feat = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
                             list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
@@ -236,7 +239,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # make this the first of a 1x4 subplot
                 # fit the model
             if modeltype == "cnn":
-                history = model.fit(train_data, train_labels, epochs=7, batch_size=batch_size, validation_data=(val_data, val_labels))
+                history = model.fit(train_data, train_labels, epochs=1, batch_size=batch_size, validation_data=(val_data, val_labels))
                 score = model.evaluate(test_data, verbose=0)
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
