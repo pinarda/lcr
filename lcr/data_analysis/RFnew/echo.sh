@@ -37,7 +37,7 @@ foreach model ($models)
     # time the run
 #    conda activate my-npl-ml
 #    python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -r METRIC
-    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
 
   endif
   if ($model == "rf") then
