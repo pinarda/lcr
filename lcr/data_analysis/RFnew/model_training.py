@@ -244,6 +244,12 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
             elif modeltype == "rf":
+                train_data.replace([np.inf, -np.inf], 0, inplace=True)
+                train_data.fillna(train_data.mean(), inplace=True)
+                test_data.replace([np.inf, -np.inf], 0, inplace=True)
+                test_data.fillna(test_data.mean(), inplace=True)
+                val_data.replace([np.inf, -np.inf], 0, inplace=True)
+                val_data.fillna(val_data.mean(), inplace=True)
                 model.fit(train_data, train_labels)
 
             predictions = model.predict(test_data)
