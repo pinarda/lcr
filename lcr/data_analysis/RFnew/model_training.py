@@ -246,13 +246,13 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             elif modeltype == "rf":
                 train_data[train_data == -np.inf] = 0
                 train_data[train_data == np.inf] = 0
-                train_data.fillna(train_data.mean(), inplace=True)
+                train_data[train_data == np.nan] = 0
                 test_data[test_data == -np.inf] = 0
                 test_data[test_data == np.inf] = 0
-                test_data.fillna(test_data.mean(), inplace=True)
+                train_data[train_data == np.nan] = 0
                 val_data[val_data == -np.inf] = 0
                 val_data[val_data == np.inf] = 0
-                val_data.fillna(val_data.mean(), inplace=True)
+                train_data[train_data == np.nan] = 0
                 model.fit(train_data, train_labels)
 
             predictions = model.predict(test_data)
