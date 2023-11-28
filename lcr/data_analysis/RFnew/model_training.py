@@ -233,7 +233,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             np.save(f"{storageloc}test_labels_CNN11_local.npy", test_labels)
 
             if only_data:
-                return
+                exit()
 
             #plot the first (LATS * LONS) values of test_labels in a 182*288 grid
             # make this the first of a 1x4 subplot
