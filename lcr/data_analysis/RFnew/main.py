@@ -77,6 +77,7 @@ if __name__ == "__main__":
     only_data = args.onlydata
     model = args.model
     feature = args.feature
+    jobid = args.jobid
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset = read_parameters_from_json(j)
     # times = [2, 3, 4]
     # n = 2
@@ -120,7 +121,7 @@ if __name__ == "__main__":
             # preds = np.load(pred_fs[cdir])
             dssims = np.load(dssim_fs[i][cdir])
             fname = j.split(".")[0]
-            preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}{model}.npy")
+            preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}{model}{jobid}.npy")
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
@@ -256,7 +257,7 @@ if __name__ == "__main__":
 
         plt.show()
 
-        plt.savefig(f"{storageloc}histogram_preds_{i}_{j.split('.')[0]}.png", bbox_inches='tight')
+        plt.savefig(f"{storageloc}histogram_preds_{i}_{j.split('.')[0]}{jobid}.png", bbox_inches='tight')
         plt.clf()
 
     # do the same for dssimresult[i]
@@ -278,7 +279,7 @@ if __name__ == "__main__":
         plt.xlabel("Compression Level")
         plt.ylabel("Frequency")
         plt.tight_layout()
-        plt.savefig(f"{storageloc}histogram_dssims_{i}_{j.split('.')[0]}.png", bbox_inches='tight')
+        plt.savefig(f"{storageloc}histogram_dssims_{i}_{j.split('.')[0]}{jobid}.png", bbox_inches='tight')
         plt.clf()
 
     if only_data or feature:
@@ -306,8 +307,8 @@ if __name__ == "__main__":
                     fname = j.split(".")[0]
                     # load the dssims and predictions
                     # dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
-                    dssims = np.load(f"{storageloc}labels_{fname}{cdir}{t}{model}.npy")
-                    preds = np.load(f"{storageloc}predictions_{fname}{cdir}{t}{model}.npy")
+                    dssims = np.load(f"{storageloc}labels_{fname}{cdir}{t}{model}{jobid}.npy")
+                    preds = np.load(f"{storageloc}predictions_{fname}{cdir}{t}{model}{jobid}.npy")
 
                     # flips dssims and preds upside down
                     # dssims = np.flipud(dssims)

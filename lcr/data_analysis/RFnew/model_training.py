@@ -78,19 +78,19 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     av_preds = []
     av_dssims = []
     for comp in dssim.keys():
-        model_path = f"model_{j}{comp}{time}{modeltype}.h5"
+        model_path = f"model_{j}{comp}{time}{modeltype}{jobid}.h5"
         if os.path.exists(model_path):
             model = tf.keras.models.load_model(model_path)
-            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}", "rb") as f:
+            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}{jobid}", "rb") as f:
                 av_preds = pickle.load(f)
-            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}", "rb") as f:
+            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}{jobid}", "rb") as f:
                 av_dssims = pickle.load(f)
-            with open(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", "rb") as f:
+            with open(f"{storageloc}predictions_{j}{comp}{time}{modeltype}{jobid}.npy", "rb") as f:
                 predictions = np.load(f)
-            with open(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", "rb") as f:
+            with open(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}{jobid}.npy", "rb") as f:
                 test_plot = np.load(f, allow_pickle=True)
             if modeltype == "cnn":
-                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}", "rb") as f:
+                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}{jobid}", "rb") as f:
                     scores = pickle.load(f)
         else:
             # perform a quanitle transformation to make the data more Gaussian using the sklearn library
@@ -198,22 +198,22 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                         npns = ns.to_numpy()
                         # save train_data, train_labels, val_data, val_labels, test_data, test_labels
 
-                        np.save(f"{storageloc}{feature}_{type}{time}{comp}.npy", npns)
+                        np.save(f"{storageloc}{feature}_{type}{time}{comp}{jobid}.npy", npns)
                     continue
 
                 for type in ["train", "test"]:
                     list = None
                     for f in featurelist:
                         if list is None and f != "magnitude_range":
-                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}{jobid}.npy")
                         elif list is None and f == "magnitude_range":
-                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                            list = np.load(f"{storageloc}{f}_{type}{time}{comp}{jobid}.npy")
                             list = list.reshape(1, list.shape[0])
                         elif f == "magnitude_range":
-                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}{jobid}.npy")
                             list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
                         else:
-                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}.npy")
+                            feat = np.load(f"{storageloc}{f}_{type}{time}{comp}{jobid}.npy")
                             list = np.concatenate((list, feat), axis=0)
                         if type == "train":
                             train_data = list
@@ -313,7 +313,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 date = datetime.datetime.now()
                 date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
                 if plotdir is not None:
-                    plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}{time}.png")
+                    plt.savefig(f"{plotdir}{comp}_{j}_{date_string}_{modeltype}{time}{jobid}.png")
                 plt.clf()
 
 
@@ -330,7 +330,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # save the model
             try:
                 if modeltype == "cnn":
-                    model.save(f"model_{j}{comp}{time}{modeltype}.h5")
+                    model.save(f"model_{j}{comp}{time}{modeltype}{jobid}.h5")
                     plt.plot(history.history['accuracy'])
                     plt.plot(history.history['val_accuracy'])
                     plt.title('model accuracy')
@@ -338,22 +338,22 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                     plt.xlabel('epoch')
                     plt.legend(['train', 'test'], loc='upper left')
                     plt.show()
-                    plt.savefig(f"{storageloc}acc_history_{j}{comp}{time}{modeltype}.png")
+                    plt.savefig(f"{storageloc}acc_history_{j}{comp}{time}{modeltype}{jobid}.png")
                     plt.clf()
             except:
                 pass
 
-            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}", "wb") as fp:
+            with open(f"{storageloc}av_preds_{j}{comp}{time}{modeltype}{jobid}", "wb") as fp:
                 pickle.dump(av_preds, fp)
-            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}", "wb") as fp:
+            with open(f"{storageloc}av_dssims_{j}{comp}{time}{modeltype}{jobid}", "wb") as fp:
                 pickle.dump(av_dssims, fp)
             if cut_windows:
                 predictions = predictions.squeeze().reshape(-1, LATS, LONS, order='C')
                 # reorder the dimensions of predictions so that the time dimension is last
                 predictions = np.moveaxis(predictions, 0, -1)
             # if modeltype == "cnn":
-            np.save(f"{storageloc}predictions_{j}{comp}{time}{modeltype}.npy", predictions)
-            np.save(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}.npy", test_plot)
+            np.save(f"{storageloc}predictions_{j}{comp}{time}{modeltype}{jobid}.npy", predictions)
+            np.save(f"{storageloc}test_plot_{j}{comp}{time}{modeltype}{jobid}.npy", test_plot)
             # also save scores, av_preds, av_dssims, predictions, test_plot in .npy files
             if cut_windows:
                 labels = test_labels.squeeze().reshape(-1, LATS, LONS, order='C')
@@ -361,9 +361,9 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 labels = np.moveaxis(labels, 0, -1)
             if modeltype == "cnn" or modeltype == "rf":
                 if cut_windows:
-                    np.save(f"{storageloc}labels_{j}{comp}{time}{modeltype}.npy", labels)
+                    np.save(f"{storageloc}labels_{j}{comp}{time}{modeltype}{jobid}.npy", labels)
             if modeltype == "cnn":
-                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}", "wb") as fp:  # Pickling
+                with open(f"{storageloc}scores_{j}{comp}{time}{modeltype}{jobid}", "wb") as fp:  # Pickling
                     pickle.dump(scores, fp)
     if modeltype == "cnn":
         return scores, model, av_preds, av_dssims, predictions, test_plot
@@ -525,14 +525,14 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         if feature is not None:
             train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist),
                                            storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist)
+                                           feature=feature, featurelist=featurelist, jobid=jobid)
             return
         errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time, "combine", len(vlist), storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid)
     else:
         if feature is not None:
             train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist),
                                            storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist, cut_windows=False)
+                                           feature=feature, featurelist=featurelist, cut_windows=False, jobid=jobid)
             return
         errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(np.array(dataset_orig)[0:time], average_dssims, time, "combine", len(vlist), storageloc, testset, j, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False)
 
@@ -546,7 +546,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         final = final_dssim_mats[cdir][0:(LATS * LONS)].reshape((LATS, LONS))
         if type(time) is list:
             for t in time:
-                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy", final)
+                np.save(f"{storageloc}{cdir}_dssim_mat_{t}_{name}{jobid}.npy", final)
                 # also save the predictions
                 # and the errors
                 preds = np.zeros((LATS, LONS)).flatten()
@@ -556,10 +556,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     preds = preds.reshape((LATS, LONS))
                 else:
                     preds = predictions.squeeze()[0:(LATS * LONS)].reshape((LATS, LONS))
-                np.save(f"{storageloc}{cdir}_preds_{t}_{name}.npy", preds)
+                np.save(f"{storageloc}{cdir}_preds_{t}_{name}{jobid}.npy", preds)
         else:
-            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}.npy", final)
-            np.save(f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}.npy", final_dssim_mats[cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
+            np.save(f"{storageloc}{cdir}_dssim_mat_{time}_{name}{jobid}.npy", final)
+            np.save(f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}{jobid}.npy", final_dssim_mats[cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
             # also save the predictions
             # and the errors
             # preds = np.zeros((LATS, LONS)).flatten()
@@ -571,7 +571,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # np.save(f"{storageloc}{cdir}_preds_{time}_{name}.npy", preds)
             # np.save(f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy", predictions.squeeze().reshape(LATS, LONS, -1))
             # preds_file = f"{storageloc}{cdir}_preds_mat_alltime_{name}.npy"
-            dssims_file = f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}.npy"
+            dssims_file = f"{storageloc}{cdir}_dssim_mat_alltime_{time}_{name}{jobid}.npy"
             # preds_files[cdir] = preds_file
             dssims_files[cdir] = dssims_file
 
