@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # append PRECT to newvars
     for varname in ["PRECT", "PS", "FLUT", "Z500"]:
         for i in range(1, 9):
-            newvars.append(["PRECT"])
+            newvars.append([varname])
     newcomps = [["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_18"],
@@ -74,9 +74,9 @@ if __name__ == '__main__':
     for varname in ["PRECT", "PS", "FLUT", "Z500"]:
         for i in range(1, 9):
             if i % 2 == 0:
-                newtimes.append([20])
+                newtimes.append([30])
             else:
-                newtimes.append([10, 20, 50, 100])
+                newtimes.append([10, 30, 50, 100])
     newtestset = ["10_90_wholeslice",
                   "10_90_wholeslice",
                   "10_90_wholeslice",

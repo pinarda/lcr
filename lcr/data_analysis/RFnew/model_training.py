@@ -457,8 +457,13 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                           data_type="cam-fv",
                                           varnames=[varname])
 
-        ldcpy.plot(dataset_col, varname, "mean", labels, start=0, end=0)
-        plt.savefig(f"{storageloc}test.png", bbox_inches='tight')
+        timeloc = int(time * 0.2)
+
+        ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc)
+        plt.savefig(f"{storageloc}_data_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
+
+        ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, calc_type="diff")
+        plt.savefig(f"{storageloc}_data_diff_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
 
         # extract the original and compressed dataarrays
         dataset_orig = dataset_col.sel(collection="orig").to_array().squeeze()
