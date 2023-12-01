@@ -12,7 +12,7 @@ import os
 
 if __name__ == '__main__':
     # read in the json file
-    with open('RF_template4.json', 'r') as f:
+    with open('RF_template5.json', 'r') as f:
         config = json.load(f)
 
     # get the list of variables
@@ -22,23 +22,23 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["TS1_jflj",
-                "TS2_jflj",
-                "TS3_jflj",
-                "TS4_jflj",
-                "TS5_jflj",
-                "TS6_jflj",
-                "TS7_jflj",
-                "TS8_jflj"]
+    newnames = ["PSL1_jflj",
+                "PSL2_jflj",
+                "PSL3_jflj",
+                "PSL4_jflj",
+                "PSL5_jflj",
+                "PSL6_jflj",
+                "PSL7_jflj",
+                "PSL8_jflj"]
     newvars = [#["TS", "T500", "TSMX", "TSMN"],
-                ["TS"],
-                ["TS"],
-                ["TS"],
-                ["TS"],
-                ["TS"],
-                ["TS"],
-                ["TS"],
-                ["TS"]]
+                ["PSL"],
+                ["PSL"],
+                ["PSL"],
+                ["PSL"],
+                ["PSL"],
+                ["PSL"],
+                ["PSL"],
+                ["PSL"]]
     newcomps = [["zfp_p_18"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_18"],
