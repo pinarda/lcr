@@ -8,6 +8,8 @@ import os
 # os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
+from sklearn.metrics import confusion_matrix
+import os
 
 WINDOWSIZE = 12
 
@@ -110,16 +112,28 @@ if __name__ == "__main__":
             build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=only_data,
                                                       modeltype=model, feature=feature, metric=metric)
             break
-        errors, av_preds, av_dssims, test_dssims, dssim_fs = build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=only_data, modeltype=model, feature=feature, metric=metric)
-        errors_all.append(errors)
-        av_preds_all.append(av_preds)
-        av_dssims_all.append(av_dssims)
+
+        #here, we want to check if some files already exist. specifically:
+        # f"{storageloc}predictions_{fname}{cdir}{i}{model}{jobid}.npy"
+        # f"{storageloc}{cdir}_dssim_mat_alltime_{i}_{fname}{jobid}.npy"
+        # f"{storageloc}labels_{fname}{cdir}{t}{model}{jobid}.npy"
+        # f"{storageloc}predictions_{fname}{cdir}{i}{model}{jobid}.npy"
+        fname = j.split(".")[0]
+        f1 = f"{storageloc}predictions_{fname}{cdirs[0]}{i}{model}{jobid}.npy"
+        f2 = f"{storageloc}{cdirs[0]}_dssim_mat_alltime_{i}_{fname}{jobid}.npy"
+        f3 = f"{storageloc}labels_{fname}{cdirs[0]}{i}{model}{jobid}.npy"
+        f4 = f"{storageloc}predictions_{fname}{cdirs[0]}{i}{model}{jobid}.npy"
+        if not os.path.isfile(f1) or not os.path.isfile(f2) or not os.path.isfile(f3) or not os.path.isfile(f4):
+            errors, av_preds, av_dssims, test_dssims, dssim_fs = build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=only_data, modeltype=model, feature=feature, metric=metric)
+        # errors_all.append(errors)
+        # av_preds_all.append(av_preds)
+        # av_dssims_all.append(av_dssims)
         # predictions_all.append(predictions)
 
         for cdir in cdirs:
             # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
             # preds = np.load(pred_fs[cdir])
-            dssims = np.load(dssim_fs[i][cdir])
+            dssims = np.load(f"{storageloc}{cdir}_dssim_mat_alltime_{i}_{fname}{jobid}.npy")
             fname = j.split(".")[0]
             preds = np.load(f"{storageloc}predictions_{fname}{cdir}{i}{model}{jobid}.npy")
 
@@ -162,6 +176,17 @@ if __name__ == "__main__":
     for i in time:
         predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
         dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
+
+        cm = confusion_matrix(dssimresult[i], predresult[i], labels=list(set(predresult[i] + dssimresult[i])))
+        # save the confusion matrix
+        np.save(f"{storageloc}confusion_matrix_{i}_{j.split('.')[0]}{jobid}.npy", cm)
+        # fig = plt.figure()
+        # plt.matshow(cm)
+        # plt.title(f"Confusion Matrix for timesteps: {time}")
+        # plt.colorbar()
+        # plt.ylabel('True Label')
+        # plt.xlabel('Predicated Label')
+        # fig.savefig('confusion_matrix' + str(learning_values.pop()) + '.jpg')
 
     # convert the strings to integers based on their index in cdirs
     predints = {}
@@ -257,6 +282,8 @@ if __name__ == "__main__":
 
         plt.show()
 
+
+
         plt.savefig(f"{storageloc}histogram_preds_{i}_{j.split('.')[0]}{jobid}.png", bbox_inches='tight')
         plt.clf()
 
@@ -287,7 +314,7 @@ if __name__ == "__main__":
 
     test_slices = [x - 1 for x in time]
     print (time)
-    print (errors_all)
+    # print (errors_all)
     # generate_performance_plots(test_slices, [errors_all],
     #                   [av_dssims_all],
     #                   [av_preds_all],
@@ -363,19 +390,19 @@ if __name__ == "__main__":
                     plt.clf()
 
                     try:
-                        allthings_zoom = convert_np_to_dssims([np.log10(1-dssims), np.log10(1-preds)], [f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
-                        ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=[f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
+                        allthings_zoom = convert_np_to_dssims([np.log10(abs(1-dssims)+10**-10), np.log10(abs(1-preds)+10**-10)], [f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
+                        ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=[f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
                                    weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                   color="plasma", cmin=0.000000001, cmax=1)
+                                   color="plasma", cmin=-10, cmax=0)
                         plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
                                     bbox_inches='tight')
                         plt.clf()
 
                         # add a plot with cmin as the min ddssim value
                         allthings_min = convert_np_to_dssims([dssims, preds], [f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
-                        ldcpy.plot(allthings_min, "dssims", calc="mean", sets=[f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
+                        ldcpy.plot(allthings_min, "dssims", calc="mean", sets=[f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
                                    weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                   color="plasma", cmin=np.min(allthings_min.to_array()).values.min(), cmax=1)
+                                   color="plasma", cmin=allthings_min.dssims[:,6:-6,:,:].min().values.min(), cmax=1)
                         plt.savefig(f"{storageloc}{cdir}_allthingsDSSIMS_min_{t}_{name}_{date_string}_{model}_noerr.png",
                                     bbox_inches='tight')
                         plt.clf()
