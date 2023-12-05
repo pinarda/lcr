@@ -176,9 +176,11 @@ if __name__ == "__main__":
     for i in time:
         predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
         dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
-
-        cm = confusion_matrix(dssimresult[i], predresult[i], labels=list(set(predresult[i] + dssimresult[i])))
+        classifyd = [element if element is not None else "None" for element in dssimresult[i]]
+        classifyp = [element if element is not None else "None" for element in predresult[i]]
+        cm = confusion_matrix(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
         # save the confusion matrix
+
         np.save(f"{storageloc}confusion_matrix_{i}_{j.split('.')[0]}{jobid}.npy", cm)
         # fig = plt.figure()
         # plt.matshow(cm)
