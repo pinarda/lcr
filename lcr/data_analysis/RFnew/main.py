@@ -8,7 +8,7 @@ import os
 # os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 import os
 
 WINDOWSIZE = 12
@@ -180,8 +180,12 @@ if __name__ == "__main__":
         classifyp = [element if element is not None else "None" for element in predresult[i]]
         cm = confusion_matrix(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
         # save the confusion matrix
+        # also create a classification report
+        report = classification_report(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
 
-        np.save(f"{storageloc}confusion_matrix_{i}_{j.split('.')[0]}{jobid}.npy", cm)
+        np.save(f"{storageloc}confusion_matrix_{i}_{j.split('.')[0]}{jobid}{model}.npy", cm)
+        with open(f"{storageloc}classification_report_{i}_{j.split('.')[0]}{jobid}{model}.txt", 'w') as f:
+            f.write(report)
         # fig = plt.figure()
         # plt.matshow(cm)
         # plt.title(f"Confusion Matrix for timesteps: {time}")
@@ -392,7 +396,7 @@ if __name__ == "__main__":
                     plt.clf()
 
                     try:
-                        allthings_zoom = convert_np_to_dssims([np.log10(abs(1-dssims)+10**-10), np.log10(abs(1-preds)+10**-10)], [f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
+                        allthings_zoom = convert_np_to_dssims([np.log10(abs(1-dssims)+10**-10), np.log10(abs(1-preds)+10**-10)], [f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
                         ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=[f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
                                    weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                    color="plasma", cmin=-10, cmax=0)
@@ -401,7 +405,7 @@ if __name__ == "__main__":
                         plt.clf()
 
                         # add a plot with cmin as the min ddssim value
-                        allthings_min = convert_np_to_dssims([dssims, preds], [f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
+                        allthings_min = convert_np_to_dssims([dssims, preds], [f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
                         ldcpy.plot(allthings_min, "dssims", calc="mean", sets=[f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"],
                                    weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                    color="plasma", cmin=allthings_min.dssims[:,6:-6,:,:].min().values.min(), cmax=1)

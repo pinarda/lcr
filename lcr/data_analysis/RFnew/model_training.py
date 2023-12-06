@@ -101,7 +101,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # check the echosave directory, open trial_results.csv
             # read the column mean_squared_error to find the row with the minimum value
             # then set filter1, filter2, and dropout to the values in that row
-            csv_path = os.path.join("echosave2/trial_results.csv")
+            csv_path = os.path.join("echosave/trial_results.csv")
             if os.path.exists(csv_path):
                 with open(csv_path, "r") as f:
                     lines = f.readlines()
@@ -194,7 +194,11 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                         elif type == "train":
                             train_data_xr = convert_np_to_xr(train_data)
                             dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
-                        ns = dc.get_calc(feature)
+                        if feature in ["ns_con_var", "ew_con_var", "w_e_first_differences", "n_s_first_differences", "fftratio", "fftmax", 'w_e_first_differences_max', 'n_s_first_differences_max', 'mean']:
+                            ns = dc.get_calc(feature)
+                        else:
+                            dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, [], weighted=False)
+                            ns = dc.get_single_calc(feature)
                         npns = ns.to_numpy()
                         # save train_data, train_labels, val_data, val_labels, test_data, test_labels
 
@@ -258,6 +262,11 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             predictions = model.predict(test_data)
             average_prediction = np.mean(predictions)
             average_dssim = np.mean(test_labels)
+            if modeltype == "rf":
+                # save the feature importances as {storageloc}importances_{i}_{j.split('.')[0]}{jobid}{model}
+                importances = model.feature_importances_
+                np.save(f"{storageloc}importances_{j}{comp}{time}{jobid}{modeltype}.npy", importances)
+
             test_plot = None
 
             if cut_windows:
