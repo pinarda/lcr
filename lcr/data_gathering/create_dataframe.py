@@ -11,16 +11,16 @@ import re
 import argparse
 import numpy as np
 
-freq = "daily"
+freq = "monthly"
 
 def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--labelloc", help="location of labels",
-                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_labels.csv")
+                        type=str, default=f"../../AllCAM{freq}4_calcs/AllCAM{freq}4_{freq}_labels.csv")
     parser.add_argument("-c", "--calcloc", help="location of features",
-                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_calcs.csv")
+                        type=str, default=f"../../AllCAM{freq}4_calcs/AllCAM{freq}4_{freq}_calcs.csv")
     parser.add_argument("-o", "--output", help="location of output csv file",
-                        type=str, default=f"../../AllCAM{freq}2_calcs/AllCAM{freq}2_{freq}_df.csv")
+                        type=str, default=f"../../AllCAM{freq}4_calcs/AllCAM{freq}4_{freq}_df.csv")
     args = parser.parse_args()
 
     return args
@@ -50,12 +50,21 @@ if __name__ == "__main__":
     #daily_calc_df.drop(index=0, inplace=True)
     daily_calc_df['variable'] = varnames
 
+
     # quick standardization
-    daily_calc_df['mean'] = (daily_calc_df['mean'] - daily_calc_df['mean'].mean())/daily_calc_df['mean'].std()
-    daily_calc_df['quantile'] = (daily_calc_df['quantile'] - daily_calc_df['quantile'].mean())/daily_calc_df['quantile'].std()
+    # for feature in ["mean", "variance", "ns_con_var", "ew_con_var", "w_e_first_differences",
+    #                 "w_e_first_differences_max", "n_s_first_differences", "n_s_first_differences_max",
+    #                 "quantile", "fftmax", "fftratio", "vfftmax", "vfftratio",
+    #                 "magnitude_range", "magnitude_diff_ew", "magnitude_diff_ns",
+    #                 "entropy", "real_information_cutoff"]:
+    #     daily_calc_df[feature] = (daily_calc_df[feature] - daily_calc_df[feature].mean()) / daily_calc_df[feature].std()
 
 
     daily_df = pd.merge(daily_calc_df, daily_label_df, on=['variable', 'time'])
+
+
+    #copy the levels column
+    daily_df['levels_feat'] = daily_df['levels']
 
     # monthly_df = pd.DataFrame()
     # monthly_df = monthly_calc_df

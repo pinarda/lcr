@@ -23,18 +23,20 @@
 # NOTE: Compressing only currently works for zfp compression. If the runtype is "compress" - modify the indir and ourdir variables in grab_all_TS.sh and lines 51-55.
 # example : "./data_gather_daily.sh rerun random" | qsub
 conda activate my-npl-ml
+source  /glade/work/haiyingx/netcdf-c-4.8.1/use_nccopy.sh
 
 # directory and filename prefix
-set prefix = AllCAMdaily2
+set prefix = 95AllCAMdaily4
 # "new" or "rerun" or "compress"
-set runtype = "calcs"
+set runtype = "rerun"
 # "fixed" or "random"
-set testset = "random"
-set alg = "zfp"
+set testset = "calcs"
+set alg = "bg"
 
 set arrDay= (bc_a1_SRF dst_a1_SRF dst_a3_SRF FLNS FLNSC FLUT FSNS FSNSC FSNTOA ICEFRAC LHFLX pom_a1_SRF PRECL PRECSC PRECSL PRECT PRECTMX PSL Q200 Q500 Q850 QBOT SHFLX so4_a1_SRF so4_a2_SRF so4_a3_SRF soa_a1_SRF soa_a2_SRF T010 T200 T500 T850 TAUX TAUY TMQ TREFHT TREFHTMN TREFHTMX TS U010 U200 U500 U850 UBOT V200 V500 V850 VBOT WSPDSRFAV Z050 Z500)
-#set arrDay= (TS)
 set arrMonth = ()
+#set arrDay= (ICEFRAC)
+#set arrDay = (FLUT LHFLX PRECT TAUX TS Z500)
 
 #git pull
 
@@ -48,15 +50,18 @@ endif
 # FULL DS
 #set time = (0 365 730 1095 1460 1825 2190 2555 2920 3285 3650 4015 4380 4745 5110 5475 5840 6205 6570 6935 7300 7665 8030 8395 8760 9125 9490 9855 10220 10585 10950 11315 11680 12045 12410 12775 13140 13505 13870 14235 14600 14965 15330 15695 16060 16425 16790 17155 17520 17885 18250 18615 18980 19345 19710 20075 20440 20805 21170 21535 21900 22265 22630 22995 23360 23725 24090 24455 24820 25185 25550 25915 26280 26645 27010)
 # 730 TIME SLICES
-set time = (0 365)
+#set time = (0 365)
 #2190 3285 4380 5475 6570 7665 8760 9855 10950 12045 13140 14235 15330 16425 17520 18615 19710 20805 21900 22995 24090 25185 26280)
-#set time = (0)
+set time = (0)
 
 if ($runtype == "new" || $runtype == "compress") then
   #rm -rf ../../data/${prefix}_calcs/*
   mkdir ../../data/${prefix}_calcs
   mkdir ../../data/${prefix}_calcs/reports
-  set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
+  #set arrComp = (zfp_p_6 zfp_p_8 zfp_p_10 zfp_p_12 zfp_p_14 zfp_p_16 zfp_p_18 zfp_p_20 zfp_p_22 zfp_p_24 zfp_p_26)
+  #set arrComp = (sz3_ROn0.1 sz3_ROn0.05 sz3_ROn0.01 sz3_ROn0.005 sz3_ROn0.001 sz3_ROn0.0005 sz3_ROn0.0001 sz3_ROn5e-05 sz3_ROn1e-05 sz3_ROn5e-06 sz3_ROn1e-06)
+  set arrComp = (br_2 br_4 br_6 br_8 br_10 br_12 br_14 br_16 br_18 br_20 br_22)
+
   #currently requires custom json files in the current directory
   #temporary comment down to next echo line
   foreach x ($arrDay)
@@ -155,14 +160,14 @@ rm -f ../../data/${prefix}_calcs/${prefix}_monthly_df.csv
 foreach x ($arrDay)
   foreach z ($time)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/AllCAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/${prefix}_calcs/${prefix}_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a ${alg} -p dssim -t ${z} -d 0.9995'" | qsub -A NTDD0005 -N testb -q regular -l walltime=4:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} && python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/${prefix}_calcs/${prefix}_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics_${z}.csv -a ${alg} -p dssim -t ${z} -d 0.95'" | qsub -A NTDD0005 -N testb -q regular -l walltime=4:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
 foreach x ($arrMonth)
 #  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_daily_optim.csv -f daily -v $x -z ../../data/daily/AllCAMmonthly_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_daily_metrics.csv -a zfp -m dssim ks spatial max_spatial pcc
   foreach z ($time)
-    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/${prefix}_calcs/${prefix}_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a ${alg} -p dssim -t ${z} -d 0.9995'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=4:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+    set idlast = `printf "tcsh -c 'conda activate my-npl-ml && set prefix = ${prefix} &&  python optimal_compression.py -l ../../data/${prefix}_calcs/${prefix}_monthly_optim.csv -f monthly -v $x -z ../../data/${prefix}_calcs/${prefix}_filesizes.csv -m ../../data/${prefix}_calcs/${prefix}_monthly_metrics_${z}.csv -a ${alg} -p dssim -t ${z} -d 0.95'"  | qsub -A NTDD0005 -N testb -q regular -l walltime=4:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   end
 end
 
