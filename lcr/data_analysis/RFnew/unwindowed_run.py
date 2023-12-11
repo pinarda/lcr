@@ -14,7 +14,7 @@ TEST = True
 
 if __name__ == '__main__':
     # read in the json file
-    with open('RF_template5.json', 'r') as f:
+    with open('unwindowed.json', 'r') as f:
         config = json.load(f)
 
     # get the list of variables

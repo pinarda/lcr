@@ -1,0 +1,16 @@
+{
+    "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
+    "SaveDir": "/glade/scratch/apinard/unwindowed_store/",
+    "VarList":  ["PSL", "TREFHTMX", "TREFHT", "TREFHTMN", "TS", "U850", "V850"],
+    "FilenamePre":"b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1.",
+    "FilenamePost": ".20060101-20071231.nc",
+    "OrigPath": "/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_orig/",
+    "CompPath":"/glade/p/cisl/asap/CAM_lossy_test_data_31/research/daily_zfp_hdf5/",
+    "CompDirs": ["zfp_p_10"],
+    "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
+    "Times": [5],
+    "Navg": 1,
+    "StorageLoc": "/glade/scratch/apinard/RF_store5/",
+    "Stride": 3,
+    "Metric": "dssim"
+}
