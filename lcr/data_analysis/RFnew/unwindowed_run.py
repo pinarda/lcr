@@ -25,10 +25,15 @@ if __name__ == '__main__':
     Times = config['Times']
 
 
-    newnames = ["unwindowed-quant",
-                "unwindowed-noquant",
-                "windowed-quant",
-                "windowed-noquant"]
+    newnames = ["TS_unwindowed-quant",
+                "TS_unwindowed-noquant",
+                "TS_windowed-quant",
+                "TS_windowed-noquant",
+                "TS_unwindowed-quant-dssimlabels",
+                "TS_unwindowed-noquant-dssimlabels",
+                "TS_windowed-quant-dssimlabels",
+                "TS_windowed-noquant-dssimlabels",
+                ]
 
     # append PRECT1 ... PRECT8 to newnames
     if not TEST:
@@ -46,6 +51,8 @@ if __name__ == '__main__':
         for varname in ["PRECT", "PSL", "FLUT", "Z500"]:
             for i in range(1, 5):
                 newvars.append([varname])
+
+
     newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
                 ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
