@@ -80,7 +80,7 @@ if __name__ == "__main__":
     model = args.model
     feature = args.feature
     jobid = args.jobid
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset = read_parameters_from_json(j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(j)
     # times = [2, 3, 4]
     # n = 2
 

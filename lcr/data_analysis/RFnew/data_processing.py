@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from math import floor
 # os.environ["HDF5_PLUGIN_PATH"]
 
-def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12) -> np.ndarray:
+def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12, nsubdirs=1) -> np.ndarray:
     """
     Extracts every possible contiguous lat-lon chunk from the input dataset.
 
@@ -32,7 +32,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
     num_windows = (len(lat_vals) - window_size + 1) * (len(lon_vals))
 
     # Initialize an empty array to store the chunks.
-    chunks = np.ndarray(shape=(num_windows, time, window_size, window_size))
+    chunks = np.ndarray(shape=(num_windows, time, nsubdirs, window_size, window_size))
 
     # Convert the dataset to a numpy array for faster slicing.
     d = dataset.to_array().to_numpy()
@@ -41,14 +41,16 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
     # this is because the longitude values are not contiguous at the edges of the array
     # so we want to pad the edges with the values from the opposite side of the array
     # this will allow us to extract windows at the edges of the array
-    d = np.pad(d, ((0, 0), (0, 0), (0, 0), (floor(window_size), floor(window_size))), mode='wrap')
+    d = np.pad(d, ((0, 0), (0, 0), (0, 0), (0, 0), (floor(window_size), floor(window_size))), mode='wrap')
 
     # Iterate over lat, lon, and time to extract 11x11 windows.
-    idx = 0
-    for i in range(len(lat_vals) - (window_size -1) ):
-        for j in range(len(lon_vals)):
-            for k in range(time):
-                chunks[idx, k] = d[:, k, i:i + window_size, j:j + window_size]
+    for l in range(nsubdirs):
+        idx = 0
+        for i in range(len(lat_vals) - (window_size -1) ):
+            for j in range(len(lon_vals)):
+                for k in range(time):
+                    # chunks[idx, k] = d[:, k, i:i + window_size, j:j + window_size]
+                    chunks[idx, k, l] = d[:, l, k, i:i + window_size, j:j + window_size]
             idx += 1
 
     # Save the chunks as a numpy array.
@@ -79,6 +81,7 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
     index_60pct = int(total_data_points * 0.6)
     index_75pct = int(total_data_points * 0.75)
     index_10pct = int(total_data_points * 0.1)
+    index_50pct = int(total_data_points * 0.5)
 
     # use 90% of the data for training, 9% for validation, and 1% for testing
     if testset == "random":
@@ -219,6 +222,54 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
             val_labels = dssim[comp][int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
             test_labels = dssim[comp][(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+
+    elif testset == "50_50_wholeslice":
+        # Calculate the number of time slices in the last 90% of the data (rounding down)
+        num_time_slices_last_50pct = (total_data_points - index_50pct) // num_windows
+
+        # Calculate the number of time slices for test and validation (rounding down)
+
+
+        num_time_slices_val = num_time_slices_last_50pct // 2
+        num_time_slices_test = num_time_slices_last_50pct - num_time_slices_val
+        num_time_slices_train = time*nvar - num_time_slices_last_50pct
+
+        # Calculate the number of windows for test and validation
+        num_windows_test = num_time_slices_test * num_windows
+        num_windows_val = num_time_slices_val * num_windows
+
+        # Calculate the start index for the remaining time slice (if any)
+        remaining_start_index = index_50pct + num_windows_test + num_windows_val
+
+        # Use the first 10% of the data for training
+        train_data = dataset[0:index_50pct]
+        train_labels = dssim[comp][0:index_50pct]
+
+        # Use the calculated number of windows for test and validation
+        test_data = dataset[index_50pct:int(index_50pct + num_windows_test)]
+        test_labels = dssim[comp][index_50pct:int(index_50pct + num_windows_test)]
+        val_data = dataset[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
+        val_labels = dssim[comp][int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
+
+        # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
+        if remaining_start_index < total_data_points:
+            remaining_windows = total_data_points - remaining_start_index
+            split_index = remaining_windows * 50 // 100
+            test_data = np.concatenate(
+                (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
+            test_labels = np.concatenate(
+                (test_labels, dssim[comp][int(remaining_start_index):int(remaining_start_index + split_index)]))
+            val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
+            val_labels = np.concatenate((val_labels, dssim[comp][int(remaining_start_index + split_index):]))
+
+        if not cut_windows:
+            train_data = dataset[0:int(index_50pct/num_windows)]
+            train_labels = dssim[comp][0:int(index_50pct/num_windows)]
+            val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
+            val_labels = dssim[comp][int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
+            test_data = dataset[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+            test_labels = dssim[comp][(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+
 
     return train_data, train_labels, val_data, val_labels, test_data, test_labels
 

@@ -145,7 +145,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
                 model.summary()
             elif modeltype == "rf":
                 import ldcpy
-                model = sklearn.ensemble.RandomForestRegressor(n_estimators=10, max_depth=10, random_state=1)
+                model = sklearn.ensemble.RandomForestRegressor(n_estimators=10, max_depth=10)
 
 
             # apply a quantile transformation to each of the lat/lon slices of the data
@@ -436,7 +436,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric, cut_dataset = read_parameters_from_json(json)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, metric, cut_dataset, subdirs = read_parameters_from_json(json)
     metric = args.metric
     if timeoverride is not None:
         time = timeoverride
@@ -444,12 +444,32 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         sys.path.insert(0, ldcpypath)
     import ldcpy
     # create a list of compressed paths by prepending cpath to each directory in cdirs
-    cpaths = [cpath + cdir for cdir in cdirs]
+    newcdirs = []
+    newopaths = []
+    for cdir in cdirs:
+        for dir in subdirs:
+            newcdirs.append(dir + "/" + cdir)
+
+    # Split the string
+    parts = opath.rsplit('/', 2)
+
+    # First part of the split (path without the last directory)
+    first_part = parts[0] + '/'
+
+    # Second part of the split (last directory)
+    second_part = '/' + parts[1] + '/'
+    for dir in subdirs:
+        newopaths.append(first_part + dir + second_part)
+
+
+    cpaths = [cpath + cdir for cdir in newcdirs]
     # add opath to the beginning of cpaths
-    paths = [opath] + cpaths
+
+    paths = newopaths + cpaths
 
     # this is not a good way to initialize final_cut_dataset_orig
     final_cut_dataset_orig = np.empty((0, WINDOWSIZE, WINDOWSIZE))
+    final_cut_dataset_zfp = np.empty((0, WINDOWSIZE, WINDOWSIZE))
     final_dssim_mats = {}
     average_dssims = {}
     for varname in vlist:
@@ -460,7 +480,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             files.append(f"{path}/" + pre + varname + post)
 
             # create a list of labels by adding "orig" to the list of cdirs
-        labels = ["orig"] + cdirs
+        labels = ["orig" + dir for dir in subdirs] + newcdirs
         dataset_col = ldcpy.open_datasets(list_of_files=files,
                                           labels=labels,
                                           data_type="cam-fv",
@@ -475,54 +495,63 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         plt.savefig(f"{storageloc}_data_diff_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
 
         # extract the original and compressed dataarrays
-        dataset_orig = dataset_col.sel(collection="orig").to_array().squeeze()
+
+        dataset_orig = dataset_col.sel(collection=["orig" + dir for dir in subdirs]).to_array().squeeze()
         # pad the longitude dimension of the original dataset by 5 on each side (wrap around)
-        dataset_orig = xr.concat([dataset_orig[:, :, (-1 * floor(WINDOWSIZE/2)):], dataset_orig, dataset_orig[:, :, :(floor(WINDOWSIZE/2))]], dim="lon")
+        dataset_orig = xr.concat([dataset_orig[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_orig, dataset_orig[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
         dssim_mats = {}
         # roll orig dataset using the xarray roll function
         # num = 0
         # dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
         for cdir in cdirs:
-            average_dssims[cdir] = np.empty((time))
-            dataset_zfp = dataset_col.sel(collection=cdir).to_array().squeeze()
+            average_dssims[cdir] = {}
+
+            dataset_zfp = dataset_col.sel(collection=[dir + "/" + cdir for dir in subdirs]).to_array().squeeze()
             # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
-            dataset_zfp = xr.concat([dataset_zfp[:, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :(floor(WINDOWSIZE/2))]], dim="lon")
+            dataset_zfp = xr.concat([dataset_zfp[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
             # dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
-            dssim_mats[cdir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
+            # dssim_mats[cdir] = np.empty((len(subdirs), time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
+            dssim_mats[cdir] = {}
 
-            for t in range(0, time):
-                dc = ldcpy.Diffcalcs(dataset_orig.isel(time=t*stride), dataset_zfp.isel(time=t*stride), data_type="cam-fv")
+            for dir in subdirs:
+                average_dssims[cdir][dir] = np.empty((time))
+                dssim_mats[cdir][dir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
 
-                if metric == "dssim":
-                    average_dssims[cdir][t] = dc.get_diff_calc("ssim_fp", xsize=11, ysize=11)
-                    dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
-                elif metric == "mse":
-                    dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
-                    mse = dc2.get_calc("mean_squared")
-                    # ignore the top and bottom 5 rows and columns
-                    mse = mse[(floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2))]
-                    dssim_mats[cdir][t] = mse.to_numpy().flatten()
-                elif metric == "logdssim":
-                    dc.get_diff_calc("ssim_fp")
-                    dc._ssim_mat_fp[0] = np.log(1 - dc._ssim_mat_fp[0])
-                    dssim_mats[cdir][t] = dc._ssim_mat_fp[0].flatten()
-                else:
-                    dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t * stride) - dataset_zfp.isel(time=t * stride),
-                                             data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
-                    dc2.get_calc("mean_squared")
+                for t in range(0, time):
+                    dc = ldcpy.Diffcalcs(dataset_orig.sel(collection=("orig" + dir)).isel(time=t*stride), dataset_zfp.sel(collection=(dir + "/" + cdir)).isel(time=t*stride), data_type="cam-fv")
+
+                    if metric == "dssim":
+                        average_dssims[cdir][dir][t] = dc.get_diff_calc("ssim_fp", xsize=11, ysize=11)
+                        dssim_mats[cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
+                    elif metric == "mse":
+                        dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
+                        mse = dc2.get_calc("mean_squared")
+                        # ignore the top and bottom 5 rows and columns
+                        mse = mse[(floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2))]
+                        dssim_mats[cdir][dir][t] = mse.to_numpy().flatten()
+                    elif metric == "logdssim":
+                        dc.get_diff_calc("ssim_fp")
+                        dc._ssim_mat_fp[0] = np.log(1 - dc._ssim_mat_fp[0])
+                        dssim_mats[cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
 
 
 
         # cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig").roll(lat=num, roll_coords=True), time, varname, storageloc)
-        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig"), time, varname, storageloc, window_size=WINDOWSIZE)
+        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection=["orig" + dir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
+        cut_dataset_zfp = cut_spatial_dataset_into_windows(dataset_col.sel(collection=[dir + "/" + cdir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
 
         # -1 means unspecified (should normally be (LATS * LONS) * time unless
         # the number of time steps loaded by cut_dataset is different than time)
 
         cut_dataset_orig = cut_dataset_orig.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
+        cut_dataset_zfp = cut_dataset_zfp.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
         # flatten dssim_mats over time
         for i, cdir in enumerate(cdirs):
-            dssim_mats[cdir] = dssim_mats[cdir].flatten()
+            for j, dir in enumerate(subdirs):
+                dssim_mats[cdir][dir] = dssim_mats[cdir][dir].flatten()
+            # stack the dssim_mats for each compression level
+            dssim_mats[cdir] = np.stack([dssim_mats[cdir][dir] for dir in subdirs], axis=0).flatten(order="F")
+
 
         np.save(f"{storageloc}{varname}_dssim_mat_{time}_{j}.npy", dssim_mats)
         # if not os.path.exists(f"{storageloc}{varname}_chunks_{time}.npy"):
@@ -531,7 +560,23 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # hopefully, by this point dssim_mat contains all the dssims for a single variable at every compression level
             # and cut_dataset_orig contains all the uncompressed 11x11 chunks for a single variable
         #append cut_dataset_orig to final_cut_dataset_orig
-        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:((LATS * LONS)*time)], axis=0)
+        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:((LATS * LONS)*time*len(subdirs))], axis=0)
+        final_cut_dataset_zfp = np.append(final_cut_dataset_zfp, cut_dataset_zfp[0:((LATS * LONS)*time*len(subdirs))], axis=0)
+
+        # turn final_cut_dataset_orig and final_cut_dataset_zfp into xarrays
+        final_cut_dataset_orig_xr = convert_np_to_xr(final_cut_dataset_orig).array
+        final_cut_dataset_zfp_xr = convert_np_to_xr(final_cut_dataset_zfp).array
+
+        for t in range(time):
+            dc2 = ldcpy.Diffcalcs(final_cut_dataset_orig_xr.isel(time=t * stride),
+                                  final_cut_dataset_zfp_xr.isel(time=t * stride), data_type="cam-fv")
+            if metric == "pcc":
+                dssim_mats[t] = dc2.get_diff_calc("pearson_correlation_coefficient")
+
+        # compute the average dssims by averaging each consecutive 182*288 (or whatever) dssim_mats
+        # for t in range(time)
+        # average_dssims = np.mean(dssim_mats[LATS*LONS*t??], axis=1)
+
         #append dssim_mats to final_dssim_mats
         for cdir in cdirs:
             if cdir not in final_dssim_mats:
