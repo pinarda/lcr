@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from math import floor
 # os.environ["HDF5_PLUGIN_PATH"]
 
-def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12, nsubdirs=1) -> np.ndarray:
+def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12, nsubdirs=1, metric=None) -> np.ndarray:
     """
     Extracts every possible contiguous lat-lon chunk from the input dataset.
 
@@ -20,7 +20,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
         np.ndarray: An array of shape (num_windows, time, window_size, window_size) containing the extracted windows.
     """
     # Check if the chunks have already been saved and load them if they exist.
-    chunks_path = f"{storageloc}{varname}_chunks_{time}.npy"
+    chunks_path = f"{storageloc}{varname}_{metric}_chunks_{time}.npy"
     if os.path.exists(chunks_path):
         pass
         # return np.load(chunks_path)
@@ -51,7 +51,7 @@ def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: st
                 for k in range(time):
                     # chunks[idx, k] = d[:, k, i:i + window_size, j:j + window_size]
                     chunks[idx, k, l] = d[:, l, k, i:i + window_size, j:j + window_size]
-            idx += 1
+                idx += 1
 
     # Save the chunks as a numpy array.
     np.save(chunks_path, chunks)

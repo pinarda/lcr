@@ -12,5 +12,5 @@
     "Navg": 1,
     "StorageLoc": "/glade/scratch/apinard/RF_store5/",
     "Stride": 3,
-    "Metric": "dssim"
+    "Metric": "spre"
 }
