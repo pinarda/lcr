@@ -12,6 +12,7 @@ import xarray as xr
 from main import main
 import argparse
 import matplotlib
+import csv
 matplotlib.use('Agg')
 
 def find_first_true_cdir(truepass_dict, cdirs, i):
@@ -97,6 +98,7 @@ def main2():
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(
         j)
     fname = j.split(".")[0]
+
 
     # start by clearing the storage directory
     # os.system(f"rm -rf {storageloc}*")
@@ -189,6 +191,23 @@ def main2():
             # plt.ylabel('True Label')
             # plt.xlabel('Predicated Label')
             # fig.savefig('confusion_matrix' + str(learning_values.pop()) + '.jpg')
+
+        # Check if the file exists
+        file_name = "result_table.csv"
+        file_exists = os.path.isfile(file_name)
+
+        # Open the file in append mode, create if it doesn't exist
+        with open(file_name, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+
+            # If the file is new, write the header
+            if not file_exists:
+                writer.writerow(["vnames", "algorithms"])
+
+            # Write the data
+            writer.writerow([", ".join(vlist), ", ".join(classifyd)])
+
+        print("Data written to", file_name)
 
         # convert the strings to integers based on their index in cdirs
         predints = {}

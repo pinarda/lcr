@@ -224,6 +224,7 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
             test_labels = dssim[comp][(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
     elif testset == "50_50_wholeslice":
+
         # Calculate the number of time slices in the last 90% of the data (rounding down)
         num_time_slices_last_50pct = (total_data_points - index_50pct) // num_windows
 
@@ -240,29 +241,28 @@ def split_data_into_train_val_test(dataset: xr.Dataset, dssim: np.ndarray, time:
 
         # Calculate the start index for the remaining time slice (if any)
         remaining_start_index = index_50pct + num_windows_test + num_windows_val
+        if cut_windows:
+            # Use the first 10% of the data for training
+            train_data = dataset[0:index_50pct]
+            train_labels = dssim[comp][0:index_50pct]
 
-        # Use the first 10% of the data for training
-        train_data = dataset[0:index_50pct]
-        train_labels = dssim[comp][0:index_50pct]
+            # Use the calculated number of windows for test and validation
+            test_data = dataset[index_50pct:int(index_50pct + num_windows_test)]
+            test_labels = dssim[comp][index_50pct:int(index_50pct + num_windows_test)]
+            val_data = dataset[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
+            val_labels = dssim[comp][int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
 
-        # Use the calculated number of windows for test and validation
-        test_data = dataset[index_50pct:int(index_50pct + num_windows_test)]
-        test_labels = dssim[comp][index_50pct:int(index_50pct + num_windows_test)]
-        val_data = dataset[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
-        val_labels = dssim[comp][int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
-
-        # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
-        if remaining_start_index < total_data_points:
-            remaining_windows = total_data_points - remaining_start_index
-            split_index = remaining_windows * 50 // 100
-            test_data = np.concatenate(
-                (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
-            test_labels = np.concatenate(
-                (test_labels, dssim[comp][int(remaining_start_index):int(remaining_start_index + split_index)]))
-            val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-            val_labels = np.concatenate((val_labels, dssim[comp][int(remaining_start_index + split_index):]))
-
-        if not cut_windows:
+            # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
+            if remaining_start_index < total_data_points:
+                remaining_windows = total_data_points - remaining_start_index
+                split_index = remaining_windows * 50 // 100
+                test_data = np.concatenate(
+                    (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
+                test_labels = np.concatenate(
+                    (test_labels, dssim[comp][int(remaining_start_index):int(remaining_start_index + split_index)]))
+                val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
+                val_labels = np.concatenate((val_labels, dssim[comp][int(remaining_start_index + split_index):]))
+        elif not cut_windows:
             train_data = dataset[0:int(index_50pct/num_windows)]
             train_labels = dssim[comp][0:int(index_50pct/num_windows)]
             val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]

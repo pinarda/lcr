@@ -613,16 +613,24 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         if feature is not None:
             train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist),
                                            storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist, jobid=jobid, metric=metric)
+                                           feature=feature, featurelist=featurelist, jobid=jobid, metric=metric, cut_windows=cut_dataset)
             return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, metric=metric)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, metric=metric, cut_windows=cut_dataset)
     else:
+        dar = np.array(dataset_orig)[0:(time * len(subdirs))]
+        dark = dar.reshape(dar.shape[0] * dar.shape[1], LATS + 10, LONS + 10, order="F")
+        new_dict = {}
+        for key, sub_dict in average_dssims.items():
+            # Flatten all arrays in the sub-dictionary and concatenate them
+            flattened_array = np.concatenate([v for v in sub_dict.values()])
+            # Add to the new dictionary under the original key
+            new_dict[key] = flattened_array
         if feature is not None:
-            train_cnn_for_dssim_regression(np.array(dataset_orig)[0:(time*len(subdirs))], average_dssims, time*len(subdirs), "combine", len(vlist),
+            train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist),
                                            storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
                                            feature=feature, featurelist=featurelist, cut_windows=False, jobid=jobid, metric=metric)
             return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(np.array(dataset_orig)[0:(time*len(subdirs))], average_dssims, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False, metric=metric)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False, metric=metric)
 
     print(errors)
     # grab the first (LATS * LONS) dssims for each compression level from dssim_mats
