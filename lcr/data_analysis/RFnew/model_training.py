@@ -425,15 +425,18 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
     return classification_matrix
 
 
-def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1, only_data=False, modeltype="cnn", metric="dssim", featureoverride=True, feature=None):
-    args = parse_command_line_arguments()
-
-    json = args.json
-    testset = args.testset
-    f = args.feature
-    featurelist = args.listfeatures
-    xform = args.transform
-    jobid = args.jobid
+def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1,
+                                         only_data=False, modeltype="cnn", metric="dssim",
+                                         featureoverride=True, feature=None, json=None, testset="random",
+                                         featurelist=None, xform="quantile", jobid=0):
+    # args = parse_command_line_arguments()
+    #
+    # json = args.json
+    # testset = args.testset
+    # f = args.feature
+    # featurelist = args.listfeatures
+    # xform = args.transform
+    # jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(json)
@@ -674,7 +677,9 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     return errors, av_preds, av_dssims, test_dssims, dssims_files
 
-def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn", feature=None, metric="dssim"):
+def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn",
+                                              feature=None, metric="dssim", json=None, testset="random",
+                                                featurelist=None, xform="quantile", jobid=0):
     # Will need to perform a normalization step.
 
     errors = []
@@ -684,9 +689,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
 
     for i in times:
         if only_data or feature:
-            build_model_and_evaluate_performance(i, j, name, only_data=only_data, modeltype=modeltype, metric=metric, feature=feature)
+            build_model_and_evaluate_performance(i, j, name, only_data=only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid)
             continue
-        e, p, d, test_dssims, dssim_f = build_model_and_evaluate_performance(i, j, name, only_data, modeltype=modeltype, metric=metric, feature=feature)
+        e, p, d, test_dssims, dssim_f = build_model_and_evaluate_performance(i, j, name, only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])

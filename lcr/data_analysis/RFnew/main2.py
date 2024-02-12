@@ -90,13 +90,17 @@ def main2():
     args = parse_command_line_arguments()
 
     j = args.json
+    testset = args.testset
+    featurelist = args.listfeatures
+    xform = args.transform
+    only_data = args.onlydata
+
     # only_data = args.onlydata
     model = args.model
     feature = args.feature
     jobid = args.jobid
     runonlydata = args.runonlydata
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(
-        j)
+    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(j)
     fname = j.split(".")[0]
 
 
@@ -104,14 +108,16 @@ def main2():
     # os.system(f"rm -rf {storageloc}*")
     #
     if (runonlydata):
-        main(metric_overwrite=metric, feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
+        main(metric_overwrite=metric, feature_override=True, newfeature=feature, only_data_override=True, newonlydata=True, j=j,
+                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=feature, only_data=only_data)
         # main(metric_overwrite="dssim", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
         # main(metric_overwrite="ks", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
         # main(metric_overwrite="pcc", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
 
     only_data = False
     feature = None
-    main(metric_overwrite=metric, feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
+    main(metric_overwrite=metric, feature_override=True, newfeature=None, only_data_override=True, newonlydata=False, j=j,
+                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=None, only_data=only_data)
     # main(metric_overwrite="dssim", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
     # main(metric_overwrite="ks", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
     # main(metric_overwrite="pcc", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)

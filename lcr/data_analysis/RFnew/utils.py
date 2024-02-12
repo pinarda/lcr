@@ -1,4 +1,5 @@
 import argparse
+import ast
 import os
 import json
 # os.environ["HDF5_PLUGIN_PATH"]
@@ -87,17 +88,17 @@ def list_of_strings(arg):
 
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local.json")
+    parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local_dssim.json")
     parser.add_argument("-t", "--testset", help="test set type", type=str, default="50_50_wholeslice")
-    parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=bool, default=True)
+    parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=ast.literal_eval, default=False)
     parser.add_argument("-m", "--model", help="model type", type=str, default="rf")
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default="mean")
     parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default="mean")
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
-    parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
-    parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="ks")
+    parser.add_argument("-d", "--jobid", help="jobid", type=int, default=1)
+    parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="pcc")
     parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=0)
-    parser.add_argument("-a", '--runonlydata', help='Run only data?', type=bool, default=False)
+    parser.add_argument("-a", '--runonlydata', help='Run only data?', type=ast.literal_eval, default=False)
 
     print(f"Only Data Status: {parser.parse_args().onlydata}")
     # let's add a -v option as well to add debug messages

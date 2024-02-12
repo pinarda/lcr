@@ -19,14 +19,17 @@ WINDOWSIZE = 12
 
 
 
-def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only_data_override=False, newonlydata=False):
-    args = parse_command_line_arguments()
+def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only_data_override=False, newonlydata=False,
+         j=None, testset="random",
+         featurelist=None, xform="quantile", jobid=0, model="rf", feature=None, only_data=False):
+    # args = parse_command_line_arguments()
 
-    j = args.json
-    only_data = args.onlydata
-    model = args.model
-    feature = args.feature
-    jobid = args.jobid
+    # j = args.json
+    # only_data = args.onlydata
+    # model = args.model
+    # feature = args.feature
+    # jobid = args.jobid
+
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(
         j)
     # times = [2, 3, 4]
@@ -55,7 +58,8 @@ def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only
         if feature or only_data:
             # j.split(".")[0] is the name of the json template
             build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=only_data,
-                                                      modeltype=model, feature=feature, metric=metric)
+                                                      modeltype=model, feature=feature, metric=metric, json=j, testset=testset,
+                                                featurelist=featurelist, xform=xform, jobid=jobid)
             break
 
     # here, we want to check if some files already exist. specifically:
@@ -75,6 +79,12 @@ def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only
                                                                                                        only_data=only_data,
                                                                                                        modeltype=model,
                                                                                                        feature=feature,
-                                                                                                       metric=metric)
+                                                                                                       metric=metric,
+                                                                                                       json=j,
+                                                                                                       testset=testset,
+                                                                                                       featurelist=featurelist,
+                                                                                                       xform=xform,
+                                                                                                       jobid=jobid)
+
 if __name__ == "__main__":
     main()
