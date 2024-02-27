@@ -17,6 +17,8 @@ import datetime
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
 # os.environ["HDF5_PLUGIN_PATH"]
+from classification_labels import classify
+from training import train_cnn
 
 LATS = 182
 LONS = 288
@@ -428,7 +430,7 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
 def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1,
                                          only_data=False, modeltype="cnn", metric="dssim",
                                          featureoverride=True, feature=None, json=None, testset="random",
-                                         featurelist=None, xform="quantile", jobid=0):
+                                         featurelist=None, xform="quantile", jobid=0, labelsonly=False):
     # args = parse_command_line_arguments()
     #
     # json = args.json
@@ -439,7 +441,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     # jobid = args.jobid
     # This version of the main function builds a single CNN on all variables, useful for training to predict a new variable
     # read in the scratch.json configuration file that specifies the location of the datasets
-    save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(json)
+    save, vlist, pres, posts, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(json)
     metric = metric
 
     if featureoverride:
@@ -488,7 +490,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         for path in paths:
             # create a list of files to open by appending pre, varname, and post to the filename
             # for every variable in vlist
-            files.append(f"{path}/" + pre + varname + post)
+            for i in range(len(pres)):
+                files.append(f"{path}/" + pres[i] + varname + posts[i])
 
             # create a list of labels by adding "orig" to the list of cdirs
         labels = ["orig" + dir for dir in subdirs] + newcdirs
@@ -612,14 +615,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     # call fit_cnn on the 11x11 chunks and the dssim values
     fname = json.split(".")[0]
-    if cut_dataset:
-        if feature is not None:
-            train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist),
-                                           storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist, jobid=jobid, metric=metric, cut_windows=cut_dataset)
-            return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, metric=metric, cut_windows=cut_dataset)
-    else:
+
+    if labelsonly:
         dar = np.array(dataset_orig)[0:(time * len(subdirs))]
         dark = dar.reshape(dar.shape[0] * dar.shape[1], LATS + 10, LONS + 10, order="F")
         new_dict = {}
@@ -629,11 +626,52 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # Add to the new dictionary under the original key
             new_dict[key] = flattened_array
         if feature is not None:
-            train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist),
-                                           storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
-                                           feature=feature, featurelist=featurelist, cut_windows=False, jobid=jobid, metric=metric)
+            train_cnn(dark, new_dict, time * len(subdirs), "combine", len(vlist),
+                                           storageloc, testset, fname, only_data=only_data, modeltype=modeltype,
+                                           plotdir=save,
+                                           feature=feature, featurelist=featurelist, cut_windows=False, jobid=jobid,
+                                           metric=metric)
             return
-        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False, metric=metric)
+        errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn(dark, new_dict,
+                                                                                  time * len(
+                                                                                      subdirs),
+                                                                                  "combine",
+                                                                                  len(vlist),
+                                                                                  storageloc,
+                                                                                  testset, fname,
+                                                                                  only_data=only_data,
+                                                                                  modeltype=modeltype,
+                                                                                  plotdir=save,
+                                                                                  feature=feature,
+                                                                                  featurelist=featurelist,
+                                                                                  transform=xform,
+                                                                                  jobid=jobid,
+                                                                                  cut_windows=False,
+                                                                                  metric=metric)
+
+    else:
+        if cut_dataset:
+            if feature is not None:
+                train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist),
+                                               storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
+                                               feature=feature, featurelist=featurelist, jobid=jobid, metric=metric, cut_windows=cut_dataset)
+                return
+            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(final_cut_dataset_orig, final_dssim_mats, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, metric=metric, cut_windows=cut_dataset)
+        else:
+            dar = np.array(dataset_orig)[0:(time * len(subdirs))]
+            dark = dar.reshape(dar.shape[0] * dar.shape[1], LATS + 10, LONS + 10, order="F")
+            new_dict = {}
+            for key, sub_dict in average_dssims.items():
+                # Flatten all arrays in the sub-dictionary and concatenate them
+                flattened_array = np.concatenate([v for v in sub_dict.values()])
+                # Add to the new dictionary under the original key
+                new_dict[key] = flattened_array
+            if feature is not None:
+                train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist),
+                                               storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save,
+                                               feature=feature, featurelist=featurelist, cut_windows=False, jobid=jobid, metric=metric)
+                return
+            errors, model, av_preds, av_dssims, predictions, test_dssims = train_cnn_for_dssim_regression(dark, new_dict, time*len(subdirs), "combine", len(vlist), storageloc, testset, fname, only_data=only_data, modeltype=modeltype, plotdir=save, feature=feature, featurelist=featurelist, transform=xform, jobid=jobid, cut_windows=False, metric=metric)
 
     print(errors)
     # grab the first (LATS * LONS) dssims for each compression level from dssim_mats
@@ -679,7 +717,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
 def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, modeltype="cnn",
                                               feature=None, metric="dssim", json=None, testset="random",
-                                                featurelist=None, xform="quantile", jobid=0):
+                                                featurelist=None, xform="quantile", jobid=0, labelsonly=False):
     # Will need to perform a normalization step.
 
     errors = []
@@ -689,9 +727,9 @@ def build_and_evaluate_models_for_time_slices(times, j, name, only_data=False, m
 
     for i in times:
         if only_data or feature:
-            build_model_and_evaluate_performance(i, j, name, only_data=only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid)
+            build_model_and_evaluate_performance(i, j, name, only_data=only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, labelsonly=True)
             continue
-        e, p, d, test_dssims, dssim_f = build_model_and_evaluate_performance(i, j, name, only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid)
+        e, p, d, test_dssims, dssim_f = build_model_and_evaluate_performance(i, j, name, only_data, modeltype=modeltype, metric=metric, feature=feature, json=json, testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, labelsonly=True)
         errors.append(e[0])
         av_preds.append(p[0])
         av_dssims.append(d[0])

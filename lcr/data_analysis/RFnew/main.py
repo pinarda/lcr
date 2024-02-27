@@ -21,7 +21,7 @@ WINDOWSIZE = 12
 
 def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only_data_override=False, newonlydata=False,
          j=None, testset="random",
-         featurelist=None, xform="quantile", jobid=0, model="rf", feature=None, only_data=False):
+         featurelist=None, xform="quantile", jobid=0, model="rf", feature=None, only_data=False, labelsonly=False):
     # args = parse_command_line_arguments()
 
     # j = args.json
@@ -59,7 +59,7 @@ def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only
             # j.split(".")[0] is the name of the json template
             build_and_evaluate_models_for_time_slices(time, j.split(".")[0], j.split(".")[0], only_data=only_data,
                                                       modeltype=model, feature=feature, metric=metric, json=j, testset=testset,
-                                                featurelist=featurelist, xform=xform, jobid=jobid)
+                                                featurelist=featurelist, xform=xform, jobid=jobid, labelsonly=labelsonly)
             break
 
     # here, we want to check if some files already exist. specifically:
@@ -84,7 +84,8 @@ def main(metric_overwrite="dssim", feature_override=False, newfeature=None, only
                                                                                                        testset=testset,
                                                                                                        featurelist=featurelist,
                                                                                                        xform=xform,
-                                                                                                       jobid=jobid)
+                                                                                                       jobid=jobid,
+                                                                                                       labelsonly=labelsonly)
 
 if __name__ == "__main__":
     main()

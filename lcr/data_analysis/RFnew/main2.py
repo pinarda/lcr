@@ -13,6 +13,9 @@ from main import main
 import argparse
 import matplotlib
 import csv
+import seaborn as sns
+import pandas as pd
+from collections import Counter
 matplotlib.use('Agg')
 
 def find_first_true_cdir(truepass_dict, cdirs, i):
@@ -100,6 +103,7 @@ def main2():
     feature = args.feature
     jobid = args.jobid
     runonlydata = args.runonlydata
+    labelsonly = args.labelsonly
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, n, stride, metric, cut_dataset, subdirs = read_parameters_from_json(j)
     fname = j.split(".")[0]
 
@@ -109,7 +113,7 @@ def main2():
     #
     if (runonlydata):
         main(metric_overwrite=metric, feature_override=True, newfeature=feature, only_data_override=True, newonlydata=True, j=j,
-                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=feature, only_data=only_data)
+                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=feature, only_data=only_data, labelsonly=labelsonly)
         # main(metric_overwrite="dssim", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
         # main(metric_overwrite="ks", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
         # main(metric_overwrite="pcc", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
@@ -117,7 +121,7 @@ def main2():
     only_data = False
     feature = None
     main(metric_overwrite=metric, feature_override=True, newfeature=None, only_data_override=True, newonlydata=False, j=j,
-                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=None, only_data=only_data)
+                testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=None, only_data=only_data, labelsonly=labelsonly)
     # main(metric_overwrite="dssim", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
     # main(metric_overwrite="ks", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
     # main(metric_overwrite="pcc", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
@@ -131,46 +135,66 @@ def main2():
 
     # for metric in ["dssim", "spre", "ks", "pcc"]:
     for metric in [metric]:
-        for cdir in cdirs:
+        if labelsonly:
             # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
             # preds = np.load(pred_fs[cdir])
-            dssims = np.load(f"{storageloc}{cdir}_{metric}_mat_alltime_{i*len(subdirs)}_{fname}{jobid}.npy")
-            fname = j.split(".")[0]
-            preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{i*len(subdirs)}{model}{jobid}.npy")
+            for t in time:
+                dssims = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                fname = j.split(".")[0]
+                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
 
-            steps = int((i*len(subdirs)) * 0.75)
+            steps = int((i * len(subdirs)) * 0.75)
             # steps = int((i*len(subdirs)) * 0.2)
 
             # errs = preds - dssims[:,5:-5,steps[0]:]
             # # now if the value is greater than 0, set it to 1, otherwise set it to 0
             # truepass = np.where(errs > 0, 1, 0)
             # compute the average dssim over the entire time slice
-            adssims = np.mean(dssims[:, :, steps:], axis=(0, 1))
-            # compute the average prediction over the entire time slice
-            if cut_dataset:
-                apreds = np.mean(preds, axis=(0, 1))
-            else:
-                apreds = preds
+        else:
+            for cdir in cdirs:
+                # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
+                # preds = np.load(pred_fs[cdir])
+                dssims = np.load(f"{storageloc}{cdir}_{metric}_mat_alltime_{i*len(subdirs)}_{fname}{jobid}.npy")
+                fname = j.split(".")[0]
+                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{i*len(subdirs)}{model}{jobid}.npy")
 
-            threshold = 0.995
+                # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
+                # first, strip the top and bottom 5 rows from the dssims
 
-            truepred = apreds > threshold
-            if cdir not in truepred_dict:
-                truepred_dict[cdir] = {}
-            if i not in truepred_dict[cdir]:
-                truepred_dict[cdir][i] = {}
-            truepred_dict[cdir][i]['truepass'] = truepred
+                steps = int((i*len(subdirs)) * 0.75)
+                # steps = int((i*len(subdirs)) * 0.2)
 
-            # compute the average dssim over the entire time slice
-            truedssim = adssims > threshold
-            if cdir not in truedssim_dict:
-                truedssim_dict[cdir] = {}
-            if i not in truedssim_dict[cdir]:
-                truedssim_dict[cdir][i] = {}
-            truedssim_dict[cdir][i]['truepass'] = truedssim
+                # errs = preds - dssims[:,5:-5,steps[0]:]
+                # # now if the value is greater than 0, set it to 1, otherwise set it to 0
+                # truepass = np.where(errs > 0, 1, 0)
+                # compute the average dssim over the entire time slice
+                adssims = np.mean(dssims[:, :, steps:], axis=(0, 1))
+                # compute the average prediction over the entire time slice
+                if cut_dataset:
+                    apreds = np.mean(preds, axis=(0, 1))
+                else:
+                    apreds = preds
+
+                threshold = 0.995
+
+                truepred = apreds > threshold
+                if cdir not in truepred_dict:
+                    truepred_dict[cdir] = {}
+                if i not in truepred_dict[cdir]:
+                    truepred_dict[cdir][i] = {}
+                truepred_dict[cdir][i]['truepass'] = truepred
+
+                # compute the average dssim over the entire time slice
+                truedssim = adssims > threshold
+                if cdir not in truedssim_dict:
+                    truedssim_dict[cdir] = {}
+                if i not in truedssim_dict[cdir]:
+                    truedssim_dict[cdir][i] = {}
+                truedssim_dict[cdir][i]['truepass'] = truedssim
 
         if only_data:
             exit()
@@ -178,17 +202,27 @@ def main2():
         predresult = {}
         dssimresult = {}
         for i in time:
-            predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
-            dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
-            classifyd = [element if element is not None else "None" for element in dssimresult[i]]
-            classifyp = [element if element is not None else "None" for element in predresult[i]]
-            cm = confusion_matrix(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
+            if not labelsonly:
+                predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
+                dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
+                classifyd = [element if element is not None else "None" for element in dssimresult[i]]
+                classifyp = [element if element is not None else "None" for element in predresult[i]]
+                cm = confusion_matrix(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
+                report = classification_report(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
+            else:
+                classifyd = dssims[steps:]
+                classifyp = preds
+                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+
             # save the confusion matrix
             # also create a classification report
-            report = classification_report(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
 
-            np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}.npy", cm)
-            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}.txt", 'w') as f:
+            date = datetime.datetime.now()
+            date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
+
+            np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.npy", cm)
+            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
                 f.write(report)
             # fig = plt.figure()
             # plt.matshow(cm)
@@ -199,7 +233,7 @@ def main2():
             # fig.savefig('confusion_matrix' + str(learning_values.pop()) + '.jpg')
 
         # Check if the file exists
-        file_name = "result_table.csv"
+        file_name = f"{storageloc}result_table_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.csv"
         file_exists = os.path.isfile(file_name)
 
         # Open the file in append mode, create if it doesn't exist
@@ -215,10 +249,36 @@ def main2():
 
         print("Data written to", file_name)
 
+        # Count the frequency of each element in classifyd
+        frequency_dict = Counter(classifyd)
+
+        # Ensure each compression level in cdirs is a key in the frequency_dict
+        for compression_level in cdirs:
+            if compression_level not in frequency_dict:
+                frequency_dict[compression_level] = 0
+
+        # Now frequency_dict has all the compression levels as keys, with their respective counts
+        print(frequency_dict)
+
+        df = pd.DataFrame([frequency_dict], columns=cdirs)
+
+        # Insert the "name" column at the beginning of the DataFrame
+        # Assuming vlist has a single value for this case, as there's only one row in df
+        df.insert(0, 'name', vlist[0])
+
+        # Write the DataFrame to a CSV file
+        csv_file_path = 'compression_frequencies.csv'  # Specify your desired file path
+        df.to_csv(csv_file_path, index=False)
+
+        print(f"Data written to '{csv_file_path}' successfully.")
+
         # convert the strings to integers based on their index in cdirs
         predints = {}
         dssimints = {}
-        for cdir in cdirs:
+        if labelsonly:
+            predints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyp]
+            dssimints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyd]
+        else:
             for i in time:
                 predints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in predresult[i]]
                 dssimints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in dssimresult[i]]
@@ -228,10 +288,16 @@ def main2():
         true_positives = {}
         false_positives = {}
         false_negatives = {}
-        for i in time:
-            true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predresult[i]))]
-            false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predresult[i]))]
-            false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        if labelsonly:
+            for i in time:
+                true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predints[i]))]
+                false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predints[i]))]
+                false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predints[i]))]
+        else:
+            for i in time:
+                true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+                false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+                false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predresult[i]))]
 
         # now sum up the true positives, false positives, and false negatives
         accuracy = {}
@@ -260,7 +326,7 @@ def main2():
 
         for i in time:
             # replace and potential Nones in predresult[i] with "None"
-            predresult[i] = ["Lossless" if x is None else x for x in predresult[i]]
+            predresult[i] = ["Lossless" if x is None else x for x in classifyp]
             frequencies, bins = np.histogram(predresult[i], bins=np.arange(len(set(predresult[i])) + 1) - 0.5)
             unique_elements, frequencies = np.unique(predresult[i], return_counts=True)
 
@@ -309,30 +375,50 @@ def main2():
 
             plt.show()
 
-            plt.savefig(f"{storageloc}histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
 
         # do the same for dssimresult[i]
         for i in time:
-            dssimresult[i] = ["Lossless" if x is None else x for x in dssimresult[i]]
-            frequencies, bins = np.histogram(dssimresult[i], bins=np.arange(len(set(dssimresult[i])) + 1) - 0.5)
-            unique_elements, frequencies = np.unique(predresult[i], return_counts=True)
+            # replace and potential Nones in predresult[i] with "None"
+            predresult[i] = ["Lossless" if x is None else x for x in classifyp]
+            unique_elements_pred, frequencies_pred = np.unique(predresult[i], return_counts=True)
+
+            # Similarly for dssimresult[i]
+            dssimresult[i] = ["Lossless" if x is None else x for x in classifyd]
+            unique_elements_dssim, frequencies_dssim = np.unique(dssimresult[i], return_counts=True)
 
             # Define colors for each unique label
-            unique_labels = list(set(dssimresult[i]))
+            unique_labels_pred = list(set(predresult[i]))
+            colorints = np.array(predints[i]) - np.array(dssimints[i])
+            colors_pred = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+
+            # Define colors for each unique label
+            unique_labels_dssim = list(set(dssimresult[i]))
             colorints = np.array(dssimints[i]) - np.array(dssimints[i])
-            colors = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+            colors_dssim = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+
+            df_pred = pd.DataFrame(
+                {'Compression Level': unique_elements_pred, 'Frequency': frequencies_pred, 'Dataset': f'{model} Preds'})
+            df_dssim = pd.DataFrame(
+                {'Compression Level': unique_elements_dssim, 'Frequency': frequencies_dssim, 'Dataset': 'Actual'})
+
+            df = pd.concat([df_pred, df_dssim])
+
 
             # Plot the histogram using plt.bar with individual colors
-            plt.bar(bins[:-1], frequencies, color=colors, align='center', width=np.diff(bins))
+            sns.barplot(x='Compression Level', y='Frequency', hue='Dataset', data=df)
 
-            plt.xticks(bins[:-1], unique_labels, rotation=45)
+            # plt.xticks(bins[:-1], unique_labels, rotation=45)
             plt.title(f"Predictions for # of time slices: {i}")
             plt.xlabel("Compression Level")
             plt.ylabel("Frequency")
+            plt.xticks(rotation=45)
             plt.tight_layout()
-            plt.savefig(f"{storageloc}histogram_{metric}_{i}_{j.split('.')[0]}{jobid}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}double_histogram_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
+
+        # let's combine the two histograms above into one
 
         if only_data or feature:
             exit()
@@ -358,8 +444,17 @@ def main2():
                         fname = j.split(".")[0]
                         # load the dssims and predictions
                         # dssims = np.load(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.npy")
-                        dssims = np.load(f"{storageloc}labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
-                        preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                        if labelsonly:
+                            fname = j.split(".")[0]
+                            dssims = np.load(
+                                f"{storageloc}labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                allow_pickle=True)
+                            preds = np.load(
+                                f"{storageloc}predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                allow_pickle=True)
+                        else:
+                            dssims = np.load(f"{storageloc}labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                            preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
 
                         # flips dssims and preds upside down
                         # dssims = np.flipud(dssims)

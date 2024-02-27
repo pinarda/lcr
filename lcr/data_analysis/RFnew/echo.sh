@@ -25,7 +25,7 @@ set ids = ()
 foreach model ($models)
   if ($model == "cnn") then
     conda activate my-npl-ml
-    python main.py --onlydata True -j RF_TEMPLATE.json -m "${model}"
+    python main2.py --onlydata True -j RF_TEMPLATE.json -m "${model}"
 
     conda activate echo
     alias postcmd 'set start_time=`date +%s`'
@@ -37,7 +37,7 @@ foreach model ($models)
     # time the run
 #    conda activate my-npl-ml
 #    python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -r METRIC
-    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main2.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
 
   endif
   if ($model == "rf") then
@@ -45,13 +45,13 @@ foreach model ($models)
     foreach feature ($features)
       # save all ids for line 48
 #      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -x none -m "${model}" -r METRIC -x TRANSFORM -f "${feature}"'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
-      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC -x TRANSFORM -f "${feature}"'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+      set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main2.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC -x TRANSFORM -f "${feature}"'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
 
       # remove the period and everything after it
       set newid = `echo $newid | sed 's/\..*//'`
       printf '%s,' ${newid}
       set ids = ( $ids $newid )
-    end
+    endd
 
     # I need a long string consisting of all the ids in the ids array, separated by commas, in tcsh
     #set joblist = `printf '%s,' "$ids[-]"`
@@ -67,7 +67,7 @@ foreach model ($models)
 #    printf '%s\n' ${str}
     set features_csv = `echo $features | sed 's/ /,/g'`
 
-    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM -l "${features_csv}"'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main2.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM -l "${features_csv}"'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
   endif
 #  if ($model == "cnn") then
 #      conda activate my-npl-ml
