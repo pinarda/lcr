@@ -485,15 +485,17 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     final_cut_dataset_zfp = np.empty((0, WINDOWSIZE, WINDOWSIZE))
     final_dssim_mats = {}
     average_dssims = {}
-    print(pres)
-    print(posts)
     for varname in vlist:
         files = []
         for path in paths:
             # create a list of files to open by appending pre, varname, and post to the filename
             # for every variable in vlist
-            for i in range(len(pres)):
-                files.append(f"{path}/" + pres[i] + varname + posts[i])
+            for i in range(len(subdirs)):
+                if path.rsplit('/', 3)[1] == subdirs[i] or path.rsplit('/', 3)[2] == subdirs[i]:
+                    if path.rsplit('/', 3)[2] == "orig":
+                        files.append(f"{path}" + pres[i] + varname + posts[i])
+                    else:
+                        files.append(f"{path}/" + pres[i] + varname + posts[i])
 
             # create a list of labels by adding "orig" to the list of cdirs
         labels = ["orig" + dir for dir in subdirs] + newcdirs
