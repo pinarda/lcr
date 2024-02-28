@@ -485,6 +485,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     final_cut_dataset_zfp = np.empty((0, WINDOWSIZE, WINDOWSIZE))
     final_dssim_mats = {}
     average_dssims = {}
+    print(pres)
+    print(posts)
     for varname in vlist:
         files = []
         for path in paths:
