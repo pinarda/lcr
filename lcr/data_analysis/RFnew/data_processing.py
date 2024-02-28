@@ -4,7 +4,7 @@ import os
 import sys
 from sklearn.model_selection import train_test_split
 from math import floor
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 
 def cut_spatial_dataset_into_windows(dataset: xr.Dataset, time: int, varname: str, storageloc: str, window_size: int = 12, nsubdirs=1, metric=None) -> np.ndarray:
     """

@@ -3,7 +3,7 @@ import numpy as np
 from utils import parse_command_line_arguments, read_parameters_from_json
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
 from sklearn.metrics import confusion_matrix, classification_report

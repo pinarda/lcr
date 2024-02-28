@@ -16,7 +16,7 @@ import datetime
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 from classification_labels import classify
 from training import train_cnn
 
