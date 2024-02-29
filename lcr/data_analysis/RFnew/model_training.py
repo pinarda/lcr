@@ -16,7 +16,7 @@ import datetime
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 from classification_labels import classify
 from training import train_cnn
 
@@ -502,7 +502,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         dataset_col = ldcpy.open_datasets(list_of_files=files,
                                           labels=labels,
                                           data_type="cam-fv",
-                                          varnames=[varname])
+                                          varnames=[varname],
+                                          chunks={"time": 10})
 
         timeloc = int(time * 0.2)
 
