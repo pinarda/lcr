@@ -2,7 +2,7 @@ import argparse
 import ast
 import os
 import json
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 def read_parameters_from_json(metajson):
     comp = ""
@@ -96,7 +96,7 @@ def parse_command_line_arguments():
     parser.add_argument("-l", "--listfeatures", help="features to use for fitting", type=list_of_strings, default="mean")
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
     parser.add_argument("-d", "--jobid", help="jobid", type=int, default=1)
-    parser.add_argument("-r", "--metric", help="metric (default dssim)", type=str, default="dssim")
+    parser.add_argument("-r", "--metric", help="metric (default dssim)", type=list_of_strings, default=["dssim"])
     parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=0)
     parser.add_argument("-a", '--runonlydata', help='Run only data?', type=ast.literal_eval, default=False)
     parser.add_argument("-y", '--labelsonly', help='Run only labels?', type=ast.literal_eval, default=True)

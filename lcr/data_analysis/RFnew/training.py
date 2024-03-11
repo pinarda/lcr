@@ -6,12 +6,12 @@ import numpy as np
 import pickle
 import datetime
 import tensorflow as tf
-from sklearn.preprocessing import quantile_transform
+from sklearn.preprocessing import quantile_transform, LabelEncoder
 from sklearn.model_selection import train_test_split
 import sklearn
 from math import floor
 from classification_labels import classify
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 
 
 LATS = 182
@@ -261,7 +261,7 @@ def convert_np_to_xr(np_arrays, titles=None):
     return ldcpy_da
 
 def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=WINDOWSIZE, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0, cut_windows=True, metric="dssim") -> float:
+                                   testset="random", j=None, plotdir=None, window_size=WINDOWSIZE, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0, cut_windows=True, metric=["dssim"]) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -283,13 +283,13 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # model_path = ""
     average_error_path = os.path.join(storageloc, "average_error.txt")
 
-    newlabels = classify(f"{j}.json", ["dssim"], labels)
+    newlabels = classify(f"{j}.json", metric, labels)
 
 
     #### SECTIONS TO REVIEW ####
 
-
-
+    label_encoder = LabelEncoder()
+    integer_encoded_labels = label_encoder.fit_transform(newlabels)
 
     scores = []
     av_preds = []
@@ -316,7 +316,8 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     for i in range(time*nvar):
         # dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
         # convert newlabels to a numpy array
-        newlabels = np.array(newlabels)
+        # newlabels = np.array(newlabels)
+        newlabels = np.array(integer_encoded_labels)
         train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows)
 
     # check the echosave directory, open trial_results.csv
@@ -364,7 +365,10 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         outputs = tf.keras.layers.Dense(len(labels), activation="softmax")(x)
 
         model = tf.keras.Model(inputs=i, outputs=outputs)
-        model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['mean_absolute_error'])
+        # model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['mean_absolute_error'])
+        # compile the model for classification
+        model.compile(loss='sparse_categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['accuracy'])
+
         model.summary()
     elif modeltype == "rf":
         import ldcpy
@@ -377,16 +381,16 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     savelats = train_data.shape[1]
     savelons = train_data.shape[2]
     train_data = train_data.reshape(train_data.shape[0], -1)
-    # val_data = val_data.reshape(val_data.shape[0], -1)
+    val_data = val_data.reshape(val_data.shape[0], -1)
     test_data_OLD = test_data.reshape(test_data.shape[0], -1)
 
     if transform == "quantile":
         train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-        # val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
+        val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
         test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
     # then put the data back into the original shape
     train_data = train_data.reshape(train_data.shape[0], savelats, savelons)
-    # val_data = val_data.reshape(val_data.shape[0], WINDOWSIZE, WINDOWSIZE)
+    val_data = val_data.reshape(val_data.shape[0], savelats, savelons)
     test_data = test_data.reshape(test_data.shape[0], savelats, savelons)
     test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], savelats, savelons)
 
@@ -482,7 +486,9 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         train_data[train_data == np.nan] = 0
         model.fit(train_data, train_labels)
 
-    predictions = model.predict(test_data)
+    val_predictions = model.predict(test_data)
+    predictions = np.argmax(val_predictions, axis=1)
+    label_predictions = label_encoder.inverse_transform(predictions)
     if modeltype == "rf":
         # save the feature importances as {storageloc}importances_{i}_{j.split('.')[0]}{jobid}{model}
         importances = model.feature_importances_
@@ -586,7 +592,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # reorder the dimensions of predictions so that the time dimension is last
         predictions = np.moveaxis(predictions, 0, -1)
     # if modeltype == "cnn":
-    np.save(f"{storageloc}predictions_{metric}_{j}{time}{modeltype}{jobid}_classify.npy", predictions)
+    np.save(f"{storageloc}predictions_{metric}_{j}{time}{modeltype}{jobid}_classify.npy", label_predictions)
     np.save(f"{storageloc}test_plot_{j}{time}{modeltype}{jobid}_classify.npy", test_plot)
     # also save scores, av_preds, av_dssims, predictions, test_plot in .npy files
     if cut_windows:
@@ -594,7 +600,8 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # reorder the dimensions of labels so that the time dimension is last
         labels = np.moveaxis(labels, 0, -1)
     if modeltype == "cnn" or modeltype == "rf":
-        np.save(f"{storageloc}labels_{metric}_{j}{time}{modeltype}{jobid}_classify.npy", newlabels)
+        class_labels = label_encoder.inverse_transform(newlabels)
+        np.save(f"{storageloc}labels_{metric}_{j}{time}{modeltype}{jobid}_classify.npy", class_labels)
     if modeltype == "cnn":
         with open(f"{storageloc}scores_{j}{time}{modeltype}{jobid}_classify", "wb") as fp:  # Pickling
             pickle.dump(scores, fp)

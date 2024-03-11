@@ -82,7 +82,7 @@ def convert_np_to_dssims(np_arrays, titles):
     # plt.show()
 
     return ldcpy_dssims
-def main2():
+def main3():
 
     WINDOWSIZE = 12
 
@@ -561,4 +561,4 @@ def main2():
                         # plt.clf()
 
 if __name__ == "__main__":
-    main2()
+    main3()

@@ -100,7 +100,7 @@ def compare_across_metrics(final_labels_dict):
 
     return final_comparison_labels
 
-def setup(config_path, metrics, cdirs):
+def setup(config_path, metrics, cdirs, storageloc):
 
     # split config_path to get the directory, filename, and extension
     directory, filename = os.path.split(config_path)
@@ -114,14 +114,14 @@ def setup(config_path, metrics, cdirs):
 
     # Base pattern for filenames
     # deal with time, jobid
-    filename_pattern = '{level}_{metric}_mat_alltime_20_{filenameonly}1.npy'
+    filename_pattern = '{storageloc}{level}_{metric}_mat_alltime_10_{filenameonly}1.npy'
 
     # Generate metrics_info dictionary
     metrics_info = {
         metric: {
             'threshold': thresholds[metric],
             'filenames': [
-                filename_pattern.format(metric=metric, level=level, filenameonly=filenameonly) for level in cdirs
+                filename_pattern.format(metric=metric, level=level, filenameonly=filenameonly, storageloc=storageloc) for level in cdirs
             ],
             'comparison': comparisons[metric]
         }
@@ -138,7 +138,7 @@ def classify(config_path, metrics, labels=None):
         config_path)
 
     # metrics = ['dssim', 'spre', 'pcc', 'ks']
-    metrics_info = setup(config_path, metrics, cdirs)
+    metrics_info = setup(config_path, metrics, cdirs, storageloc)
 
     # Load and label data for each metric
     final_labels_dict = load_and_label_data(metrics_info, storageloc, labels)
@@ -153,14 +153,16 @@ def classify(config_path, metrics, labels=None):
 
 # Run the function to load, label, and save data
 if __name__ == '__main__':
-    config_path = "RF_local_spre.json"
+    config_path = "RF_local_dssim.json"
 
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(
         config_path)
 
-    metrics = ['dssim', 'spre', 'pcc', 'ks']
-    metrics = ['spre']
-    metrics_info, storageloc = setup(config_path, metrics)
+    # metrics = ['dssim', 'spre', 'pcc', 'ks']
+    # metrics = ['spre']
+
+    metrics = ['dssim', 'pcc']
+    metrics_info = setup(config_path, metrics, storageloc)
 
     # Load and label data for each metric
     final_labels_dict = load_and_label_data(metrics_info, storageloc)
