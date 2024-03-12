@@ -29,7 +29,7 @@ if __name__ == '__main__':
     newtimes = [[200], [200]]
     newtestset = ["50_50_wholeslice", "50_50_wholeslice"]
     jobids = [8, 9]
-    metrics = [["dssim"], ["dssim"]]
+    metrics = ["dssim", "dssim"]
     transforms = ["none", "none"]
     cutdatasets = [
         False,
