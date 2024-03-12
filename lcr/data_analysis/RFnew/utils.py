@@ -2,7 +2,7 @@ import argparse
 import ast
 import os
 import json
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 
 def read_parameters_from_json(metajson):
     comp = ""

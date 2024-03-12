@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split
 import sklearn
 from math import floor
 from classification_labels import classify
-# os.environ["HDF5_PLUGIN_PATH"]
-
+os.environ["HDF5_PLUGIN_PATH"]
+#
 
 LATS = 182
 LONS = 288
