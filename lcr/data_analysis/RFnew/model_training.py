@@ -505,7 +505,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                           labels=labels,
                                           data_type="cam-fv",
                                           varnames=[varname],
-                                          chunks={"time": 5})
+                                          chunks={"time": 50})
 
         timeloc = int(time * 0.2)
 
