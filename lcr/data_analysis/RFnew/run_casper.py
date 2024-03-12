@@ -12,7 +12,7 @@ import os
 
 if __name__ == '__main__':
     # read in the json file
-    with open('RF_template.json', 'r') as f:
+    with open('run_casper.json', 'r') as f:
         config = json.load(f)
 
     # get the list of variables
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["asdfjk"]
+    newnames = ["first_test"]
     newvars = [["TS"]]
     newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newtimes = [[2]]
