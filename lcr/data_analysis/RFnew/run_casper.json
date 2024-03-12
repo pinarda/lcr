@@ -14,5 +14,5 @@
     "StorageLoc": "/glade/work/apinard/RF_store_classify/",
     "Stride": 3,
     "Cut_Dataset": 0,
-    "Metric": "dssim"
+    "Metric": ["dssim", "spre", "pcc"]
 }
