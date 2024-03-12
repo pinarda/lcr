@@ -24,8 +24,8 @@ conda activate my-npl-2023a
 
 
 
-python main3.py --onlydata True --runonlydata True --metric dssim -j TEMPLATE --labelsonly True --model cnn
-python main3.py --onlydata False --runonlydata False --metric dssim -j TEMPLATE --labelsonly True --model cnn
+python main3.py --onlydata True --runonlydata True --metric dssim -j run_casper_TEMPLATE.json --labelsonly True --model cnn
+python main3.py --onlydata False --runonlydata False --metric dssim -j run_casper_TEMPLATE.json --labelsonly True --model cnn
 #
 ##
 ##rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/data/*.npy
