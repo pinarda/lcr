@@ -18,9 +18,9 @@ rm -f echosave/*
 git pull
 conda activate my-npl-2023a
 
-#rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/data/*
-#rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/*
-#rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/*.h5
+rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/data/*
+rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/*
+rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/*.h5
 
 
 
