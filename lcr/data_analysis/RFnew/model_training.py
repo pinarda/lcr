@@ -501,14 +501,14 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
             # create a list of labels by adding "orig" to the list of cdirs
         labels = ["orig" + dir for dir in subdirs] + newcdirs
-        print(files)
+        # print(files)
         dataset_col = ldcpy.open_datasets(list_of_files=files,
                                           labels=labels,
                                           data_type="cam-fv",
                                           varnames=[varname],
                                           chunks={"time": 50})
         # print the length of the time dimension
-        print(len(dataset_col.time))
+        # print(len(dataset_col.time))
 
         timeloc = int(time * 0.2)
 
@@ -545,6 +545,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
                     for t in range(0, time):
                         # print the length of the time dimension
+                        print(len(dataset_orig.time))
+                        print(len(dataset_zfp.time))
                         dc = ldcpy.Diffcalcs(dataset_orig.sel(collection=("orig" + dir)).isel(time=t*stride), dataset_zfp.sel(collection=(dir + "/" + cdir)).isel(time=t*stride), data_type="cam-fv")
 
                         if "dssim" in metric:
