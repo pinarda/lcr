@@ -22,15 +22,17 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["chunk_test"]
-    newvars = [["TS"]]
-    newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-    newtimes = [[2]]
-    newtestset = ["50_50_wholeslice"]
-    jobids = [8]
-    metrics = ["dssim"]
-    transforms = [ "none"]
+    newnames = ["TS_test", "PRECT_test"]
+    newvars = [["TS"], ["PRECT"]]
+    newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
+    newtimes = [[200], [200]]
+    newtestset = ["50_50_wholeslice", "50_50_wholeslice"]
+    jobids = [8, 9]
+    metrics = [["dssim"], ["dssim"]]
+    transforms = ["none", "none"]
     cutdatasets = [
+        False,
         False
     ]
 
