@@ -541,6 +541,9 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     dssim_mats[m][cdir][dir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
 
                     for t in range(0, time):
+                        # print the length of the time dimension
+                        print(len(dataset_orig.time))
+                        print(len(dataset_zfp.time))
                         dc = ldcpy.Diffcalcs(dataset_orig.sel(collection=("orig" + dir)).isel(time=t*stride), dataset_zfp.sel(collection=(dir + "/" + cdir)).isel(time=t*stride), data_type="cam-fv")
 
                         if "dssim" in metric:
