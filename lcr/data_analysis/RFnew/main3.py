@@ -134,14 +134,18 @@ def main3():
     i = time[-1]
 
     # for metric in ["dssim", "spre", "ks", "pcc"]:
+    steps = []
+    dssims = {}
+    preds = {}
     for metric in [metric]:
         if labelsonly:
             # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
             # preds = np.load(pred_fs[cdir])
+
             for t in time:
-                dssims = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                 fname = j.split(".")[0]
-                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
 
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
@@ -158,43 +162,44 @@ def main3():
             for cdir in cdirs:
                 # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
                 # preds = np.load(pred_fs[cdir])
-                dssims = np.load(f"{storageloc}{cdir}_{metric}_mat_alltime_{i*len(subdirs)}_{fname}{jobid}.npy")
-                fname = j.split(".")[0]
-                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{i*len(subdirs)}{model}{jobid}.npy")
-
-                # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
-                # first, strip the top and bottom 5 rows from the dssims
-
-                steps = int((i*len(subdirs)) * 0.75)
-                # steps = int((i*len(subdirs)) * 0.2)
-
-                # errs = preds - dssims[:,5:-5,steps[0]:]
-                # # now if the value is greater than 0, set it to 1, otherwise set it to 0
-                # truepass = np.where(errs > 0, 1, 0)
-                # compute the average dssim over the entire time slice
-                adssims = np.mean(dssims[:, :, steps:], axis=(0, 1))
-                # compute the average prediction over the entire time slice
-                if cut_dataset:
-                    apreds = np.mean(preds, axis=(0, 1))
-                else:
-                    apreds = preds
-
-                threshold = 0.995
-
-                truepred = apreds > threshold
-                if cdir not in truepred_dict:
-                    truepred_dict[cdir] = {}
-                if i not in truepred_dict[cdir]:
-                    truepred_dict[cdir][i] = {}
-                truepred_dict[cdir][i]['truepass'] = truepred
-
-                # compute the average dssim over the entire time slice
-                truedssim = adssims > threshold
-                if cdir not in truedssim_dict:
-                    truedssim_dict[cdir] = {}
-                if i not in truedssim_dict[cdir]:
-                    truedssim_dict[cdir][i] = {}
-                truedssim_dict[cdir][i]['truepass'] = truedssim
+                for t in time:
+                    dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                    fname = j.split(".")[0]
+                    preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+        #
+        #             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
+        #             # first, strip the top and bottom 5 rows from the dssims
+        #
+        #             steps = int((i*len(subdirs)) * 0.75)
+        #             # steps = int((i*len(subdirs)) * 0.2)
+        #
+        #             # errs = preds - dssims[:,5:-5,steps[0]:]
+        #             # # now if the value is greater than 0, set it to 1, otherwise set it to 0
+        #             # truepass = np.where(errs > 0, 1, 0)
+        #             # compute the average dssim over the entire time slice
+        #             adssims = np.mean(dssims[:, :, steps:], axis=(0, 1))
+        #             # compute the average prediction over the entire time slice
+        #             if cut_dataset:
+        #                 apreds = np.mean(preds, axis=(0, 1))
+        #             else:
+        #                 apreds = preds
+        #
+        #             threshold = 0.995
+        #
+        #             truepred = apreds > threshold
+        #             if cdir not in truepred_dict:
+        #                 truepred_dict[cdir] = {}
+        #             if t not in truepred_dict[cdir]:
+        #                 truepred_dict[cdir][t] = {}
+        #             truepred_dict[cdir][t]['truepass'] = truepred
+        #
+        #             # compute the average dssim over the entire time slice
+        #             truedssim = adssims > threshold
+        #             if cdir not in truedssim_dict:
+        #                 truedssim_dict[cdir] = {}
+        #             if t not in truedssim_dict[cdir]:
+        #                 truedssim_dict[cdir][t] = {}
+        #             truedssim_dict[cdir][t]['truepass'] = truedssim
 
         if only_data:
             exit()
@@ -202,16 +207,22 @@ def main3():
         predresult = {}
         dssimresult = {}
         for i in time:
+
+            steps = int((i * len(subdirs)) * 0.75)
             if not labelsonly:
-                predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
-                dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
-                classifyd = [element if element is not None else "None" for element in dssimresult[i]]
-                classifyp = [element if element is not None else "None" for element in predresult[i]]
-                cm = confusion_matrix(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
-                report = classification_report(classifyd, classifyp, labels=list(set(classifyp + classifyd)))
+                # predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
+                # dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
+                # classifyd = [element if element is not None else "None" for element in dssimresult[i]]
+                # classifyp = [element if element is not None else "None" for element in predresult[i]]
+                classifyd = dssims[i][steps:]
+                classifyp = preds[i]
+
+                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
             else:
-                classifyd = dssims[steps:]
-                classifyp = preds
+                print(dssims)
+                classifyd = dssims[i][steps:]
+                classifyp = preds[i]
                 cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
                 report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
 
@@ -273,54 +284,54 @@ def main3():
         print(f"Data written to '{csv_file_path}' successfully.")
 
         # convert the strings to integers based on their index in cdirs
-        predints = {}
-        dssimints = {}
-        if labelsonly:
-            predints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyp]
-            dssimints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyd]
-        else:
-            for i in time:
-                predints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in predresult[i]]
-                dssimints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in dssimresult[i]]
-
-        # compute true positives ( if predresult - dssimresult = 0)
-        # and true
-        true_positives = {}
-        false_positives = {}
-        false_negatives = {}
-        if labelsonly:
-            for i in time:
-                true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predints[i]))]
-                false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predints[i]))]
-                false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predints[i]))]
-        else:
-            for i in time:
-                true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predresult[i]))]
-                false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predresult[i]))]
-                false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        # predints = {}
+        # dssimints = {}
+        # if labelsonly:
+        #     predints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyp]
+        #     dssimints[i] = [cdirs.index(x) if x is not None and x != 'None' else len(cdirs) for x in classifyd]
+        # else:
+        #     for i in time:
+        #         predints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in predresult[i]]
+        #         dssimints[i] = [cdirs.index(x) if x is not None else len(cdirs) for x in dssimresult[i]]
+        #
+        # # compute true positives ( if predresult - dssimresult = 0)
+        # # and true
+        # true_positives = {}
+        # false_positives = {}
+        # false_negatives = {}
+        # if labelsonly:
+        #     for i in time:
+        #         true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predints[i]))]
+        #         false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predints[i]))]
+        #         false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predints[i]))]
+        # else:
+        #     for i in time:
+        #         true_positives[i] = [1 if predints[i][j] == dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        #         false_positives[i] = [1 if predints[i][j] > dssimints[i][j] else 0 for j in range(len(predresult[i]))]
+        #         false_negatives[i] = [1 if predints[i][j] < dssimints[i][j] else 0 for j in range(len(predresult[i]))]
 
         # now sum up the true positives, false positives, and false negatives
-        accuracy = {}
-        false_negative_fraction = {}
-        false_positive_fraction = {}
-        for i in time:
-            true_positives_sum = sum(true_positives[i])
-            false_positives_sum = sum(false_positives[i])
-            false_negatives_sum = sum(false_negatives[i])
-
-            # compute accuracy as true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
-            if (true_positives_sum + false_positives_sum + false_negatives_sum) > 0:
-                accuracy[i] = true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
-            else:
-                accuracy[i] = 0
-            if (true_positives_sum + false_negatives_sum) > 0:
-                false_positive_fraction[i] = false_positives_sum / (true_positives_sum + false_negatives_sum)
-            else:
-                false_positive_fraction[i] = 0
-            if (true_positives_sum + false_negatives_sum) > 0:
-                false_negative_fraction[i] = false_negatives_sum / (true_positives_sum + false_negatives_sum)
-            else:
-                false_negative_fraction[i] = 0
+        # accuracy = {}
+        # false_negative_fraction = {}
+        # false_positive_fraction = {}
+        # for i in time:
+        #     true_positives_sum = sum(true_positives[i])
+        #     false_positives_sum = sum(false_positives[i])
+        #     false_negatives_sum = sum(false_negatives[i])
+        #
+        #     # compute accuracy as true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
+        #     if (true_positives_sum + false_positives_sum + false_negatives_sum) > 0:
+        #         accuracy[i] = true_positives_sum / (true_positives_sum + false_positives_sum + false_negatives_sum)
+        #     else:
+        #         accuracy[i] = 0
+        #     if (true_positives_sum + false_negatives_sum) > 0:
+        #         false_positive_fraction[i] = false_positives_sum / (true_positives_sum + false_negatives_sum)
+        #     else:
+        #         false_positive_fraction[i] = 0
+        #     if (true_positives_sum + false_negatives_sum) > 0:
+        #         false_negative_fraction[i] = false_negatives_sum / (true_positives_sum + false_negatives_sum)
+        #     else:
+        #         false_negative_fraction[i] = 0
 
         # build a histogram of predresult[i]
 
@@ -332,8 +343,8 @@ def main3():
 
             # Define colors for each unique label
             unique_labels = list(set(predresult[i]))
-            colorints = np.array(predints[i]) - np.array(dssimints[i])
-            colors = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+            colorints = [1 if i==j else 0 for (i, j) in zip(classifyd, classifyp)]
+            colors = ['red' if x == 0 else 'green' if x == 1 else 'blue' for x in colorints]
 
             plt.clf()
             # get 80% of the total number of slices i
@@ -390,13 +401,13 @@ def main3():
 
             # Define colors for each unique label
             unique_labels_pred = list(set(predresult[i]))
-            colorints = np.array(predints[i]) - np.array(dssimints[i])
-            colors_pred = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+            colorints = [1 if i==j else 0 for (i, j) in zip(classifyd, classifyp)]
+            colors_pred = ['red' if x == 0 else 'green' if x == 1 else 'blue' for x in colorints]
 
             # Define colors for each unique label
             unique_labels_dssim = list(set(dssimresult[i]))
-            colorints = np.array(dssimints[i]) - np.array(dssimints[i])
-            colors_dssim = ['red' if x > 0 else 'green' if x < 0 else 'blue' for x in colorints]
+            colorints = [1 if i==j else 0 for (i, j) in zip(classifyd, classifyp)]
+            colors_dssim = ['red' if x == 0 else 'green' if x == 1 else 'blue' for x in colorints]
 
             df_pred = pd.DataFrame(
                 {'Compression Level': unique_elements_pred, 'Frequency': frequencies_pred, 'Dataset': f'{model} Preds'})
