@@ -581,6 +581,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     print(m)
                     print (cdir)
                     print (dir)
+                    print (type(dssim_mats))
+                    print (type(dssim_mats[m]))
+                    print (type(dssim_mats[m][cdir]))
+                    print (type(dssim_mats[m][cdir][dir]))
 
                     print (dssim_mats[m][cdir][dir].shape)
                     dssim_mats[m][cdir][dir] = dssim_mats[m][cdir][dir].flatten()
