@@ -7,16 +7,18 @@ import pickle
 from math import floor
 import matplotlib.pyplot as plt
 tf.keras.backend.clear_session()
+import cftime
 
 from utils import parse_command_line_arguments, read_parameters_from_json
 from data_processing import cut_spatial_dataset_into_windows, split_data_into_train_val_test
 from sklearn.preprocessing import quantile_transform
 import sklearn
 import datetime
+import pandas as pd
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 from classification_labels import classify
 from training import train_cnn
 
@@ -426,6 +428,8 @@ def create_classification_matrix(predicted_dssims, true_dssims, threshold = 0.99
 
     return classification_matrix
 
+def create_cftime_range(start_year, periods, calendar='noleap'):
+    return [cftime.DatetimeNoLeap(start_year + i, 1, 1) for i in range(periods)]
 
 def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride=1,
                                          only_data=False, modeltype="cnn", metric="dssim",
@@ -509,6 +513,34 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                           chunks={"time": 50})
         # print the length of the time dimension
         # print(len(dataset_col.time))
+
+        # Determine the maximum length of continuous data across all collections
+        # Determine the maximum length of continuous data across all collections
+        max_len = max(dataset_col.isel(collection=i).dropna(dim='time', how='all').dims['time'] for i in
+                      range(len(dataset_col.collection)))
+
+        # Create a new cftime range for the continuous time dimension
+        new_time_dim = create_cftime_range(1920, max_len, calendar='noleap')  # Adjust as needed
+
+        # Prepare an empty DataArray or Dataset with the correct dimensions, including lat and lon
+        realigned_data = xr.Dataset({
+            'TS': (('collection', 'time', 'lat', 'lon'), np.full(
+                (len(dataset_col.collection), max_len, len(dataset_col.lat), len(dataset_col.lon)), np.nan)),
+        }, coords={
+            'collection': dataset_col.collection,
+            'time': new_time_dim,
+            'lat': dataset_col.lat,
+            'lon': dataset_col.lon,
+        })
+
+        # Copy and realign the data for each collection element
+        for i in range(len(dataset_col.collection)):
+            element_data = dataset_col.isel(collection=i).dropna(dim='time', how='all')
+
+            # Ensure lat and lon coordinates are included without modification
+            # The realignment focuses on the 'time' dimension; 'lat' and 'lon' remain as in the original dataset
+            for t_idx, t_val in enumerate(element_data.time):
+                realigned_data['TS'][i, t_idx, :, :] = element_data['TS'].sel(time=t_val).values
 
         timeloc = int(time * 0.2)
 
