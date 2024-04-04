@@ -18,7 +18,7 @@ import pandas as pd
 # import layers
 # import random forest regressor
 from sklearn.ensemble import RandomForestRegressor
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 from classification_labels import classify
 from training import train_cnn
 
@@ -524,7 +524,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
         # Prepare an empty DataArray or Dataset with the correct dimensions, including lat and lon
         realigned_data = xr.Dataset({
-            'TS': (('collection', 'time', 'lat', 'lon'), np.full(
+            varname: (('collection', 'time', 'lat', 'lon'), np.full(
                 (len(dataset_col.collection), max_len, len(dataset_col.lat), len(dataset_col.lon)), np.nan)),
         }, coords={
             'collection': dataset_col.collection,
@@ -540,7 +540,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             # Ensure lat and lon coordinates are included without modification
             # The realignment focuses on the 'time' dimension; 'lat' and 'lon' remain as in the original dataset
             for t_idx, t_val in enumerate(element_data.time):
-                realigned_data['TS'][i, t_idx, :, :] = element_data['TS'].sel(time=t_val).values
+                realigned_data[varname][i, t_idx, :, :] = element_data[varname].sel(time=t_val).values
 
         timeloc = int(time * 0.2)
 
