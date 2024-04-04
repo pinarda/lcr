@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["FINALTEST2"]
+    newnames = ["FINALTEST3"]
     newvars = [["PRECT"]]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     newtestset = ["50_50_wholeslice"]
     jobids = [8]
     metrics = ["dssim"]
+    metric = [["dssim"]]
     transforms = [ "none"]
     cutdatasets = [
         False
