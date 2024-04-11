@@ -22,17 +22,77 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["FINALTEST3"]
-    newvars = [["PRECT"]]
+    newnames = ["FINALTEST4",
+                "FINALTEST5",
+                "FINALTEST6",
+                "FINALTEST7",
+                "FINALTEST8",
+                "FINALTEST9",
+                "FINALTEST10"]
+    newvars = [["PRECT"],
+               ["TS"],
+               ["Z050"],
+               ["LHFLX"],
+               ["ICEFRAC"],
+               ["FLUT"],
+               ["PSL"]]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-    newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
-    newtimes = [[20]]
-    newtestset = ["50_50_wholeslice"]
-    jobids = [8]
-    metrics = ["dssim"]
-    metric = [["dssim"]]
-    transforms = [ "none"]
+    newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
+    newtimes = [[200],
+                [200],
+                [200],
+                [200],
+                [200],
+                [200],
+                [200]]
+    newtestset = ["50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice"]
+    jobids = [8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14]
+    metrics = ["dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim"]
+    metric = [["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"]]
+    transforms = [ "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none"]
     cutdatasets = [
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
         False
     ]
 
@@ -45,6 +105,7 @@ if __name__ == '__main__':
         newconfig['CompDirs'] = newcomps[i]
         newconfig['Times'] = newtimes[i]
         newconfig['CutDataset'] = cutdatasets[i]
+        newconfig['Metric'] = metric[i]
         # write the new json file
         with open('run_casper_' + newnames[i] + '.json', 'w') as f:
             json.dump(newconfig, f)
