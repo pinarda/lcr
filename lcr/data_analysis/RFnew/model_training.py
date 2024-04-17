@@ -543,6 +543,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                 realigned_data[varname][i, t_idx, :, :] = element_data[varname].sel(time=t_val).values
 
         timeloc = int(time * 0.2)
+        # realigned_data = realigned_data.transpose('lat', 'lon', "time", "collection")
 
         ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, weighted=False)
         plt.savefig(f"{storageloc}_data_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
@@ -552,7 +553,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
         # extract the original and compressed dataarrays
 
-        dataset_orig = dataset_col.sel(collection=["orig" + dir for dir in subdirs]).to_array().squeeze()
+        dataset_orig = realigned_data.sel(collection=["orig" + dir for dir in subdirs]).to_array().squeeze()
         # pad the longitude dimension of the original dataset by 5 on each side (wrap around)
         dataset_orig = xr.concat([dataset_orig[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_orig, dataset_orig[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
         dssim_mats = {}
