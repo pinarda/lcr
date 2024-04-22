@@ -28,16 +28,19 @@ if __name__ == '__main__':
                 "FINALTEST7",
                 "FINALTEST8",
                 "FINALTEST9",
-                "FINALTEST10"]
+                "FINALTEST10",
+                "COOLPLOTS"]
     newvars = [["PRECT"],
                ["TS"],
                ["Z050"],
                ["LHFLX"],
                ["ICEFRAC"],
                ["FLUT"],
-               ["PSL"]]
+               ["PSL"],
+               ["TS"]]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
+                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
                 ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
                 ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
                 ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
@@ -50,8 +53,10 @@ if __name__ == '__main__':
                 [200],
                 [200],
                 [200],
+                [200],
                 [200]]
     newtestset = ["50_50_wholeslice",
+                  "50_50_wholeslice",
                   "50_50_wholeslice",
                   "50_50_wholeslice",
                   "50_50_wholeslice",
@@ -64,8 +69,10 @@ if __name__ == '__main__':
               11,
               12,
               13,
-              14]
+              14,
+              15]
     metrics = ["dssim",
+               "dssim",
                "dssim",
                "dssim",
                "dssim",
@@ -78,8 +85,10 @@ if __name__ == '__main__':
               ["dssim"],
               ["dssim"],
               ["dssim"],
+              ["dssim"],
               ["dssim"]]
     transforms = [ "none",
+                   "none",
                    "none",
                    "none",
                    "none",
@@ -93,7 +102,8 @@ if __name__ == '__main__':
         False,
         False,
         False,
-        False
+        False,
+        True
     ]
 
 

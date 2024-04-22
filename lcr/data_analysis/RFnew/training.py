@@ -483,11 +483,16 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         train_data[train_data == np.nan] = 0
         val_data[val_data == -np.inf] = 0
         val_data[val_data == np.inf] = 0
-        train_data[train_data == np.nan] = 0
+        train_data[np.isnan(train_data)] = 0
+        test_data[np.isnan(test_data)] = 0
+        val_data[np.isnan(val_data)] = 0
         model.fit(train_data, train_labels)
 
     val_predictions = model.predict(test_data)
-    predictions = np.argmax(val_predictions, axis=1)
+    if modeltype == "cnn":
+        predictions = np.argmax(val_predictions, axis=1)
+    else:
+        predictions = model.predict(test_data)
     label_predictions = label_encoder.inverse_transform(predictions)
     if modeltype == "rf":
         # save the feature importances as {storageloc}importances_{i}_{j.split('.')[0]}{jobid}{model}

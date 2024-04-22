@@ -451,7 +451,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     if featureoverride:
         feature=feature
     else:
-        feature=f
+        feature=feature
 
 
 
