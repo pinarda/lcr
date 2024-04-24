@@ -565,7 +565,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
             for cdir in cdirs:
                 average_dssims[cdir] = {}
 
-                dataset_zfp = dataset_col.sel(collection=[dir + "/" + cdir for dir in subdirs]).to_array().squeeze()
+                dataset_zfp = realigned_data.sel(collection=[dir + "/" + cdir for dir in subdirs]).to_array().squeeze()
                 # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
                 dataset_zfp = xr.concat([dataset_zfp[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
                 # dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
@@ -684,7 +684,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
     if labelsonly:
         dar = np.array(dataset_orig)[0:(time * len(subdirs))]
-        dark = dar.reshape(dar.shape[0] * dar.shape[1], LATS + 10, LONS + 10, order="F")
+        dark = dar.reshape(-1, *dar.shape[2:])
         new_dict = {}
         for key, sub_dict in average_dssims.items():
             # Flatten all arrays in the sub-dictionary and concatenate them

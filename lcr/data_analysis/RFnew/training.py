@@ -34,7 +34,8 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
      tuple: A tuple containing the training, validation, and testing data and labels.
     """
     # Calculate the number of windows based on the dataset's dimensions
-    num_windows = lats * lons # 182 * 288
+    # num_windows = lats * lons # 182 * 288
+    num_windows = 1
 
     total_data_points = num_windows * time * nvar
     # Calculate the indices corresponding to 60% and 75% of the data
@@ -46,8 +47,8 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
     # use 90% of the data for training, 9% for validation, and 1% for testing
     if testset == "random":
         train_data, test_data, train_labels, test_labels = train_test_split(dataset[0:(num_windows * time * nvar)],
-                                                                            label, test_size=0.1)
-        val_data, test_data, val_labels, test_labels = train_test_split(test_data, test_labels, test_size=0.1)
+                                                                            label, test_size=0.5)
+        val_data, test_data, val_labels, test_labels = train_test_split(test_data, test_labels, test_size=0.5)
     elif testset == "oneout":
         # train_data = dataset[0:(50596*time*nvar-1)]
         # train_labels = label[0:(50596*time*nvar-1)]
