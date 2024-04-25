@@ -12,7 +12,7 @@
     "Times": [20],
     "Navg": 1,
     "StorageLoc": "/glade/work/apinard/RF_store_classify/",
-    "Stride": 1,
+    "Stride": 3,
     "Cut_Dataset": 0,
     "Metric": ["dssim"]
 }
