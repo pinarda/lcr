@@ -22,14 +22,14 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["TODAYSPLOTS1",
-                "TODAYSPLOTS2",
-                "TODAYSPLOTS3",
-                "TODAYSPLOTS4",
-                "TODAYSPLOTS5",
-                "TODAYSPLOTS6",
-                "TODAYSPLOTS7",
-                "TODAYSPLOTS8"]
+    newnames = ["TODAYSPLOTS100",
+                "TODAYSPLOTS200",
+                "TODAYSPLOTS300",
+                "TODAYSPLOTS400",
+                "TODAYSPLOTS500",
+                "TODAYSPLOTS600",
+                "TODAYSPLOTS700",
+                "TODAYSPLOTS800"]
     newvars = [["PRECT"],
                ["TS"],
                ["Z050"],
