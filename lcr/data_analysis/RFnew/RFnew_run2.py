@@ -22,14 +22,23 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["TODAYSPLOTS100",
-                "TODAYSPLOTS200",
-                "TODAYSPLOTS300",
-                "TODAYSPLOTS400",
-                "TODAYSPLOTS500",
-                "TODAYSPLOTS600",
-                "TODAYSPLOTS700",
-                "TODAYSPLOTS800"]
+    newnames = ["TODAYSPLOTS111",
+                "TODAYSPLOTS211",
+                "TODAYSPLOTS311",
+                "TODAYSPLOTS411",
+                "TODAYSPLOTS511",
+                "TODAYSPLOTS611",
+                "TODAYSPLOTS711",
+                "TODAYSPLOTS811",
+                "TODAYSPLOTS111",
+                "TODAYSPLOTS211",
+                "TODAYSPLOTS311",
+                "TODAYSPLOTS411",
+                "TODAYSPLOTS511",
+                "TODAYSPLOTS611",
+                "TODAYSPLOTS711",
+                "TODAYSPLOTS811"
+                ]
     newvars = [["PRECT"],
                ["TS"],
                ["Z050"],
@@ -37,16 +46,34 @@ if __name__ == '__main__':
                ["ICEFRAC"],
                ["FLUT"],
                ["PSL"],
-               ["TS"]]
+               ["TS"],
+               ["PRECT"],
+               ["TS"],
+               ["Z050"],
+               ["LHFLX"],
+               ["ICEFRAC"],
+               ["FLUT"],
+               ["PSL"],
+               ["TS"]
+               ]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-    newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"],
-                ["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
+    newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18"],
+                ["zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"],
+                ["zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]
+                ]
     newtimes = [[200],
                 [200],
                 [200],
@@ -54,7 +81,16 @@ if __name__ == '__main__':
                 [200],
                 [200],
                 [200],
-                [200]]
+                [200],
+                [400],
+                [400],
+                [400],
+                [400],
+                [400],
+                [400],
+                [400],
+                [400]
+                ]
     newtestset = ["50_50_wholeslice",
                   "50_50_wholeslice",
                   "50_50_wholeslice",
@@ -62,8 +98,24 @@ if __name__ == '__main__':
                   "50_50_wholeslice",
                   "50_50_wholeslice",
                   "50_50_wholeslice",
-                  "50_50_wholeslice"]
-    jobids = [8,
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice",
+                  "50_50_wholeslice"
+                  ]
+    jobids = [1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
               9,
               10,
               11,
@@ -78,7 +130,16 @@ if __name__ == '__main__':
                "dssim",
                "dssim",
                "dssim",
-               "dssim"]
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim",
+               "dssim"
+               ]
     metric = [["dssim"],
               ["dssim"],
               ["dssim"],
@@ -86,7 +147,16 @@ if __name__ == '__main__':
               ["dssim"],
               ["dssim"],
               ["dssim"],
-              ["dssim"]]
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"],
+              ["dssim"]
+              ]
     transforms = [ "none",
                    "none",
                    "none",
@@ -94,8 +164,25 @@ if __name__ == '__main__':
                    "none",
                    "none",
                    "none",
-                   "none"]
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none",
+                   "none"
+                   ]
     cutdatasets = [
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+        True,
         False,
         False,
         False,
