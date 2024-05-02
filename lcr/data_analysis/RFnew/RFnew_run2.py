@@ -30,14 +30,14 @@ if __name__ == '__main__':
                 "TODAYSPLOTS611",
                 "TODAYSPLOTS711",
                 "TODAYSPLOTS811",
-                "TODAYSPLOTS111",
-                "TODAYSPLOTS211",
-                "TODAYSPLOTS311",
-                "TODAYSPLOTS411",
-                "TODAYSPLOTS511",
-                "TODAYSPLOTS611",
-                "TODAYSPLOTS711",
-                "TODAYSPLOTS811"
+                "TODAYSPLOTS911",
+                "TODAYSPLOTS1011",
+                "TODAYSPLOTS1111",
+                "TODAYSPLOTS1211",
+                "TODAYSPLOTS1311",
+                "TODAYSPLOTS1411",
+                "TODAYSPLOTS1511",
+                "TODAYSPLOTS1611"
                 ]
     newvars = [["PRECT"],
                ["TS"],
@@ -122,7 +122,8 @@ if __name__ == '__main__':
               12,
               13,
               14,
-              15]
+              15,
+              16]
     metrics = ["dssim",
                "dssim",
                "dssim",
