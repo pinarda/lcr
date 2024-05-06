@@ -32,7 +32,7 @@ foreach feature ($features)
   set newid = `echo $newid | sed 's/\..*//'`
   printf '%s,' ${newid}
   set ids = ( $ids $newid )
-endd
+end
 
 set features_csv = `echo $features | sed 's/ /,/g'`
 echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate mynpl2023a && cd ~/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m "${model}" -r dssim --testset TESTSET -l "${features_csv}" --onlydata False --runonlydata False --labelsonly True'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
