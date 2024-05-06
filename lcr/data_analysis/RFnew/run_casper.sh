@@ -17,6 +17,7 @@ cd ~/lcr2/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
 conda activate mynpl2023a
+set ids = ()
 
 rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/data/*
 rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/*
