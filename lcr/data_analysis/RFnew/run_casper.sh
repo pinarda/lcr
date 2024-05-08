@@ -23,7 +23,7 @@ rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/data/*
 rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/*
 rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/*.h5
 
-set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences" "fftratio")
+set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences")
 set model = "rf"
 
 foreach feature ($features)
