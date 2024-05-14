@@ -82,14 +82,14 @@ if __name__ == '__main__':
                 [200],
                 [200],
                 [200],
-                [400],
-                [400],
-                [400],
-                [400],
-                [400],
-                [400],
-                [400],
-                [400]
+                [200],
+                [200],
+                [200],
+                [200],
+                [200],
+                [200],
+                [200],
+                [200]
                 ]
     newtestset = ["50_50_wholeslice",
                   "50_50_wholeslice",
@@ -193,6 +193,24 @@ if __name__ == '__main__':
         False,
         True
     ]
+    models = [
+        "rf",
+        "rf",
+        "rf",
+        "rf",
+        "rf",
+        "rf",
+        "rf",
+        "rf",
+        "cnn",
+        "cnn",
+        "cnn",
+        "cnn",
+        "cnn",
+        "cnn",
+        "cnn",
+        "cnn"
+    ]
 
 
     # we need to write a new json file for each model configuration
@@ -224,6 +242,8 @@ if __name__ == '__main__':
         batch = re.sub('METRIC', metrics[i], batch)
         # replace the transform with the new transform
         batch = re.sub('TRANSFORM', transforms[i], batch)
+        # replace the model with the new model
+        batch = re.sub('MODEL', models[i], batch)
 
 
         with open('run_casper_' + newnames[i] + '.sh', 'w') as f:
