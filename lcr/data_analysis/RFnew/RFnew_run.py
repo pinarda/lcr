@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # get the list of times
     Times = config['Times']
 
-    newnames = ["test_same_ensemble"]
+    newnames = ["test_samo"]
     newvars = [["ICEFRAC"]]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
