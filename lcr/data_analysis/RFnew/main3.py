@@ -3,7 +3,7 @@ import numpy as np
 from utils import parse_command_line_arguments, read_parameters_from_json
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
 from sklearn.metrics import confusion_matrix, classification_report
@@ -421,7 +421,7 @@ def main3():
             sns.barplot(x='Compression Level', y='Frequency', hue='Dataset', data=df)
 
             # plt.xticks(bins[:-1], unique_labels, rotation=45)
-            plt.title(f"Predictions for # of time slices: {i}")
+            plt.title(f"Predictions for {vliststring}")
             plt.xlabel("Compression Level")
             plt.ylabel("Frequency")
             plt.xticks(rotation=45)
