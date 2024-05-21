@@ -26,7 +26,7 @@ if __name__ == '__main__':
     newvars = [["ICEFRAC"]]
     # newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
     newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
-    newtimes = [[100]]
+    newtimes = [[10]]
     newtestset = ["50_50_wholeslice"]
     jobids = [100]
     metrics = ["dssim"]
