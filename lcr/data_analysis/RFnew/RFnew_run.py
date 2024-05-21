@@ -35,6 +35,9 @@ if __name__ == '__main__':
     cutdatasets = [
         False
     ]
+    models = [
+        "cnn"
+    ]
 
 
     # we need to write a new json file for each model configuration
@@ -66,6 +69,8 @@ if __name__ == '__main__':
         batch = re.sub('METRIC', metrics[i], batch)
         # replace the transform with the new transform
         batch = re.sub('TRANSFORM', transforms[i], batch)
+        batch = re.sub('MODEL', models[i], batch)
+
 
 
         with open('run_casper_' + newnames[i] + '.sh', 'w') as f:
