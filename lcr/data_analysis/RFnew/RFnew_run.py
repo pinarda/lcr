@@ -36,7 +36,7 @@ if __name__ == '__main__':
         False
     ]
     models = [
-        "cnn"
+        "rf"
     ]
 
 
