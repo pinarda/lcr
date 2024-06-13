@@ -21,8 +21,8 @@ newvars = [
 
 # Define the times, models, metrics, transforms, etc.
 newcomps = [["zfp_p_10", "zfp_p_14", "zfp_p_18", "zfp_p_22"]]
-newtimes = [100, 300]
-# newtimes = [10]
+# newtimes = [100, 300]
+newtimes = [10]
 newtestset = ["50_50_wholeslice"]
 metrics = ["dssim"]
 metric = [["dssim"]]
