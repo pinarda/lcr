@@ -43,10 +43,11 @@ if ($model == "rf") then
 
   echo "Joblist for dependencies: $joblist"
   # manually set a timer for 5 minutes
-  sleep 10m
+  set joblist = `echo $joblist | sed 's/ /:/g'`
+
 
   set features_csv = `echo $features | sed 's/ /,/g'`
-  echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd ~/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m rf -r dssim --testset TESTSET -l "${features_csv}" --onlydata False --runonlydata False --labelsonly True'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+  echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd ~/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m rf -r dssim --testset TESTSET -l "${features_csv}" --onlydata False --runonlydata False --labelsonly True'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
 else
   set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd ~/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --onlydata True --runonlydata True --labelsonly True'" | qsub -A NTDD0005 -N data -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
   echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd ~/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --testset TESTSET --onlydata False --runonlydata False --labelsonly True'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
