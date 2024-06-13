@@ -18,7 +18,7 @@ LATS = 182
 LONS = 288
 WINDOWSIZE = 11
 
-def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11) -> tuple:
+def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11, encoder=None, storageloc=None, metric=None, modeltype=None, jobid=None) -> tuple:
     """
     Splits the dataset into training, validation, and testing sets based on the specified testset parameter.
 
@@ -226,6 +226,14 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
         elif not cut_windows:
             train_data = dataset[0:int(index_50pct/num_windows)]
             train_labels = label[0:int(index_50pct/num_windows)]
+            # use the encoder to transform the labels back to the original labels
+            original_labels = encoder.inverse_transform(train_labels)
+            # compute the number of labels in each class
+            unique, counts = np.unique(original_labels, return_counts=True)
+            # save the number of labels in each class as a text file
+            with open(f"{storageloc}train_labels_{metric}_{modeltype}_{jobid}.txt", "w") as f:
+                for i in range(len(unique)):
+                    f.write(f"{unique[i]}: {counts[i]}\n")
             val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
             val_labels = label[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
@@ -291,7 +299,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
 
     label_encoder = LabelEncoder()
     integer_encoded_labels = label_encoder.fit_transform(newlabels)
-
+    # let's go backwards to the original labels
     scores = []
     av_preds = []
     av_dssims = []
@@ -319,7 +327,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # convert newlabels to a numpy array
         # newlabels = np.array(newlabels)
         newlabels = np.array(integer_encoded_labels)
-        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows)
+        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows, encoder=label_encoder, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid)
 
     # check the echosave directory, open trial_results.csv
     # read the column mean_squared_error to find the row with the minimum value
@@ -373,8 +381,8 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         model.summary()
     elif modeltype == "rf":
         import ldcpy
-        model = sklearn.ensemble.RandomForestClassifier(n_estimators=100, max_depth=2, random_state=0)
-
+        # fit the model using some standard parameters
+        model = sklearn.ensemble.RandomForestClassifier(n_estimators=100, max_depth=10, random_state=0)
 
     # apply a quantile transformation to each of the lat/lon slices of the data
     # this will make the data more Gaussian
@@ -471,10 +479,13 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # make this the first of a 1x4 subplot
         # fit the model
     if modeltype == "cnn":
-        history = model.fit(train_data, train_labels, epochs=1, batch_size=batch_size, validation_data=(val_data, val_labels))
+        history = model.fit(train_data, train_labels, epochs=3, batch_size=batch_size, validation_data=(val_data, val_labels))
         score = model.evaluate(test_data, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
+        # let's save the training history
+        with open(f"{storageloc}history_{j}{time}{jobid}{modeltype}_classify", "wb") as f:
+            pickle.dump(history.history, f)
     elif modeltype == "rf":
         train_data[train_data == -np.inf] = 0
         train_data[train_data == np.inf] = 0

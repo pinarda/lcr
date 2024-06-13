@@ -510,7 +510,7 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                                           labels=labels,
                                           data_type="cam-fv",
                                           varnames=[varname],
-                                          chunks={"time": 50})
+                                          chunks={"time": 50}).load()
         # print the length of the time dimension
         # print(len(dataset_col.time))
 

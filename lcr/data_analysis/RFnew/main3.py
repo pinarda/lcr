@@ -217,14 +217,18 @@ def main3():
                 classifyd = dssims[i][steps:]
                 classifyp = preds[i]
 
-                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                # cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+                # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                report = classification_report(classifyd, classifyp, labels=cdirs)
             else:
                 print(dssims)
                 classifyd = dssims[i][steps:]
                 classifyp = preds[i]
-                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                # cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+                # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                report = classification_report(classifyd, classifyp, labels=cdirs)
 
             # save the confusion matrix
             # also create a classification report
@@ -233,6 +237,13 @@ def main3():
             date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
 
             np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.npy", cm)
+            # let's also save the confusion matrix as a text file
+            # but first, let's convert the numpy array to something that has labeled rows and columns
+            # however, we need
+            cm = pd.DataFrame(cm, index=cdirs, columns=cdirs)
+            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
+                f.write(str(cm))
+
             with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
                 f.write(report)
             # fig = plt.figure()
@@ -390,7 +401,7 @@ def main3():
             plt.clf()
 
         # do the same for dssimresult[i]
-        for i in time:
+        # for i in time:
             # replace and potential Nones in predresult[i] with "None"
             predresult[i] = ["Lossless" if x is None else x for x in classifyp]
             unique_elements_pred, frequencies_pred = np.unique(predresult[i], return_counts=True)
@@ -419,9 +430,10 @@ def main3():
 
             # Plot the histogram using plt.bar with individual colors
             sns.barplot(x='Compression Level', y='Frequency', hue='Dataset', data=df)
+            plt.ylim(0, nslices)
 
             # plt.xticks(bins[:-1], unique_labels, rotation=45)
-            plt.title(f"Predictions for {vliststring}")
+            plt.title(f"Predictions for {vliststring} with {nlevels} levels, \n windowed = {windowed}, total # of test slices: {nslices}")
             plt.xlabel("Compression Level")
             plt.ylabel("Frequency")
             plt.xticks(rotation=45)
@@ -464,8 +476,17 @@ def main3():
                                 f"{storageloc}predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
                                 allow_pickle=True)
                         else:
-                            dssims = np.load(f"{storageloc}labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
-                            preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                            if labelsonly:
+                                fname = j.split(".")[0]
+                                dssims = np.load(
+                                    f"{storageloc}labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                    allow_pickle=True)
+                                preds = np.load(
+                                    f"{storageloc}predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                    allow_pickle=True)
+                            else:
+                                dssims = np.load(f"{storageloc}labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
 
                         # flips dssims and preds upside down
                         # dssims = np.flipud(dssims)
@@ -473,103 +494,105 @@ def main3():
                         # preds = np.flipud(preds)
                         # pad the top and bottom of dssims and preds with 5 0s
 
-                        dssims = np.pad(dssims, (((floor(WINDOWSIZE / 2)), (floor(WINDOWSIZE / 2))), (0, 0), (0, 0)),
-                                        'constant', constant_values=0)
-                        # test_dssims = np.pad(test_dssims, (((floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2))), (0, 0)), 'constant', constant_values=0)
-                        preds = np.pad(preds, (((floor(WINDOWSIZE / 2)), (floor(WINDOWSIZE / 2))), (0, 0), (0, 0)), 'constant',
-                                       constant_values=0)
+                        if not labelsonly:
 
-                        ldcpy_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
-                        # ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
+                            dssims = np.pad(dssims, (((floor(WINDOWSIZE / 2)), (floor(WINDOWSIZE / 2))), (0, 0), (0, 0)),
+                                            'constant', constant_values=0)
+                            # test_dssims = np.pad(test_dssims, (((floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2))), (0, 0)), 'constant', constant_values=0)
+                            preds = np.pad(preds, (((floor(WINDOWSIZE / 2)), (floor(WINDOWSIZE / 2))), (0, 0), (0, 0)), 'constant',
+                                           constant_values=0)
 
-                        # save the plots
-                        # plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.png", bbox_inches='tight')
-                        # plt.clf()
+                            ldcpy_dssims = convert_np_to_dssims([dssims], ["Actual DSSIMs"])
+                            # ldcpy.plot(ldcpy_dssims, "dssims", calc="mean", sets=["Actual DSSIMs"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
 
-                        da_preds = convert_np_to_dssims([preds], ["Model Predictions"])
-                        # ldcpy.plot(da_preds, "dssims", calc="mean", sets=["Model Predictions"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
+                            # save the plots
+                            # plt.savefig(f"{storageloc}{cdir}_dssim_mat_{t}_{name}.png", bbox_inches='tight')
+                            # plt.clf()
 
-                        # save the plots
-                        # plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png", bbox_inches='tight')
+                            da_preds = convert_np_to_dssims([preds], ["Model Predictions"])
+                            # ldcpy.plot(da_preds, "dssims", calc="mean", sets=["Model Predictions"], weighted=False, start=0, end=0, short_title=True, cmax=1, cmin=0, vert_plot=True)
 
-                        errors = [dssims - preds]
-                        errors = convert_np_to_dssims(errors, ["Errors"])
-                        # ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True, vert_plot=True)
-                        # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
-                        # plt.clf()
+                            # save the plots
+                            # plt.savefig(f"{storageloc}{cdir}_preds_{t}_{name}.png", bbox_inches='tight')
 
-                        # FIX THESE NAMES
+                            errors = [dssims - preds]
+                            errors = convert_np_to_dssims(errors, ["Errors"])
+                            # ldcpy.plot(errors, "dssims", calc="mean", sets=["Errors"], weighted=False, start=0, end=0, short_title=True, vert_plot=True)
+                            # plt.savefig(f"{storageloc}{cdir}_error_{t}_{name}.png", bbox_inches='tight')
+                            # plt.clf()
 
-                        # allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIM ({fname} {cdir} {t} {model})", f"Model Predictions ({fname} {cdir} {t} {model})"])
-                        allthings = convert_np_to_dssims([dssims, preds], [
-                            f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
-                        ldcpy.plot(allthings, "dssims", calc="mean",
-                                   sets=[f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})",
-                                         "Model Predictions"],
-                                   weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                   color="plasma", cmin=0, cmax=1)
-                        plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr.png",
-                                    bbox_inches='tight')
-                        plt.clf()
+                            # FIX THESE NAMES
 
-                        allthings = convert_np_to_dssims([dssims - preds],
-                                                         [f"Error ({fname} {cdir} {t} {model})"])
-                        ldcpy.plot(allthings, "dssims", calc="mean", sets=[f"Error ({fname} {cdir} {t} {model})"],
-                                   weighted=False, start=0, end=0, short_title=True, vert_plot=True,
-                                   color="PiYG")
-                        plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_erroronly.png",
-                                    bbox_inches='tight')
-                        plt.clf()
-
-                        try:
-                            # add a plot of the original data, and the error between compressed and original.
+                            # allthings =convert_np_to_dssims([dssims, preds], [f"Actual DSSIM ({fname} {cdir} {t} {model})", f"Model Predictions ({fname} {cdir} {t} {model})"])
                             allthings = convert_np_to_dssims([dssims, preds], [
                                 f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
                             ldcpy.plot(allthings, "dssims", calc="mean",
                                        sets=[f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})",
                                              "Model Predictions"],
                                        weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                       color="plasma", cmin=0, cmax=100)
-                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr_nomax.png",
+                                       color="plasma", cmin=0, cmax=1)
+                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr.png",
                                         bbox_inches='tight')
                             plt.clf()
 
-                            allthings_zoom = convert_np_to_dssims(
-                                [np.log10(abs(1 - dssims) + 10 ** -10), np.log10(abs(1 - preds) + 10 ** -10)],
-                                [f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})",
-                                 "Model Predictions"])
-                            ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=[
-                                f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})",
-                                "Model Predictions"],
-                                       weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                       color="plasma", cmin=-10, cmax=0)
-                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
+                            allthings = convert_np_to_dssims([dssims - preds],
+                                                             [f"Error ({fname} {cdir} {t} {model})"])
+                            ldcpy.plot(allthings, "dssims", calc="mean", sets=[f"Error ({fname} {cdir} {t} {model})"],
+                                       weighted=False, start=0, end=0, short_title=True, vert_plot=True,
+                                       color="PiYG")
+                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_erroronly.png",
                                         bbox_inches='tight')
                             plt.clf()
 
-                            # add a plot with cmin as the min ddssim value
-                            allthings_min = convert_np_to_dssims([dssims, preds], [
-                                f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})",
-                                "Model Predictions"])
-                            ldcpy.plot(allthings_min, "dssims", calc="mean", sets=[
-                                f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})",
-                                "Model Predictions"],
-                                       weighted=False, start=0, end=0, short_title=False, vert_plot=True,
-                                       color="plasma", cmin=allthings_min.dssims[:, 6:-6, :, :].min().values.min(), cmax=1)
-                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_min_{t}_{name}_{date_string}_{model}_noerr.png",
-                                        bbox_inches='tight')
-                            plt.clf()
-                        except:
-                            pass
+                            try:
+                                # add a plot of the original data, and the error between compressed and original.
+                                allthings = convert_np_to_dssims([dssims, preds], [
+                                    f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})", "Model Predictions"])
+                                ldcpy.plot(allthings, "dssims", calc="mean",
+                                           sets=[f"Actual DSSIMs (windowed: {windowed}, {nslices} timesteps, {vliststring})",
+                                                 "Model Predictions"],
+                                           weighted=False, start=0, end=0, short_title=False, vert_plot=True,
+                                           color="plasma", cmin=0, cmax=100)
+                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr_nomax.png",
+                                            bbox_inches='tight')
+                                plt.clf()
 
-                        # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
-                        #            weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-                        # plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}.png", bbox_inches='tight')
-                        # plt.clf()
+                                allthings_zoom = convert_np_to_dssims(
+                                    [np.log10(abs(1 - dssims) + 10 ** -10), np.log10(abs(1 - preds) + 10 ** -10)],
+                                    [f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})",
+                                     "Model Predictions"])
+                                ldcpy.plot(allthings_zoom, "dssims", calc="mean", sets=[
+                                    f"Actual DSSIMs (log scale, windowed: {windowed}, {nslices} timesteps, {vliststring})",
+                                    "Model Predictions"],
+                                           weighted=False, start=0, end=0, short_title=False, vert_plot=True,
+                                           color="plasma", cmin=-10, cmax=0)
+                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
+                                            bbox_inches='tight')
+                                plt.clf()
 
-                        # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff", weighted=False, start=t, end=t, short_title=True, vert_plot=True)
-                        # plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}.png", bbox_inches='tight')
-                        # plt.clf()
+                                # add a plot with cmin as the min ddssim value
+                                allthings_min = convert_np_to_dssims([dssims, preds], [
+                                    f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})",
+                                    "Model Predictions"])
+                                ldcpy.plot(allthings_min, "dssims", calc="mean", sets=[
+                                    f"Actual DSSIMs (rescaled, windowed: {windowed}, {nslices} timesteps, {vliststring})",
+                                    "Model Predictions"],
+                                           weighted=False, start=0, end=0, short_title=False, vert_plot=True,
+                                           color="plasma", cmin=allthings_min.dssims[:, 6:-6, :, :].min().values.min(), cmax=1)
+                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_min_{t}_{name}_{date_string}_{model}_noerr.png",
+                                            bbox_inches='tight')
+                                plt.clf()
+                            except:
+                                pass
+
+                            # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig"],
+                            #            weighted=False, start=t, end=t, short_title=True, vert_plot=True)
+                            # plt.savefig(f"{storageloc}{cdir}_allthingsORIG_{t}_{name}.png", bbox_inches='tight')
+                            # plt.clf()
+
+                            # ldcpy.plot(dataset, "TS", calc="mean", sets=["labels_orig", "labels_comp"], calc_type="diff", weighted=False, start=t, end=t, short_title=True, vert_plot=True)
+                            # plt.savefig(f"{storageloc}{cdir}_allthingsERRORS_{t}_{name}.png", bbox_inches='tight')
+                            # plt.clf()
 
 if __name__ == "__main__":
     main3()
