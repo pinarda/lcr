@@ -499,6 +499,9 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         test_data[np.isnan(test_data)] = 0
         val_data[np.isnan(val_data)] = 0
         model.fit(train_data, train_labels)
+        # get the feature importances and save them
+        importances = model.feature_importances_
+        np.save(f"{storageloc}importances_{j}{time}{jobid}{modeltype}_classify.npy", importances)
 
     val_predictions = model.predict(test_data)
     if modeltype == "cnn":
