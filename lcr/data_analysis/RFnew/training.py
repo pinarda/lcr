@@ -18,7 +18,7 @@ LATS = 182
 LONS = 288
 WINDOWSIZE = 11
 
-def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11, encoder=None, storageloc=None, metric=None, modeltype=None, jobid=None) -> tuple:
+def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11, encoder=None, storageloc=None, metric=None, modeltype=None, jobid=None, j=None) -> tuple:
     """
     Splits the dataset into training, validation, and testing sets based on the specified testset parameter.
 
@@ -231,7 +231,7 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
             # compute the number of labels in each class
             unique, counts = np.unique(original_labels, return_counts=True)
             # save the number of labels in each class as a text file
-            with open(f"{storageloc}train_labels_{metric}_{modeltype}_{jobid}.txt", "w") as f:
+            with open(f"{storageloc}train_labels_{metric}_{j}{time}{modeltype}_{jobid}.txt", "w") as f:
                 for i in range(len(unique)):
                     f.write(f"{unique[i]}: {counts[i]}\n")
             val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
@@ -327,7 +327,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # convert newlabels to a numpy array
         # newlabels = np.array(newlabels)
         newlabels = np.array(integer_encoded_labels)
-        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows, encoder=label_encoder, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid)
+        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows, encoder=label_encoder, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j)
 
     # check the echosave directory, open trial_results.csv
     # read the column mean_squared_error to find the row with the minimum value
@@ -500,8 +500,6 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         val_data[np.isnan(val_data)] = 0
         model.fit(train_data, train_labels)
         # get the feature importances and save them
-        importances = model.feature_importances_
-        np.save(f"{storageloc}importances_{j}{time}{jobid}{modeltype}_classify.npy", importances)
 
     val_predictions = model.predict(test_data)
     if modeltype == "cnn":
@@ -513,6 +511,10 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # save the feature importances as {storageloc}importances_{i}_{j.split('.')[0]}{jobid}{model}
         importances = model.feature_importances_
         np.save(f"{storageloc}importances_{j}{time}{jobid}{modeltype}_classify.npy", importances)
+        # convert the importances to text and save them
+        with open(f"{storageloc}importances_{j}{time}{jobid}{modeltype}_classify.txt", "w") as f:
+            for i in range(len(importances)):
+                f.write(f"{i}: {importances[i]}\n")
 
     test_plot = None
 

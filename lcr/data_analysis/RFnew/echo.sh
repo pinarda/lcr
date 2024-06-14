@@ -59,7 +59,7 @@ foreach model ($models)
     #set joblist = `echo $joblist | sed 's/,*$//'`
 
     #printf '%s,' ${joblist}
-
+    set joblist = `printf '%s:' "$ids"`
     # look through the following string and replace MODEL with the model name, and features with the features
 #    set str = 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && module load conda && conda activate my-npl-ml && python main.py -j RF_TEMPLATE.json -m "${model}" --testset TESTSET -l ${features}'
 #    set str = `echo $str | sed "s/MODEL/${model}/"`
@@ -67,7 +67,7 @@ foreach model ($models)
 #    printf '%s\n' ${str}
     set features_csv = `echo $features | sed 's/ /,/g'`
 
-    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main2.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM -l "${features_csv}"'" | qsub -W depend=afterok:${newid} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+    echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-ml && python main2.py -j RF_TEMPLATE.json -d JOBID -m "${model}" -r METRIC --testset TESTSET -x TRANSFORM -l "${features_csv}"'" | qsub -W depend=afterok:${joblist} -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
   endif
 #  if ($model == "cnn") then
 #      conda activate my-npl-ml

@@ -359,7 +359,7 @@ def main3():
 
             plt.clf()
             # get 80% of the total number of slices i
-            nslices = int(i * 0.8)
+            nslices = int(i * 0.5)
 
             # Plot the histogram using plt.bar with individual colors
             # set the max height of the histogram to be 80% of the total number of slices
