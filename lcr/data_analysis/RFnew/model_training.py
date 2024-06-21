@@ -545,11 +545,12 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         timeloc = int(time * 0.2)
         # realigned_data = realigned_data.transpose('lat', 'lon', "time", "collection")
 
-        ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, weighted=False)
-        plt.savefig(f"{storageloc}_data_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
+        if not labelsonly:
+            ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, weighted=False)
+            plt.savefig(f"{storageloc}_data_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
 
-        ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, calc_type="diff", weighted=False)
-        plt.savefig(f"{storageloc}_data_diff_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
+            ldcpy.plot(dataset_col, varname, "mean", labels, start=timeloc, end=timeloc, calc_type="diff", weighted=False)
+            plt.savefig(f"{storageloc}_data_diff_{time}_{name}_{modeltype}_{varname}.png", bbox_inches='tight')
 
         # extract the original and compressed dataarrays
 

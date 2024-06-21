@@ -217,18 +217,21 @@ def main3():
                 classifyd = dssims[i][steps:]
                 classifyp = preds[i]
 
-                # cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                # can we add x and y labels to the confusion matrix? row is true label, column is predicted label
+                # also compute percentages of each row and include them in a separate matrix
+
+                # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
                 # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
                 report = classification_report(classifyd, classifyp, labels=cdirs)
             else:
                 print(dssims)
                 classifyd = dssims[i][steps:]
                 classifyp = preds[i]
-                # cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
-                # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                report = classification_report(classifyd, classifyp, labels=cdirs)
+                cm = confusion_matrix(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+                report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+                # report = classification_report(classifyd, classifyp, labels=cdirs)
 
             # save the confusion matrix
             # also create a classification report
