@@ -82,7 +82,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
     av_preds = []
     av_dssims = []
     for comp in dssim.keys():
-        model_path = f"model_{metric}{j}{comp}{time}{modeltype}{jobid}.h5"
+        model_path = f"{storageloc}model_{metric}{j}{comp}{time}{modeltype}{jobid}.h5"
         if os.path.exists(model_path):
             model = tf.keras.models.load_model(model_path)
             with open(f"{storageloc}av_preds_{metric}_{j}{comp}{time}{modeltype}{jobid}", "rb") as f:
@@ -352,7 +352,7 @@ def train_cnn_for_dssim_regression(dataset: xr.Dataset, dssim: np.ndarray, time,
             # save the model
             try:
                 if modeltype == "cnn":
-                    model.save(f"model_{metric}{j}{comp}{time}{modeltype}{jobid}.h5")
+                    model.save(f"{storageloc}model_{metric}{j}{comp}{time}{modeltype}{jobid}.h5")
                     plt.plot(history.history['accuracy'])
                     plt.plot(history.history['val_accuracy'])
                     plt.title('model accuracy')

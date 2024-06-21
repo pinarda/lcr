@@ -592,7 +592,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # save the model
     try:
         if modeltype == "cnn":
-            model.save(f"model_{metric}{j}{time}{modeltype}{jobid}_classify.h5")
+            model.save(f"{storageloc}model_{metric}{j}{time}{modeltype}{jobid}_classify.h5")
             plt.plot(history.history['accuracy'])
             plt.plot(history.history['val_accuracy'])
             plt.title('model accuracy')
