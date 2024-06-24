@@ -21,6 +21,7 @@ def read_parameters_from_json(metajson):
     stride=1
     metric = "dssim"
     cutdataset = True
+    subdirs = []
 
     print("Reading jsonfile", metajson, " ...")
     if not os.path.exists(metajson):

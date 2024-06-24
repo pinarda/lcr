@@ -14,6 +14,7 @@
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd ~/lcr2/lcr/lcr/data_analysis/RFnew
+cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew
 rm -f echosave/*
 git pull
 conda activate my-npl-2023a
