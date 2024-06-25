@@ -1,0 +1,18 @@
+{
+    "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
+    "SaveDir": "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/",
+    "VarList":  ["TS"],
+    "FilenamePre":["", "t10.b.e11.BRCP85C5CNBDRD.f09_g16.031.cam.h1."],
+    "FilenamePost": [ ".100days.nc", ".20060101-20801231.nc"],
+    "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/orig/",
+    "CompPath":"/Users/alex/git/ldcpy/data/cam-fv/",
+    "SubDirs": ["ens1", "ens2"],
+    "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
+    "OptLdcpyDevPath": "/Users/alex/git/ldcpy",
+    "Times": [5],
+    "Navg": 1,
+    "StorageLoc": "./data/",
+    "Stride": 2,
+    "CutDataset": 0,
+    "Metric": ["dssim", "pcc", "spre"]
+}
