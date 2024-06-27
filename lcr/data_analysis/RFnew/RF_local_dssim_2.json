@@ -7,7 +7,7 @@
     "OrigPath": "/glade/campaign/cisl/asap/abaker/cesm_daily_comp/orig/",
     "CompPath": "/glade/campaign/cisl/asap/abaker/cesm_daily_comp/",
     "SubDirs": ["lens1_ens25_1920", "lens1_ens25_2006"],
-    "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
+    "CompDirs": ["zfp_p_10", "zfp_p_12", "zfp_p_14"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy",
     "Times": [5],
     "Navg": 1,
