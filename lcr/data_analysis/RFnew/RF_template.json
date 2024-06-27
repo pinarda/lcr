@@ -1,6 +1,6 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
-    "SaveDir": "/glade/work/apinard/RF_store_classify/",
+    "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
     "VarList":  ["PSL", "TREFHTMX", "TREFHT", "TREFHTMN", "TS", "U850", "V850"],
     "FilenamePre": ["b.e11.B20TRC5CNBDRD.f09_g16.025.cam.h1.", "b.e11.BRCP85C5CNBDRD.f09_g16.025.cam.h1."],
     "FilenamePost": [".19200101-20051231.nc", ".20060101-20801231.nc"],
@@ -11,7 +11,7 @@
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [100],
     "Navg": 1,
-    "StorageLoc": "/glade/work/apinard/RF_store_classify/",
+    "StorageLoc": "/glade/derecho/scratch/apinard/RF_store_classify/",
     "Stride": 10,
     "Cut_Dataset": 0,
     "Metric": ["dssim"]
