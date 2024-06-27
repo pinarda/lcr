@@ -3,7 +3,7 @@ import numpy as np
 from utils import parse_command_line_arguments, read_parameters_from_json
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-# os.environ["HDF5_PLUGIN_PATH"]
+os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
 from sklearn.metrics import confusion_matrix, classification_report
@@ -240,6 +240,7 @@ def main3():
             date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
 
             np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.npy", cm)
+
             # let's also save the confusion matrix as a text file
             # but first, let's convert the numpy array to something that has labeled rows and columns
             # however, we need
