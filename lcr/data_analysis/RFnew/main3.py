@@ -151,8 +151,8 @@ def main3():
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
 
-            steps = int((i * len(subdirs)) * 0.75)
-            # steps = int((i*len(subdirs)) * 0.2)
+            # steps = int((i * len(subdirs)) * 0.1)
+            steps = int((i*len(subdirs)) * 0.2)
 
             # errs = preds - dssims[:,5:-5,steps[0]:]
             # # now if the value is greater than 0, set it to 1, otherwise set it to 0
@@ -171,7 +171,7 @@ def main3():
         #             # first, strip the top and bottom 5 rows from the dssims
         #
         #             steps = int((i*len(subdirs)) * 0.75)
-        #             # steps = int((i*len(subdirs)) * 0.2)
+                    # steps = int((i*len(subdirs)) * 0.2)
         #
         #             # errs = preds - dssims[:,5:-5,steps[0]:]
         #             # # now if the value is greater than 0, set it to 1, otherwise set it to 0
@@ -208,7 +208,8 @@ def main3():
         dssimresult = {}
         for i in time:
 
-            steps = int((i * len(subdirs)) * 0.75)
+            # steps = int((i * len(subdirs)) * 0.75)
+            steps = int((i * len(subdirs)) * 0.2)
             if not labelsonly:
                 # predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
                 # dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
@@ -244,7 +245,11 @@ def main3():
             # let's also save the confusion matrix as a text file
             # but first, let's convert the numpy array to something that has labeled rows and columns
             # however, we need
-            cm = pd.DataFrame(cm, index=cdirs, columns=cdirs)
+            # turn set(np.append(classifyp, classifyd)) into a list
+            # cm = pd.DataFrame(cm, index=set(np.append(classifyp, classifyd)), columns=set(np.append(classifyp, classifyd)))
+            ind = list(set(np.append(classifyp, classifyd)))
+            cm = pd.DataFrame(cm, index=ind, columns=ind)
+
             with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
                 f.write(str(cm))
 
