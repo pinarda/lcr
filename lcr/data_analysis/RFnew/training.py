@@ -479,7 +479,7 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # make this the first of a 1x4 subplot
         # fit the model
     if modeltype == "cnn":
-        history = model.fit(train_data, train_labels, epochs=3, batch_size=batch_size, validation_data=(val_data, val_labels))
+        history = model.fit(train_data, train_labels, epochs=4, batch_size=batch_size, validation_data=(val_data, val_labels))
         score = model.evaluate(test_data, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
