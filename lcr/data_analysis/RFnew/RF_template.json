@@ -12,7 +12,7 @@
     "Times": [100],
     "Navg": 1,
     "StorageLoc": "/glade/derecho/scratch/apinard/RF_store_classify/",
-    "Stride": 10,
+    "Stride": 1,
     "Cut_Dataset": 1,
     "Metric": ["dssim"]
 }
