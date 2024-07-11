@@ -15,8 +15,7 @@ import itertools
 #     ["TS", "PRECT"]  # Example of a combination of two variables
 # ]
 newvars = [
-    ["dst_a1_SRF"], ["dst_a3_SRF"], ["pom_a1_SRF"], ["so4_a1_SRF"],
-    ["so4_a2_SRF"], ["so4_a3_SRF"], ["soa_a1_SRF"], ["soa_a2_SRF"],
+    ["TS"]
 ]
 
 # newvars = [
@@ -25,7 +24,7 @@ newvars = [
 
 # Define the times, models, metrics, transforms, etc.
 newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-newtimes = [1000, 2500]
+newtimes = [1000]
 # newtimes = [10]
 newtestset = ["10_90_wholeslice"]
 metrics = ["dssim"]
