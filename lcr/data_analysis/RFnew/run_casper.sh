@@ -8,7 +8,7 @@
 ### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
 ### Route the job to the casper queue
-#PBS -q casper
+#PBS -q regular
 ### Join output and error streams into single file
 #PBS -j oe
 
