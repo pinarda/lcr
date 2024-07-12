@@ -80,4 +80,4 @@ for idx, (var, time, model, comp, testset, metric_single, metric_list, transform
         f.write(batch)
 
     # Submit the batch file to the queue using qsub
-    os.system(f'qsub -q regular -v PLP="{json_filename}" {batch_filename}')
+    os.system(f'qsub -v PLP="{json_filename}" {batch_filename}')
