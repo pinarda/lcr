@@ -276,7 +276,7 @@ def main_plots():
             # Add labels, title, and legend
             ax.set_xlabel('True Labels')
             ax.set_ylabel('Count')
-            ax.set_title('Counts of Correct and Incorrect Predictions by True Label')
+            ax.set_title(f'Counts of Correct and Incorrect Predictions by True Label for {", ".join(vlist)}')
             ax.set_xticks(x)
             ax.set_xticklabels(unique_labels, rotation=45)
             ax.legend()
@@ -303,7 +303,7 @@ def main_plots():
 
 # and the big chart
 
-            pattern = f"{storageloc}result_table_*_*.csv"
+            pattern = f"{storageloc}result_table_['dssim']_2500_*.csv"
 
             # Initialize an empty list to store the results
             results = []
@@ -489,7 +489,7 @@ def main_plots():
 
             plt.clf()
             # get 80% of the total number of slices i
-            nslices = int(i)
+            nslices = int(i) * 2
 
             # Plot the histogram using plt.bar with individual colors
             # set the max height of the histogram to be 80% of the total number of slices
