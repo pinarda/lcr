@@ -3,7 +3,7 @@ import numpy as np
 from utils import parse_command_line_arguments, read_parameters_from_json
 from model_training import build_and_evaluate_models_for_time_slices
 import os
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 import datetime
 from math import floor
 from sklearn.metrics import confusion_matrix, classification_report
@@ -15,8 +15,9 @@ import matplotlib
 import csv
 import seaborn as sns
 import pandas as pd
+import glob
 from collections import Counter
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 
 def find_first_true_cdir(truepass_dict, cdirs, i):
     first_true_cdirs = [None] * len(truepass_dict[cdirs[0]][i]['truepass']) # assuming 32 elements in the truepass array
@@ -82,7 +83,7 @@ def convert_np_to_dssims(np_arrays, titles):
     # plt.show()
 
     return ldcpy_dssims
-def main3():
+def main_plots():
 
     WINDOWSIZE = 12
 
@@ -237,8 +238,126 @@ def main3():
             # save the confusion matrix
             # also create a classification report
 
+
             date = datetime.datetime.now()
             date_string = date.strftime("%Y-%m-%d-%H-%M-%S")
+
+            # a stacked bar chart
+
+
+
+
+
+
+
+            unique_labels = np.unique(classifyd)
+            correct_counts = []
+            incorrect_counts = []
+
+            for label in unique_labels:
+                correct_count = np.sum((classifyd == label) & (classifyp == label))
+                incorrect_count = np.sum((classifyd == label) & (classifyp != label))
+                correct_counts.append(correct_count)
+                incorrect_counts.append(incorrect_count)
+
+            # Create a stacked bar chart
+            x = np.arange(len(unique_labels))  # label locations
+            width = 0.35  # width of the bars
+
+            fig, ax = plt.subplots(figsize=(14, 8))
+
+            # Bars for correctly identified labels
+            bars_correct = ax.bar(x, correct_counts, width, label='Correct', color='y')
+
+            # Bars for incorrectly identified labels
+            bars_incorrect = ax.bar(x, incorrect_counts, width, bottom=correct_counts, label='Incorrect', color='y',
+                                    hatch='//')
+
+            # Add labels, title, and legend
+            ax.set_xlabel('True Labels')
+            ax.set_ylabel('Count')
+            ax.set_title('Counts of Correct and Incorrect Predictions by True Label')
+            ax.set_xticks(x)
+            ax.set_xticklabels(unique_labels, rotation=45)
+            ax.legend()
+
+            # Add counts on top of the bars
+            for rect in bars_correct + bars_incorrect:
+                height = rect.get_height()
+                ax.annotate('{}'.format(height),
+                            xy=(rect.get_x() + rect.get_width() / 2, height),
+                            xytext=(0, 3),  # 3 points vertical offset
+                            textcoords="offset points",
+                            ha='center', va='bottom')
+
+            # Adjust layout to make sure everything fits
+            plt.tight_layout()
+
+            # Save the figure
+            plt.savefig(f"{storageloc}stacked_bar_chart_{date_string}.png", bbox_inches='tight')
+
+
+
+
+
+
+# and the big chart
+
+            pattern = f"{storageloc}result_table_*_*.csv"
+
+            # Initialize an empty list to store the results
+            results = []
+
+            # Loop through all files matching the pattern
+            for filepath in glob.glob(pattern):
+                # Read the CSV file
+                df = pd.read_csv(filepath)
+
+                # Process each row in the file
+                for index, row in df.iterrows():
+                    vname = row['vnames']
+                    algorithms = row['algorithms'].split(', ')
+
+                    # Create a dictionary to store counts of each label
+                    counts = {}
+                    for algorithm in algorithms:
+                        if algorithm in counts:
+                            counts[algorithm] += 1
+                        else:
+                            counts[algorithm] = 1
+
+                    # Create a dictionary for the row
+                    result_row = {'vnames': vname}
+                    result_row.update(counts)
+
+                    # Append the row to the results list
+                    results.append(result_row)
+
+            # Convert the results list to a DataFrame
+            results_df = pd.DataFrame(results)
+
+            # Fill NaN values with 0
+            results_df = results_df.fillna(0)
+
+            # Define the desired column order
+            column_order = ['vnames'] + [f'zfp_p_{i}' for i in range(10, 25, 2)] + ['Lossless']
+
+            # Reindex the DataFrame to match the desired column order
+            results_df = results_df.reindex(columns=column_order, fill_value=0)
+
+            # Save the DataFrame to a CSV file
+            output_file = f"{storageloc}summary_counts_{date_string}.csv"
+            results_df.to_csv(output_file, index=False)
+
+            print(f"Summary counts saved to {output_file}")
+
+
+
+
+
+
+
+
 
             np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.npy", cm)
 
@@ -266,6 +385,8 @@ def main3():
         # Check if the file exists
         file_name = f"{storageloc}result_table_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.csv"
         file_exists = os.path.isfile(file_name)
+
+
 
         # Open the file in append mode, create if it doesn't exist
         with open(file_name, mode='a', newline='', encoding='utf-8') as file:
@@ -368,7 +489,7 @@ def main3():
 
             plt.clf()
             # get 80% of the total number of slices i
-            nslices = int(i * 0.8)
+            nslices = int(i)
 
             # Plot the histogram using plt.bar with individual colors
             # set the max height of the histogram to be 80% of the total number of slices
@@ -605,4 +726,4 @@ def main3():
                             # plt.clf()
 
 if __name__ == "__main__":
-    main3()
+    main_plots()
