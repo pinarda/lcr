@@ -368,7 +368,7 @@ def main3():
 
             plt.clf()
             # get 80% of the total number of slices i
-            nslices = int(i * 0.5)
+            nslices = int(i * 0.8)
 
             # Plot the histogram using plt.bar with individual colors
             # set the max height of the histogram to be 80% of the total number of slices
@@ -436,7 +436,7 @@ def main3():
 
             df = pd.concat([df_pred, df_dssim])
 
-
+            plt.figure(figsize=(14, 8))
             # Plot the histogram using plt.bar with individual colors
             sns.barplot(x='Compression Level', y='Frequency', hue='Dataset', data=df)
             plt.ylim(0, nslices)
@@ -446,6 +446,7 @@ def main3():
             plt.xlabel("Compression Level")
             plt.ylabel("Frequency")
             plt.xticks(rotation=45)
+            plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
             plt.tight_layout()
             plt.savefig(f"{storageloc}double_histogram_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
