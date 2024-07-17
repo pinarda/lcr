@@ -14,22 +14,22 @@ newvars = [
     ["V200"], ["V500"], ["V850"], ["VBOT"], ["WSPDSRFAV"], ["Z050"], ["Z500"],
     ["TS", "PRECT"]  # Example of a combination of two variables
 ]
-# newvars = [
+# newvars = [d
 #     ["dst_a1_SRF"], ["dst_a3_SRF"], ["pom_a1_SRF"], ["so4_a1_SRF"],
 #     ["so4_a2_SRF"], ["so4_a3_SRF"], ["soa_a1_SRF"], ["soa_a2_SRF"],
 # ]
 
-# newvars = [
-#     ["TS"]
-# ]
+newvars = [
+    ["TS"]
+]
 
 # Define the times, models, metrics, transforms, etc.
 newcomps = [["zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
 newtimes = [1000, 2500]
 # newtimes = [10]
 newtestset = ["10_90_wholeslice"]
-metrics = ["dssim"]
-metric = [["dssim"]]
+metrics = ["dssim,pcc,spre"]
+metric = [["dssim", "pcc", "spre"]]
 transforms = ["none"]
 cutdatasets = [False]
 models = ["cnn"]
