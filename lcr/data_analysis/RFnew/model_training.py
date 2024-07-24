@@ -22,6 +22,8 @@ from sklearn.ensemble import RandomForestRegressor
 os.environ["HDF5_PLUGIN_PATH"]
 from classification_labels import classify
 from training import train_cnn
+import dask
+dask.config.set(**{'array.slicing.split_large_chunks': True})
 
 LATS = 182
 LONS = 288

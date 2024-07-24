@@ -14,6 +14,9 @@ from classification_labels import classify
 os.environ["HDF5_PLUGIN_PATH"]
 #
 
+import dask
+dask.config.set(**{'array.slicing.split_large_chunks': True})
+
 LATS = 182
 LONS = 288
 WINDOWSIZE = 11

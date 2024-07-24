@@ -22,6 +22,9 @@ import xarray as xr
 import os
 from utils import read_parameters_from_json
 
+import dask
+dask.config.set(**{'array.slicing.split_large_chunks': True})
+
 
 
 def extract_compression_level(filename):
