@@ -8,6 +8,7 @@ from math import floor
 import matplotlib.pyplot as plt
 tf.keras.backend.clear_session()
 import cftime
+import time as ttime
 
 from utils import parse_command_line_arguments, read_parameters_from_json
 from data_processing import cut_spatial_dataset_into_windows, split_data_into_train_val_test
