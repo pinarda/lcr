@@ -76,9 +76,41 @@ def load_and_label_data(metric_info, storageloc, ds=None):
     return final_labels_dict
 
 
+# def compare_across_metrics(final_labels_dict):
+#     metrics = list(final_labels_dict.keys())
+#     # Use the first metric as the base for comparison
+#     base_metric_labels = final_labels_dict[metrics[0]]
+#
+#     # Initialize the final comparison array with "None" labels
+#     final_comparison_labels = xr.full_like(base_metric_labels, "None", dtype="object")
+#
+#     # Iterate through all points and compare labels across metrics
+#     for metric in metrics:
+#         current_metric_labels = final_labels_dict[metric]
+#         final_comparison_labels = xr.where(
+#             (final_comparison_labels == "None") & (current_metric_labels != "None"),
+#             current_metric_labels,
+#             final_comparison_labels
+#         )
+#         final_comparison_labels = xr.where(
+#             (base_metric_labels == current_metric_labels) & (current_metric_labels != "None"),
+#             current_metric_labels,
+#             final_comparison_labels
+#         )
+#
+#     return final_comparison_labels
+
+
 def compare_across_metrics(final_labels_dict):
+    compression_levels = [
+        "zfp_1e-3", "zfp_1e-1", "zfp_1.0",
+        "zfp_p_24", "zfp_p_22", "zfp_p_20", "zfp_p_18", "zfp_p_16", "zfp_p_14", "zfp_p_12", "zfp_p_10", "zfp_p_8",
+        "zfp_p_6"  # Add more as needed
+    ]
+    # Create a ranking dictionary for the compression levels
+    level_rank = {level: rank for rank, level in enumerate(compression_levels)}
+
     metrics = list(final_labels_dict.keys())
-    # Use the first metric as the base for comparison
     base_metric_labels = final_labels_dict[metrics[0]]
 
     # Initialize the final comparison array with "None" labels
@@ -87,16 +119,17 @@ def compare_across_metrics(final_labels_dict):
     # Iterate through all points and compare labels across metrics
     for metric in metrics:
         current_metric_labels = final_labels_dict[metric]
-        final_comparison_labels = xr.where(
-            (final_comparison_labels == "None") & (current_metric_labels != "None"),
-            current_metric_labels,
-            final_comparison_labels
-        )
-        final_comparison_labels = xr.where(
-            (base_metric_labels == current_metric_labels) & (current_metric_labels != "None"),
-            current_metric_labels,
-            final_comparison_labels
-        )
+        for idx in range(current_metric_labels.size):
+            current_label = current_metric_labels.values[idx]
+            final_label = final_comparison_labels.values[idx]
+
+            # If the final label is "None" and current label is not, set the current label
+            if final_label == "None" and current_label != "None":
+                final_comparison_labels.values[idx] = current_label
+            # If both labels are not "None", choose the most conservative one
+            elif final_label != "None" and current_label != "None":
+                if level_rank[current_label] < level_rank[final_label]:
+                    final_comparison_labels.values[idx] = current_label
 
     return final_comparison_labels
 

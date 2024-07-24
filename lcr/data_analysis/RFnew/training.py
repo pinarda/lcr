@@ -294,11 +294,14 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
 
     newlabels = classify(f"{j}.json", metric, labels)
 
+    # get the label keys
+    label_keys = list(labels.keys())
 
     #### SECTIONS TO REVIEW ####
 
     label_encoder = LabelEncoder()
     integer_encoded_labels = label_encoder.fit_transform(newlabels)
+
     # let's go backwards to the original labels
     scores = []
     av_preds = []
@@ -389,19 +392,31 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # first flatten the data
     savelats = train_data.shape[1]
     savelons = train_data.shape[2]
-    train_data = train_data.reshape(train_data.shape[0], -1)
-    val_data = val_data.reshape(val_data.shape[0], -1)
-    test_data_OLD = test_data.reshape(test_data.shape[0], -1)
+    # Reshape the data to 2D, treating each spatial point as a separate sample
+    train_data_reshaped = train_data.reshape(-1, train_data.shape[-1])
+    val_data_reshaped = val_data.reshape(-1, val_data.shape[-1])
+    test_data_reshaped = test_data.reshape(-1, test_data.shape[-1])
+    test_data_OLD = test_data.reshape(-1, test_data.shape[-1])
 
+    # Apply the quantile transform
     if transform == "quantile":
-        train_data = quantile_transform(train_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-        val_data = quantile_transform(val_data, output_distribution='uniform', copy=True, n_quantiles=10000)
-        test_data = quantile_transform(test_data_OLD, output_distribution='uniform', copy=True, n_quantiles=10000)
-    # then put the data back into the original shape
-    train_data = train_data.reshape(train_data.shape[0], savelats, savelons)
-    val_data = val_data.reshape(val_data.shape[0], savelats, savelons)
-    test_data = test_data.reshape(test_data.shape[0], savelats, savelons)
-    test_data_OLD = test_data_OLD.reshape(test_data_OLD.shape[0], savelats, savelons)
+        train_data_transformed = quantile_transform(train_data_reshaped, output_distribution='uniform', copy=True,
+                                                    n_quantiles=1000)
+        val_data_transformed = quantile_transform(val_data_reshaped, output_distribution='uniform', copy=True,
+                                                  n_quantiles=1000)
+        test_data_transformed = quantile_transform(test_data_reshaped, output_distribution='uniform', copy=True,
+                                                   n_quantiles=1000)
+    else:
+        train_data_transformed = train_data_reshaped
+        val_data_transformed = val_data_reshaped
+        test_data_transformed = test_data_reshaped
+
+    # Reshape the data back to its original 3D shape
+    train_data = train_data_transformed.reshape(-1, savelats, savelons)
+    val_data = val_data_transformed.reshape(-1, savelats, savelons)
+    test_data = test_data_transformed.reshape(-1, savelats, savelons)
+
+    test_data_OLD = test_data_OLD.reshape(-1, savelats, savelons)
 
 
     if modeltype == "rf":
@@ -442,23 +457,23 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
             exit(0)
 
         for type in ["train", "test"]:
-            list = None
+            flist = None
             for f in featurelist:
-                if list is None and f != "magnitude_range":
-                    list = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
-                elif list is None and f == "magnitude_range":
-                    list = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
-                    list = list.reshape(1, list.shape[0])
+                if flist is None and f != "magnitude_range":
+                    flist = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
+                elif flist is None and f == "magnitude_range":
+                    flist = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
+                    flist = flist.reshape(1, flist.shape[0])
                 elif f == "magnitude_range":
                     feat = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
-                    list = np.concatenate((list, feat.reshape(1, feat.shape[0])), axis=0)
+                    flist = np.concatenate((flist, feat.reshape(1, feat.shape[0])), axis=0)
                 else:
                     feat = np.load(f"{storageloc}{f}_{metric}_{type}{time}{jobid}_classify.npy")
-                    list = np.concatenate((list, feat), axis=0)
+                    flist = np.concatenate((flist, feat), axis=0)
                 if type == "train":
-                    train_data = list
+                    train_data = flist
                 elif type == "test":
-                    test_data = list
+                    test_data = flist
 
         train_data = train_data.transpose()
         test_data = test_data.transpose()

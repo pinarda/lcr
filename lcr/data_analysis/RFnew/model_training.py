@@ -600,88 +600,93 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
 
 
         # cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection="orig").roll(lat=num, roll_coords=True), time, varname, storageloc)
-        cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection=["orig" + dir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
-        cut_dataset_zfp = cut_spatial_dataset_into_windows(dataset_col.sel(collection=[dir + "/" + cdir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
+        if cut_dataset:
+            cut_dataset_orig = cut_spatial_dataset_into_windows(dataset_col.sel(collection=["orig" + dir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
+            cut_dataset_zfp = cut_spatial_dataset_into_windows(dataset_col.sel(collection=[dir + "/" + cdir for dir in subdirs]), time, varname, storageloc, window_size=WINDOWSIZE, nsubdirs=len(subdirs))
 
-        # -1 means unspecified (should normally be (LATS * LONS) * time unless
-        # the number of time steps loaded by cut_dataset is different than time)
+            # -1 means unspecified (should normally be (LATS * LONS) * time unless
+            # the number of time steps loaded by cut_dataset is different than time)
 
-        cut_dataset_orig = cut_dataset_orig.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
-        cut_dataset_zfp = cut_dataset_zfp.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
-        # flatten dssim_mats over time
-        for m in metric:
-            for i, cdir in enumerate(cdirs):
-                for j, dir in enumerate(subdirs):
-                    print(m)
-                    print (cdir)
-                    print (dir)
-                    print (type(dssim_mats))
-                    print (type(dssim_mats[m]))
-                    print (type(dssim_mats[m][cdir]))
-                    print (type(dssim_mats[m][cdir][dir]))
-
-                    print (dssim_mats[m][cdir][dir].shape)
-                    dssim_mats[m][cdir][dir] = dssim_mats[m][cdir][dir].flatten()
-                # dssim_mats[cdir][dir] = dssim_mats[cdir][dir].flatten()
-            # stack the dssim_mats for each compression level
-                dssim_mats[m][cdir] = np.stack([dssim_mats[m][cdir][dir] for dir in subdirs], axis=0).flatten(order="C")
-
-
-        np.save(f"{storageloc}{varname}_{metric}_mat_{time}_{j}.npy", dssim_mats)
-        # if not os.path.exists(f"{storageloc}{varname}_chunks_{time}.npy"):
-        #     np.save(f"{storageloc}{varname}_chunks_{time}.npy", cut_dataset_orig)
-
-            # hopefully, by this point dssim_mat contains all the dssims for a single variable at every compression level
-            # and cut_dataset_orig contains all the uncompressed 11x11 chunks for a single variable
-        #append cut_dataset_orig to final_cut_dataset_orig
-        final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:((LATS * LONS)*time*len(subdirs))], axis=0)
-        final_cut_dataset_zfp = np.append(final_cut_dataset_zfp, cut_dataset_zfp[0:((LATS * LONS)*time*len(subdirs))], axis=0)
-
-        # turn final_cut_dataset_orig and final_cut_dataset_zfp into xarrays
-        final_cut_dataset_orig_xr = convert_np_to_xr(final_cut_dataset_orig).array
-        final_cut_dataset_zfp_xr = convert_np_to_xr(final_cut_dataset_zfp).array
-
-        if "dssim" not in metric:
-            dssim_mats = {}
+            cut_dataset_orig = cut_dataset_orig.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
+            cut_dataset_zfp = cut_dataset_zfp.reshape((-1, WINDOWSIZE, WINDOWSIZE), order="F")
+            # flatten dssim_mats over time
             for m in metric:
-                dssim_mats[m] = {}
+                for i, cdir in enumerate(cdirs):
+                    for j, dir in enumerate(subdirs):
+                        print(m)
+                        print (cdir)
+                        print (dir)
+                        print (type(dssim_mats))
+                        print (type(dssim_mats[m]))
+                        print (type(dssim_mats[m][cdir]))
+                        print (type(dssim_mats[m][cdir][dir]))
 
-        for cdir in cdirs:
-            # for t in range(final_cut_dataset_orig_xr.sizes["time"]):
-            dc2 = ldcpy.Diffcalcs(final_cut_dataset_orig_xr,
-                                  final_cut_dataset_zfp_xr, data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
-            if "pcc" in metric:
-                mat_xr = dc2.get_diff_calc("pearson_correlation_coefficient")
-                dssim_mats["pcc"][cdir] = mat_xr.to_numpy()
-            elif "ks" in metric:
-                mat_xr = dc2.get_diff_calc("ks_p_value")
-                dssim_mats["ks"][cdir] = mat_xr.to_numpy()
-            elif "spre" in metric:
-                mat_xr = dc2.get_diff_calc("spatial_rel_error")
-                dssim_mats["spre"][cdir] = mat_xr.to_numpy()
+                        print (dssim_mats[m][cdir][dir].shape)
+                        dssim_mats[m][cdir][dir] = dssim_mats[m][cdir][dir].flatten()
+                    # dssim_mats[cdir][dir] = dssim_mats[cdir][dir].flatten()
+                # stack the dssim_mats for each compression level
+                    dssim_mats[m][cdir] = np.stack([dssim_mats[m][cdir][dir] for dir in subdirs], axis=0).flatten(order="C")
+
+
+                np.save(f"{storageloc}{varname}_{metric}_mat_{time}_{j}.npy", dssim_mats)
+                # if not os.path.exists(f"{storageloc}{varname}_chunks_{time}.npy"):
+                #     np.save(f"{storageloc}{varname}_chunks_{time}.npy", cut_dataset_orig)
+
+                    # hopefully, by this point dssim_mat contains all the dssims for a single variable at every compression level
+                    # and cut_dataset_orig contains all the uncompressed 11x11 chunks for a single variable
+                #append cut_dataset_orig to final_cut_dataset_orig
+                final_cut_dataset_orig = np.append(final_cut_dataset_orig, cut_dataset_orig[0:((LATS * LONS)*time*len(subdirs))], axis=0)
+                final_cut_dataset_zfp = np.append(final_cut_dataset_zfp, cut_dataset_zfp[0:((LATS * LONS)*time*len(subdirs))], axis=0)
+
+                # turn final_cut_dataset_orig and final_cut_dataset_zfp into xarrays
+                final_cut_dataset_orig_xr = convert_np_to_xr(final_cut_dataset_orig).array
+                final_cut_dataset_zfp_xr = convert_np_to_xr(final_cut_dataset_zfp).array
+
+            if "dssim" not in metric:
+                dssim_mats = {}
+                for m in metric:
+                    dssim_mats[m] = {}
+
+            for cdir in cdirs:
+                # for t in range(final_cut_dataset_orig_xr.sizes["time"]):
+                dc2 = ldcpy.Diffcalcs(final_cut_dataset_orig_xr,
+                                      final_cut_dataset_zfp_xr, data_type="cam-fv", aggregate_dims=["latitude", "longitude"])
+                if "pcc" in metric:
+                    mat_xr = dc2.get_diff_calc("pearson_correlation_coefficient")
+                    dssim_mats["pcc"][cdir] = mat_xr.to_numpy()
+                elif "ks" in metric:
+                    mat_xr = dc2.get_diff_calc("ks_p_value")
+                    dssim_mats["ks"][cdir] = mat_xr.to_numpy()
+                elif "spre" in metric:
+                    mat_xr = dc2.get_diff_calc("spatial_rel_error")
+                    dssim_mats["spre"][cdir] = mat_xr.to_numpy()
 
 
 
-        # compute the average dssims by averaging each consecutive 182*288 (or whatever) dssim_mats
-        # for t in range(time)
-        # average_dssims = np.mean(dssim_mats[LATS*LONS*t??], axis=1)
+            # compute the average dssims by averaging each consecutive 182*288 (or whatever) dssim_mats
+            # for t in range(time)
+            # average_dssims = np.mean(dssim_mats[LATS*LONS*t??], axis=1)
 
-        #append dssim_mats to final_dssim_mats
-        for m in metric:
-            final_dssim_mats[m] = {}
-
-        for cdir in cdirs:
+            #append dssim_mats to final_dssim_mats
             for m in metric:
-                if cdir not in final_dssim_mats:
-                    final_dssim_mats[m][cdir] = dssim_mats[m][cdir]
-                else:
-                    final_dssim_mats[m][cdir] = np.append(final_dssim_mats[m][cdir], dssim_mats[m][cdir], axis=0)
+                final_dssim_mats[m] = {}
 
-    #append all elements in average_dssims to a single array
-    # average_dssims = np.array([average_dssims[cdir] for cdir in cdirs])
+            for cdir in cdirs:
+                for m in metric:
+                    if cdir not in final_dssim_mats:
+                        final_dssim_mats[m][cdir] = dssim_mats[m][cdir]
+                    else:
+                        final_dssim_mats[m][cdir] = np.append(final_dssim_mats[m][cdir], dssim_mats[m][cdir], axis=0)
 
-    # call fit_cnn on the 11x11 chunks and the dssim values
-    fname = json.split(".")[0]
+        #append all elements in average_dssims to a single array
+        # average_dssims = np.array([average_dssims[cdir] for cdir in cdirs])
+
+        # call fit_cnn on the 11x11 chunks and the dssim values
+        fname = json.split(".")[0]
+
+        # start timer
+        start = ttime.time()
+
 
     if labelsonly:
         dar = np.array(dataset_orig)[0:(time * len(subdirs))]
@@ -749,7 +754,10 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
     for m in metric:
         dssims_files[m] = {}
         for cdir in cdirs:
-            final = final_dssim_mats[m][cdir][0:(LATS * LONS)].reshape((LATS, LONS))
+            if cut_dataset:
+                final = final_dssim_mats[m][cdir][0:(LATS * LONS)].reshape((LATS, LONS))
+            else:
+                final = new_dict
             if type(time) is list:
                 for t in time:
                     np.save(f"{storageloc}{cdir}_{metric}_mat_{t}_{name}{jobid}.npy", final)
@@ -765,7 +773,8 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
                     np.save(f"{storageloc}{cdir}_{metric}_preds_{t*len(subdirs)}_{name}{jobid}.npy", preds)
             else:
                 np.save(f"{storageloc}{cdir}_{metric}_mat_{time*len(subdirs)}_{name}{jobid}.npy", final)
-                np.save(f"{storageloc}{cdir}_{metric}_mat_alltime_{time*len(subdirs)}_{name}{jobid}.npy", final_dssim_mats[m][cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
+                if cut_dataset:
+                    np.save(f"{storageloc}{cdir}_{metric}_mat_alltime_{time*len(subdirs)}_{name}{jobid}.npy", final_dssim_mats[m][cdir].reshape(LATS, (LONS+2*(WINDOWSIZE-11)), -1))
                 # also save the predictions
                 # and the errors
                 # preds = np.zeros((LATS, LONS)).flatten()
