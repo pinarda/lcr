@@ -20,19 +20,24 @@ newvars = [
 # ]
 
 newvars = [
-    ["TS"]
+    ["FLNS"], ["LHFLX"], ["PRECSL"], ["PRECT"], ["PSL"], ["Q200"], ["Q500"], ["Q850"], ["QBOT"], ["SHFLX"],
+    ["T200"], ["T500"], ["T850"], ["TAUX"], ["TAUY"], ["TREFHTMX"], ["TS"], ["U010"]
 ]
 
+# newvars = [
+#     ["TS"]
+# ]
+
 # Define the times, models, metrics, transforms, etc.
-newcomps = [["zfp_p_8", "zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-newtimes = [100]
+newcomps = [["zfp_p_6", "zfp_p_8", "zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
+newtimes = [1000]
 # newtimes = [10]
 newtestset = ["10_90_wholeslice"]
 metrics = ["dssim,pcc,spre"]
 metric = [["dssim", "pcc", "spre"]]
 transforms = ["none"]
 cutdatasets = [False]
-models = ["cnn"]
+models = ["cnn", "rf"]
 
 # Read in the template JSON file
 with open('RF_template.json', 'r') as f:
