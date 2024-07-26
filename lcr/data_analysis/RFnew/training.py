@@ -160,15 +160,15 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
 
         # Use the first 10% of the data for training
         train_data = dataset[0:index_10pct]
-        if label:
+        if label is not None:
             train_labels = label[0:index_10pct]
 
         # Use the calculated number of windows for test and validation
         test_data = dataset[index_10pct:int(index_10pct + num_windows_test)]
-        if label:
+        if label is not None:
             test_labels = label[index_10pct:int(index_10pct + num_windows_test)]
         val_data = dataset[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
-        if label:
+        if label is not None:
             val_labels = label[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
 
         # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
@@ -177,22 +177,22 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
             split_index = remaining_windows * 90 // 100
             test_data = np.concatenate(
                 (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
-            if label:
+            if label is not None:
                 test_labels = np.concatenate(
                     (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
             val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-            if label:
+            if label is not None:
                 val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
 
         if not cut_windows:
             train_data = dataset[0:int(index_10pct/num_windows)]
-            if label:
+            if label is not None:
                 train_labels = label[0:int(index_10pct/num_windows)]
             val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
-            if label:
+            if label is not None:
                 val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
-            if label:
+            if label is not None:
                 test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
     elif testset == "50_50_wholeslice":
@@ -216,15 +216,15 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
         if cut_windows:
             # Use the first 10% of the data for training
             train_data = dataset[0:index_50pct]
-            if label:
+            if label is not None:
                 train_labels = label[0:index_50pct]
 
             # Use the calculated number of windows for test and validation
             test_data = dataset[index_50pct:int(index_50pct + num_windows_test)]
-            if label:
+            if label is not None:
                 test_labels = label[index_50pct:int(index_50pct + num_windows_test)]
             val_data = dataset[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
-            if label:
+            if label is not None:
                 val_labels = label[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
 
             # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
@@ -233,15 +233,15 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
                 split_index = remaining_windows * 50 // 100
                 test_data = np.concatenate(
                     (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
-                if label:
+                if label is not None:
                     test_labels = np.concatenate(
                         (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
                 val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-                if label:
+                if label is not None:
                     val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
         elif not cut_windows:
             train_data = dataset[0:int(index_50pct/num_windows)]
-            if label:
+            if label is not None:
                 train_labels = label[0:int(index_50pct/num_windows)]
                 # use the encoder to transform the labels back to the original labels
                 original_labels = encoder.inverse_transform(train_labels)
@@ -252,13 +252,13 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
                     for i in range(len(unique)):
                         f.write(f"{unique[i]}: {counts[i]}\n")
             val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
-            if label:
+            if label is not None:
                 val_labels = label[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
-            if label:
+            if label is not None:
                 test_labels = label[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
-    if label:
+    if label is not None:
         return train_data, train_labels, val_data, val_labels, test_data, test_labels
     else:
         return train_data, val_data, test_data
