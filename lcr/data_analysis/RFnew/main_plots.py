@@ -330,7 +330,7 @@ def main_plots():
 
 # and the big chart
 
-            pattern = f"{storageloc}result_table_['dssim']_2500_*.csv"
+            pattern = f"{storageloc}result_table_['dssim']_2000_*.csv"
 
             # Initialize an empty list to store the results
             results = []

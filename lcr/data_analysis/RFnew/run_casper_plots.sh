@@ -28,41 +28,14 @@ set model = "cnn"
 
 set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences")
 #set model = "rf"
-#
-if ($model == "rf") then
-  foreach feature ($features)
-    set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m rf -r dssim -f "${feature}" --onlydata True --runonlydata True --labelsonly True'" | qsub -A NTDD0005 -N ${feature} -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100`
-
-    set newid = `echo $newid | sed 's/\..*//'`
-    printf '%s,' ${newid}
-    set ids = ( $ids $newid )
-  end
-  # Create a dependency string with all job IDs separated by colons
-  set joblist = `printf '%s:' "$ids"`
-  # Remove any trailing colons
-  set joblist = `echo $joblist | sed 's/:*$//'`
-
-  echo "Joblist for dependencies: $joblist"
-  # manually set a timer for 5 minutes
-  set joblist = `echo $joblist | sed 's/ /:/g'`
-
-
-  set features_csv = `echo $features | sed 's/ /,/g'`
-  set final_jobid = `echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m rf -r dssim --testset TESTSET -l "${features_csv}" --onlydata False --runonlydata False --labelsonly True'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100`
-  set final_jobid = `echo $final_jobid | sed 's/\..*//'`
-
-  echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main_plots.py -j run_casper_TEMPLATE.json -d JOBID -m rf -r dssim --testset TESTSET --onlydata False --runonlydata False --labelsonly True'" | qsub -W depend=afterok:${final_jobid} -A NTDD0005 -N final_plots -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
-
-else
-#  set newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --onlydata True --runonlydata True --labelsonly True'" | qsub -A NTDD0005 -N data -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
+# newid = `printf "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --onlydata True --runonlydata True --labelsonly True'" | qsub -A NTDD0005 -N data -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ncpus=1`
 #  echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main3.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --testset TESTSET --onlydata False --runonlydata False --labelsonly True'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
 #
 #  python main3.py --onlydata True --runonlydata True --metric dssim -j run_casper_TEMPLATE.json --labelsonly True --model cnn
 #  python main3.py --onlydata False --runonlydata False --metric dssim -j run_casper_TEMPLATE.json --labelsonly True --model cnn
 
-  echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main_plots.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --testset TESTSET --onlydata False --runonlydata False --labelsonly True'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
+echo "tcsh -c 'setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin && conda activate my-npl-2023a && cd /glade/work/apinard/lcr2/lcr/lcr/data_analysis/RFnew && python main_plots.py -j run_casper_TEMPLATE.json -d JOBID -m cnn -r dssim --testset TESTSET --onlydata False --runonlydata False --labelsonly True'" | qsub -A NTDD0005 -N final -q casper -l walltime=12:00:00 -j oe -M apinard@ucar.edu -l select=1:ngpus=1:mem=40GB -l gpu_type=v100
 
-endif
 
 
 
