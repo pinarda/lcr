@@ -183,7 +183,7 @@ def main_plots():
                     preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                     fname_rf = fname.replace("CNN", "RF")
 
-                    preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
+                    preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
         #
         #             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
         #             # first, strip the top and bottom 5 rows from the dssims
