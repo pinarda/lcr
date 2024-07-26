@@ -19,18 +19,18 @@ newvars = [
 #     ["so4_a2_SRF"], ["so4_a3_SRF"], ["soa_a1_SRF"], ["soa_a2_SRF"],
 # ]
 
-# newvars = [
-#     ["FLNS"], ["LHFLX"], ["PRECSL"], ["PRECT"], ["PSL"], ["Q200"], ["Q500"], ["Q850"], ["QBOT"], ["SHFLX"],
-#     ["T200"], ["T500"], ["T850"], ["TAUX"], ["TAUY"], ["TREFHTMX"], ["TS"], ["U010"]
-# ]
-
 newvars = [
-    ["TS"]
+    ["FLNS"], ["LHFLX"], ["PRECSL"], ["PRECT"], ["PSL"], ["Q200"], ["Q500"], ["Q850"], ["QBOT"], ["SHFLX"],
+    ["T200"], ["T500"], ["T850"], ["TAUX"], ["TAUY"], ["TREFHTMX"], ["TS"], ["U010"]
 ]
+
+# newvars = [
+#     ["TS"]
+# ]
 
 # Define the times, models, metrics, transforms, etc.
 newcomps = [["zfp_p_6", "zfp_p_8", "zfp_p_10", "zfp_p_12", "zfp_p_14", "zfp_p_16", "zfp_p_18", "zfp_p_20", "zfp_p_22", "zfp_p_24"]]
-newtimes = [10]
+newtimes = [1500]
 # newtimes = [10]
 newtestset = ["10_90_wholeslice"]
 metrics = ["dssim,pcc,spre"]
