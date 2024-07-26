@@ -160,13 +160,16 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
 
         # Use the first 10% of the data for training
         train_data = dataset[0:index_10pct]
-        train_labels = label[0:index_10pct]
+        if label:
+            train_labels = label[0:index_10pct]
 
         # Use the calculated number of windows for test and validation
         test_data = dataset[index_10pct:int(index_10pct + num_windows_test)]
-        test_labels = label[index_10pct:int(index_10pct + num_windows_test)]
+        if label:
+            test_labels = label[index_10pct:int(index_10pct + num_windows_test)]
         val_data = dataset[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
-        val_labels = label[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
+        if label:
+            val_labels = label[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
 
         # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
         if remaining_start_index < total_data_points:
@@ -174,18 +177,23 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
             split_index = remaining_windows * 90 // 100
             test_data = np.concatenate(
                 (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
-            test_labels = np.concatenate(
-                (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
+            if label:
+                test_labels = np.concatenate(
+                    (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
             val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-            val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
+            if label:
+                val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
 
         if not cut_windows:
             train_data = dataset[0:int(index_10pct/num_windows)]
-            train_labels = label[0:int(index_10pct/num_windows)]
+            if label:
+                train_labels = label[0:int(index_10pct/num_windows)]
             val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
-            val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+            if label:
+                val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
-            test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+            if label:
+                test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
     elif testset == "50_50_wholeslice":
 
@@ -208,13 +216,16 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
         if cut_windows:
             # Use the first 10% of the data for training
             train_data = dataset[0:index_50pct]
-            train_labels = label[0:index_50pct]
+            if label:
+                train_labels = label[0:index_50pct]
 
             # Use the calculated number of windows for test and validation
             test_data = dataset[index_50pct:int(index_50pct + num_windows_test)]
-            test_labels = label[index_50pct:int(index_50pct + num_windows_test)]
+            if label:
+                test_labels = label[index_50pct:int(index_50pct + num_windows_test)]
             val_data = dataset[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
-            val_labels = label[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
+            if label:
+                val_labels = label[int(index_50pct + num_windows_test):int(index_50pct + num_windows_test + num_windows_val)]
 
             # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
             if remaining_start_index < total_data_points:
@@ -222,28 +233,35 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
                 split_index = remaining_windows * 50 // 100
                 test_data = np.concatenate(
                     (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
-                test_labels = np.concatenate(
-                    (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
+                if label:
+                    test_labels = np.concatenate(
+                        (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
                 val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-                val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
+                if label:
+                    val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
         elif not cut_windows:
             train_data = dataset[0:int(index_50pct/num_windows)]
-            train_labels = label[0:int(index_50pct/num_windows)]
-            # use the encoder to transform the labels back to the original labels
-            original_labels = encoder.inverse_transform(train_labels)
-            # compute the number of labels in each class
-            unique, counts = np.unique(original_labels, return_counts=True)
-            # save the number of labels in each class as a text file
-            with open(f"{storageloc}train_labels_{metric}_{j}{time}{modeltype}_{jobid}.txt", "w") as f:
-                for i in range(len(unique)):
-                    f.write(f"{unique[i]}: {counts[i]}\n")
+            if label:
+                train_labels = label[0:int(index_50pct/num_windows)]
+                # use the encoder to transform the labels back to the original labels
+                original_labels = encoder.inverse_transform(train_labels)
+                # compute the number of labels in each class
+                unique, counts = np.unique(original_labels, return_counts=True)
+                # save the number of labels in each class as a text file
+                with open(f"{storageloc}train_labels_{metric}_{j}{time}{modeltype}_{jobid}.txt", "w") as f:
+                    for i in range(len(unique)):
+                        f.write(f"{unique[i]}: {counts[i]}\n")
             val_data = dataset[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
-            val_labels = label[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
+            if label:
+                val_labels = label[int(index_50pct/num_windows):(int(index_50pct/num_windows)+int(num_windows_val/num_windows))]
             test_data = dataset[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
-            test_labels = label[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+            if label:
+                test_labels = label[(int(index_50pct/num_windows)+int(num_windows_val/num_windows)):(int(index_50pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
 
-
-    return train_data, train_labels, val_data, val_labels, test_data, test_labels
+    if label:
+        return train_data, train_labels, val_data, val_labels, test_data, test_labels
+    else:
+        return train_data, val_data, test_data
 
 def convert_np_to_xr(np_arrays, titles=None):
     das = []
@@ -295,15 +313,16 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # model_path = ""
     average_error_path = os.path.join(storageloc, "average_error.txt")
 
-    newlabels = classify(f"{j}.json", metric, labels)
+    if not only_data:
+        newlabels = classify(f"{j}.json", metric, labels)
 
-    # get the label keys
-    label_keys = list(labels.keys())
+        # get the label keys
+        label_keys = list(labels.keys())
 
-    #### SECTIONS TO REVIEW ####
+        #### SECTIONS TO REVIEW ####
 
-    label_encoder = LabelEncoder()
-    integer_encoded_labels = label_encoder.fit_transform(newlabels)
+        label_encoder = LabelEncoder()
+        integer_encoded_labels = label_encoder.fit_transform(newlabels)
 
     # let's go backwards to the original labels
     scores = []
@@ -332,8 +351,18 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
         # dataset[i] = (dataset[i] - np.mean(dataset[i])) / np.std(dataset[i])
         # convert newlabels to a numpy array
         # newlabels = np.array(newlabels)
-        newlabels = np.array(integer_encoded_labels)
-        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels, time, nvar, testset, LATS, LONS, cut_windows, encoder=label_encoder, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j)
+        if not only_data:
+            newlabels = np.array(integer_encoded_labels)
+            train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels,
+                                                                                                time, nvar, testset,
+                                                                                                LATS, LONS, cut_windows,
+                                                                                                encoder=label_encoder,
+                                                                                                storageloc=storageloc,
+                                                                                                metric=metric,
+                                                                                                modeltype=modeltype,
+                                                                                                jobid=jobid, j=j)
+        else:
+            train_data, val_data, test_data = split_data(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j)
 
     # check the echosave directory, open trial_results.csv
     # read the column mean_squared_error to find the row with the minimum value
