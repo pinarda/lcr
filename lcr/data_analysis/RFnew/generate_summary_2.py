@@ -78,7 +78,7 @@ for idx, (var, time, model, comp, testset, metric_single, metric_list, transform
     batch = re.sub('TRANSFORM', transform, batch)
     batch = re.sub('MODEL', model, batch)
 
-    batch_filename = f'run_casper_{newname}.sh'
+    batch_filename = f'run_casper_plots_{newname}.sh'
 
     # Write the new batch file
     with open(batch_filename, 'w') as f:
