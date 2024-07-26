@@ -90,7 +90,7 @@ def list_of_strings(arg):
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-j", "--json", help="json configuration file", type=str, default="RF_local_dssim_2.json")
-    parser.add_argument("-t", "--testset", help="test set type", type=str, default="50_50_wholeslice")
+    parser.add_argument("-t", "--testset", help="test set type", type=str, default="10_90_wholeslice")
     parser.add_argument("-o", "--onlydata", help="whether to fit the model or only generate training and test data", type=ast.literal_eval, default=False)
     parser.add_argument("-m", "--model", help="model type", type=str, default="rf")
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default="n_s_first_differences")
