@@ -289,8 +289,8 @@ def main_plots():
 
                 correct_count_rf = np.sum((classifyd == label) & (classifyp_rf == label))
                 incorrect_count_rf = np.sum((classifyd == label) & (classifyp_rf != label))
-                correct_counts_cnn.append(correct_count_rf)
-                incorrect_counts_cnn.append(incorrect_count_rf)
+                correct_counts_rf.append(correct_count_rf)
+                incorrect_counts_rf.append(incorrect_count_rf)
 
             # Create a stacked bar chart
             x = np.arange(len(unique_labels))  # label locations
@@ -299,12 +299,12 @@ def main_plots():
             fig, ax = plt.subplots(figsize=(14, 8))
 
             # Bars for CNN
-            bars_correct_cnn = ax.bar(x - width, correct_counts_cnn, width, label='Correct CNN', color='y')
+            bars_correct_cnn = ax.bar(x - width, correct_counts_cnn, width, label='Correct CNN', color='r')
             bars_incorrect_cnn = ax.bar(x - width, incorrect_counts_cnn, width, bottom=correct_counts_cnn,
                                         label='Incorrect CNN', color='y', hatch='//')
 
             # Bars for RF
-            bars_correct_rf = ax.bar(x + width, correct_counts_rf, width, label='Correct RF', color='b')
+            bars_correct_rf = ax.bar(x + width, correct_counts_rf, width, label='Correct RF', color='g')
             bars_incorrect_rf = ax.bar(x + width, incorrect_counts_rf, width, bottom=correct_counts_rf,
                                        label='Incorrect RF', color='b', hatch='//')
 
