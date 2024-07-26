@@ -564,41 +564,42 @@ def build_model_and_evaluate_performance(timeoverride=None, j=0, name="", stride
         # roll orig dataset using the xarray roll function
         # num = 0
         # dataset_orig = dataset_orig.roll(lat=num, roll_coords=True)
-        for m in metric:
-            dssim_mats[m] = {}
-            for cdir in cdirs:
-                average_dssims[cdir] = {}
+        if not only_data:
+            for m in metric:
+                dssim_mats[m] = {}
+                for cdir in cdirs:
+                    average_dssims[cdir] = {}
 
-                dataset_zfp = realigned_data.sel(collection=[dir + "/" + cdir for dir in subdirs]).to_array().squeeze()
-                # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
-                dataset_zfp = xr.concat([dataset_zfp[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
-                # dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
-                # dssim_mats[cdir] = np.empty((len(subdirs), time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
-                dssim_mats[m][cdir] = {}
+                    dataset_zfp = realigned_data.sel(collection=[dir + "/" + cdir for dir in subdirs]).to_array().squeeze()
+                    # pad the longitude dimension of the compressed dataset by 5 on each side (wrap around)
+                    dataset_zfp = xr.concat([dataset_zfp[:, :, :, (-1 * floor(WINDOWSIZE/2)):], dataset_zfp, dataset_zfp[:, :, :, :(floor(WINDOWSIZE/2))]], dim="lon")
+                    # dataset_zfp = dataset_zfp.roll(lat=num, roll_coords=True)
+                    # dssim_mats[cdir] = np.empty((len(subdirs), time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
+                    dssim_mats[m][cdir] = {}
 
-                for dir in subdirs:
-                    average_dssims[cdir][dir] = np.empty((time))
-                    dssim_mats[m][cdir][dir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
+                    for dir in subdirs:
+                        average_dssims[cdir][dir] = np.empty((time))
+                        dssim_mats[m][cdir][dir] = np.empty((time, (LATS * (LONS+2*(WINDOWSIZE-11)))))
 
-                    for t in range(0, time):
-                        # print the length of the time dimension
-                        print(len(dataset_orig.time))
-                        print(len(dataset_zfp.time))
-                        dc = ldcpy.Diffcalcs(dataset_orig.sel(collection=("orig" + dir)).isel(time=t*stride), dataset_zfp.sel(collection=(dir + "/" + cdir)).isel(time=t*stride), data_type="cam-fv")
+                        for t in range(0, time):
+                            # print the length of the time dimension
+                            print(len(dataset_orig.time))
+                            print(len(dataset_zfp.time))
+                            dc = ldcpy.Diffcalcs(dataset_orig.sel(collection=("orig" + dir)).isel(time=t*stride), dataset_zfp.sel(collection=(dir + "/" + cdir)).isel(time=t*stride), data_type="cam-fv")
 
-                        if "dssim" in metric:
-                            average_dssims[cdir][dir][t] = dc.get_diff_calc("ssim_fp", xsize=11, ysize=11)
-                            dssim_mats[m][cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
-                        elif "mse" in metric:
-                            dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
-                            mse = dc2.get_calc("mean_squared")
-                            # ignore the top and bottom 5 rows and columns
-                            mse = mse[(floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2))]
-                            dssim_mats[m][cdir][dir][t] = mse.to_numpy().flatten()
-                        elif "logdssim" in metric:
-                            dc.get_diff_calc("ssim_fp")
-                            dc._ssim_mat_fp[0] = np.log(1 - dc._ssim_mat_fp[0])
-                            dssim_mats[m][cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
+                            if "dssim" in metric:
+                                average_dssims[cdir][dir][t] = dc.get_diff_calc("ssim_fp", xsize=11, ysize=11)
+                                dssim_mats[m][cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
+                            elif "mse" in metric:
+                                dc2 = ldcpy.Datasetcalcs(dataset_orig.isel(time=t*stride) - dataset_zfp.isel(time=t*stride), data_type="cam-fv", aggregate_dims=[])
+                                mse = dc2.get_calc("mean_squared")
+                                # ignore the top and bottom 5 rows and columns
+                                mse = mse[(floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2)), (floor(WINDOWSIZE/2)):(-1 * floor(WINDOWSIZE/2))]
+                                dssim_mats[m][cdir][dir][t] = mse.to_numpy().flatten()
+                            elif "logdssim" in metric:
+                                dc.get_diff_calc("ssim_fp")
+                                dc._ssim_mat_fp[0] = np.log(1 - dc._ssim_mat_fp[0])
+                                dssim_mats[m][cdir][dir][t] = dc._ssim_mat_fp[0].flatten()
 
 
 
