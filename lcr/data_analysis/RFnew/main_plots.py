@@ -152,7 +152,11 @@ def main_plots():
                 # preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                 # load the preds for the cnn and rf models, and give the
                 preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
-                preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
+                # replace CNN in the fname with RF before continuing
+                fname_rf = fname.replace("CNN", "RF")
+
+
+                preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
 
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
@@ -175,7 +179,9 @@ def main_plots():
                     # preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                     # load the preds for the cnn and rf models, and give the
                     preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
-                    preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
+                    fname_rf = fname.replace("CNN", "RF")
+
+                    preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
         #
         #             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
         #             # first, strip the top and bottom 5 rows from the dssims
