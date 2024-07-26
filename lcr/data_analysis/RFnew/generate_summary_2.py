@@ -67,7 +67,7 @@ for idx, (var, time, model, comp, testset, metric_single, metric_list, transform
         json.dump(newconfig, f)
 
     # Read the batch file template
-    with open('run_casper.sh', 'r') as f:
+    with open('run_casper_plots.sh', 'r') as f:
         batch = f.read()
 
     # Replace placeholders in the batch file
