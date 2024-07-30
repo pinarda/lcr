@@ -176,17 +176,21 @@ def main_plots():
                 # open the pred_f npy file containing a numpy array of predictions and the dssim_f npy file containing a numpy array of dssims
                 # preds = np.load(pred_fs[cdir])
                 for t in time:
-                    dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                    # print the model and use ascii to make a header and footer
+                    print(f"{'='*50}")
+                    print(model)
+                    print(f"{'='*50}")
+
+                    if model == "cnn":
+                        dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid-1}_classify.npy", allow_pickle=True)
+                    else:
+                        dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                     fname = j.split(".")[0]
                     # preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                     # load the preds for the cnn and rf models, and give the
                     fname_cnn = fname.replace("RF", "CNN")
                     fname_rf = fname.replace("CNN", "RF")
 
-                    # print the model and use ascii to make a header and footer
-                    print(f"{'='*50}")
-                    print(model)
-                    print(f"{'='*50}")
 
                     if model == "cnn":
                         preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
