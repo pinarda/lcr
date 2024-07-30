@@ -183,6 +183,11 @@ def main_plots():
                     fname_cnn = fname.replace("RF", "CNN")
                     fname_rf = fname.replace("CNN", "RF")
 
+                    # print the model and use ascii to make a header and footer
+                    print(f"{'='*50}")
+                    print(model)
+                    print(f"{'='*50}")
+
                     if model == "cnn":
                         preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                         preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
