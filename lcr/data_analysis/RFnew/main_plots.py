@@ -559,6 +559,7 @@ def main_plots():
             # set the max height of the histogram to be 80% of the total number of slices
             plt.bar(bins_cnn[:-1], frequencies_cnn, color=colors_cnn, align='center', width=np.diff(bins_cnn))
             plt.ylim(0, nslices)
+            print(bins_cnn[:-1], unique_labels)
             plt.xticks(bins_cnn[:-1], unique_labels, rotation=45)
             # for each item in vlist, append to a string separated by a comma and space
             vliststring = ""
