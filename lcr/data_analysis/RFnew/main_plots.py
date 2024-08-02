@@ -145,7 +145,8 @@ def main_plots():
             # preds = np.load(pred_fs[cdir])
 
             for t in time:
-                fname_cnn = fname.replace("RF", "CNN")
+                # fname_cnn = fname.replace("RF", "CNN")
+                fname_cnn = fname.replace("RF", "RF")
                 dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                 fname = j.split(".")[0]
 
@@ -158,7 +159,10 @@ def main_plots():
                 fname_rf = fname.replace("CNN", "RF")
 
 
+# SWITCH ME
+
                 preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
+                # preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
 
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
@@ -194,7 +198,9 @@ def main_plots():
 
                     if model == "cnn":
                         preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
+        # SWITCH
                         preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
+                        # preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
                     else:
                         preds_cnn[t] = np.load(
                             f"{storageloc}predictions_{metric}_{fname_cnn}{t * len(subdirs)}cnn{jobid - 1}_classify.npy",
@@ -700,12 +706,13 @@ def main_plots():
             unique_labels = np.unique(np.concatenate([classifyd, classifyp_cnn, classifyp_rf])).tolist()
 
             # Calculate correct and incorrect counts for CNN
-            correct_counts_cnn = np.diag(cm_cnn)
-            incorrect_counts_cnn = cm_cnn.sum(axis=1) - correct_counts_cnn
+            correct_counts_cnn = np.diag(cm_cnn)  # Correct predictions (diagonal elements)
+            incorrect_counts_cnn = cm_cnn.sum(
+                axis=0) - correct_counts_cnn  # Incorrect predictions (off-diagonal elements)
 
             # Calculate correct and incorrect counts for RF
-            correct_counts_rf = np.diag(cm_rf)
-            incorrect_counts_rf = cm_rf.sum(axis=1) - correct_counts_rf
+            correct_counts_rf = np.diag(cm_rf)  # Correct predictions (diagonal elements)
+            incorrect_counts_rf = cm_rf.sum(axis=0) - correct_counts_rf  # Incorrect predictions (off-diagonal elements)
 
             true_counts = np.array([list(classifyd).count(label) for label in unique_labels])
 
@@ -759,12 +766,12 @@ def main_plots():
             # Plot incorrect counts for CNN
             incorrect_bars_cnn = ax.bar(bar_positions, df_incorrect[df_incorrect['Model'] == 'CNN']['Count'], bar_width,
                                         bottom=df_correct[df_correct['Model'] == 'CNN']['Count'], label='Incorrect CNN',
-                                        color=palette[0], alpha=0.5)
+                                        color=palette[0], alpha=0.5, hatch='//')
 
             # Plot incorrect counts for RF
             incorrect_bars_rf = ax.bar(bar_positions + bar_width, df_incorrect[df_incorrect['Model'] == 'RF']['Count'],
                                        bar_width, bottom=df_correct[df_correct['Model'] == 'RF']['Count'],
-                                       label='Incorrect RF', color=palette[1], alpha=0.5)
+                                       label='Incorrect RF', color=palette[1], alpha=0.5, hatch='//')
 
             # Set the y-limit
             nslices = int(np.max([true_counts, correct_counts_cnn + incorrect_counts_cnn,
