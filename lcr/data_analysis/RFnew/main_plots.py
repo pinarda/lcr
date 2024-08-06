@@ -429,19 +429,19 @@ def main_plots():
             ind_cnn = list(set(np.append(classifyp_cnn, classifyd)))
             cm_cnn = pd.DataFrame(cm_cnn, index=ind_cnn, columns=ind_cnn)
 
-            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
+            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
                 f.write(str(cm_cnn))
 
-            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
+            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
                 f.write(report_cnn)
 
             np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}rf_{date_string}.npy", cm_rf)
             ind_rf = list(set(np.append(classifyp_rf, classifyd)))
             cm_rf = pd.DataFrame(cm_rf, index=ind_rf, columns=ind_rf)
-            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
+            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
                 f.write(str(cm_rf))
 
-            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.txt", 'w') as f:
+            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
                 f.write(report_rf)
 
 
