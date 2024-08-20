@@ -134,7 +134,7 @@ def compare_across_metrics(final_labels_dict):
                 if level_rank[current_label] < level_rank[final_label]:
                     final_comparison_labels.values[idx] = current_label
 
-    return final_comparison_labels
+    return final_comparison_labels, final_labels_dict
 
 def setup(config_path, metrics, cdirs, storageloc):
 
@@ -180,12 +180,14 @@ def classify(config_path, metrics, labels=None):
     final_labels_dict = load_and_label_data(metrics_info, storageloc, labels)
 
     # Compare results across all metrics
-    final_comparison_labels = compare_across_metrics(final_labels_dict)
+    final_comparison_labels, final_labels_dict = compare_across_metrics(final_labels_dict)
 
     # Save the final comparison labels
     final_labels_filepath = os.path.join(storageloc, 'final_comparison_labels.npy')
+    # save the labels as a dictionary with a description of the labels, including the time steps, variable, metrics, jobid
+
     np.save(final_labels_filepath, final_comparison_labels.values)
-    return final_comparison_labels
+    return final_comparison_labels, final_labels_dict
 
 # Run the function to load, label, and save data
 if __name__ == '__main__':

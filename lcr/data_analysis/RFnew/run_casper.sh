@@ -26,7 +26,7 @@ rm -f /Users/alex/git/lcr/lcr/data_analysis/RFnew/*.h5
 
 set model = MODEL
 
-set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences")
+set features = ("ns_con_var" "ew_con_var" "w_e_first_differences" "n_s_first_differences", "entropy", "real_information_cutoff", "fftratio", "fftmax")
 #set model = "rf"
 #
 if ($model == "rf") then

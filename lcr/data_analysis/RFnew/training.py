@@ -314,7 +314,12 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     average_error_path = os.path.join(storageloc, "average_error.txt")
 
     if not only_data:
-        newlabels = classify(f"{j}.json", metric, labels)
+        newlabels, metric_dict = classify(f"{j}.json", metric, labels)
+
+        # save the metric_dict
+        with open(f"{storageloc}metric_dict_{j}{time}{modeltype}{jobid}.pkl", "wb") as f:
+            pickle.dump(metric_dict, f)
+
 
         # get the label keys
         label_keys = list(labels.keys())
@@ -526,12 +531,12 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
     # make this the first of a 1x4 subplot
         # fit the model
     if modeltype == "cnn":
-        history = model.fit(train_data, train_labels, epochs=4, batch_size=batch_size, validation_data=(val_data, val_labels))
+        history = model.fit(train_data, train_labels, epochs=6, batch_size=batch_size, validation_data=(val_data, val_labels))
         score = model.evaluate(test_data, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
         # let's save the training history
-        with open(f"{storageloc}history_{j}{time}{jobid}{modeltype}_classify", "wb") as f:
+        with open(f"{storageloc}cnn_train_history_{j}{time}{jobid}{modeltype}_classify", "wb") as f:
             pickle.dump(history.history, f)
     elif modeltype == "rf":
         train_data[train_data == -np.inf] = 0
