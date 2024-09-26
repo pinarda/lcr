@@ -4,7 +4,7 @@
     "VarList":  ["TS", "PRECT"],
     "FilenamePre":["", ""],
     "FilenamePost": [ ".100days.nc", ".100days.nc"],
-    "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/orig/",
+    "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/",
     "CompPath":"/Users/alex/git/ldcpy/data/cam-fv/",
     "SubDirs": ["ens1", "ens2"],
     "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
@@ -14,5 +14,6 @@
     "StorageLoc": "./data/",
     "Stride": 1,
     "CutDataset": 0,
-    "Metric": ["dssim", "pcc", "spre"]
+    "Metric": ["dssim", "pcc", "spre"],
+    "ModelType": "rf"
 }

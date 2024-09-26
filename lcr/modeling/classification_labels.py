@@ -168,7 +168,7 @@ def setup(config_path, metrics, cdirs, storageloc):
     return metrics_info
 
 def classify(config_path, metrics, labels=None):
-    # config_path = "RF_local_dssim.json"
+    # config_path = "config.json"
 
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(
         config_path)
@@ -191,7 +191,7 @@ def classify(config_path, metrics, labels=None):
 
 # Run the function to load, label, and save data
 if __name__ == '__main__':
-    config_path = "RF_local_dssim.json"
+    config_path = "config_casper.json"
 
     save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, time, storageloc, navg, stride, m, cut_dataset, subdirs = read_parameters_from_json(
         config_path)
