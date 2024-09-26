@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def main():
     # Read the JSON configuration
-    with open('config_casper.json', 'r') as f:
+    with open('config.json', 'r') as f:
         config = json.load(f)
 
     # Extract parameters
@@ -128,23 +128,27 @@ def main():
         return final_comparison_labels_combined, final_labels_dict
 
     # Initialize dictionaries to hold files and labels for each variable
-    files_dict = {var: [] for var in var_list}
-    labels_dict = {var: [] for var in var_list}
+    # Mappings for prefixes and postfixes based on ensembles
 
-    # Populate the dictionaries
-    for idx, varname in enumerate(var_list):
-        pre = filename_pre[idx]
-        post = filename_post[idx]
+    # Initialize dictionaries to store files and labels
+    files_dict = {varname: [] for varname in var_list}
+    labels_dict = {varname: [] for varname in var_list}
 
-        # Original data files and labels
-        for subdir in sub_dirs:
+    i = 0
+    for subdir in sub_dirs:
+
+        pre = filename_pre[i]
+        post = filename_post[i]
+        i = i + 1
+
+        for varname in var_list:
+            # Original data files and labels
             orig_file = os.path.join(base_orig_path, subdir, 'orig', pre + varname + post)
             files_dict[varname].append(orig_file)
             labels_dict[varname].append(f"{subdir}_orig")
 
-        # Compressed data files and labels
-        for comp_dir in comp_dirs:
-            for subdir in sub_dirs:
+            # Compressed data files and labels
+            for comp_dir in comp_dirs:
                 comp_file = os.path.join(base_comp_path, subdir, comp_dir, pre + varname + post)
                 files_dict[varname].append(comp_file)
                 labels_dict[varname].append(f"{subdir}_{comp_dir}")
