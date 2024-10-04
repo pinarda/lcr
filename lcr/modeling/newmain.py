@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def main():
     # Read the JSON configuration
-    with open('config_casper.json', 'r') as f:
+    with open('config.json', 'r') as f:
         config = json.load(f)
 
     # Extract parameters
@@ -118,7 +118,8 @@ def main():
             final_comparison_labels_combined = final_labels_dict['dssim']
         else:
             # Take the first available metric's labels
-            available_metrics = [m for m in metric if m in final_labels_dict and final_labels_dict[m] is not None]
+
+            available_metrics = [m for m in list(metric) if m in final_labels_dict and final_labels_dict[m] is not None]
             if not available_metrics:
                 raise ValueError("No valid metrics available for classification.")
             first_metric = available_metrics[0]
