@@ -347,6 +347,9 @@ def main():
         # Select both 'ens1_orig' and 'ens2_orig' datasets
         data_var = data_var.sel(collection=[label for label in data_var['collection'].values if 'orig' in label])
 
+        # let's log all the labels
+        logging.info(f"Labels for {varname}: {data_var['collection'].values}")
+
         # Stack 'collection' and 'time' into 'sample'
         data_var = data_var.stack(sample=('collection', 'time'))
 
