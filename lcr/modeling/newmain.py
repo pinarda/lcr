@@ -46,7 +46,7 @@ def main():
     from classification_labels import compare_across_metrics
 
     # Define the custom labeling function
-    def generate_classification_labels(metrics_info, metrics_data):
+    def generate_classification_labels(metrics_info, metrics_data, compression_level_order):
         """
         Generates classification labels based on metrics_info and metrics_data.
 
@@ -114,17 +114,28 @@ def main():
         # Here, you can implement your own logic or use the existing compare_across_metrics function
         # For simplicity, we'll prioritize 'dssim' if available
 
-        if 'dssim' in final_labels_dict and final_labels_dict['dssim'] is not None:
-            final_comparison_labels_combined = final_labels_dict['dssim']
-        else:
-            # Take the first available metric's labels
+        # Create an array to hold the final conservative label for each element
+        combined_final_labels = xr.full_like(final_labels_dict[next(iter(final_labels_dict))], "None", dtype="object")
 
-            available_metrics = [m for m in list(metric) if m in final_labels_dict and final_labels_dict[m] is not None]
-            if not available_metrics:
-                raise ValueError("No valid metrics available for classification.")
-            first_metric = available_metrics[0]
-            final_comparison_labels_combined = final_labels_dict[first_metric]
-            logging.info(f"Using '{first_metric}' metric for final classification labels.")
+        for comp_level in compression_level_order:
+            for metric, label_da in final_labels_dict.items():
+                if label_da is None:
+                    continue
+                # Update combined_final_labels with the most conservative available label
+                combined_final_labels = xr.where(
+                    (combined_final_labels == "None") & (label_da == comp_level),
+                    comp_level,
+                    combined_final_labels
+                )
+
+        # Ensure no elements remain labeled as "None", fill them with the least conservative option
+        combined_final_labels = xr.where(
+            combined_final_labels == "None",
+            compression_level_order[-1],  # Fallback to the least conservative compression level
+            combined_final_labels
+        )
+
+        final_comparison_labels_combined = combined_final_labels
 
         return final_comparison_labels_combined, final_labels_dict
 
@@ -326,7 +337,9 @@ def main():
 
     for varname in var_list:
         metrics_data_var = metrics_data_combined[varname]
-        final_comparison_labels, final_labels = generate_classification_labels(metrics_info, metrics_data_var)
+        # here
+        comparison_list = comp_dirs
+        final_comparison_labels, final_labels = generate_classification_labels(metrics_info, metrics_data_var, comparison_list)
         final_comparison_labels_dict[varname] = final_comparison_labels
         final_labels_dict[varname] = final_labels
 
