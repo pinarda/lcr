@@ -253,6 +253,9 @@ def main():
 
                 logging.info(f"Computing metrics between {orig_label} and {comp_label} for {m}...")
 
+                # log all the elements in the dataset_col
+                logging.info(f"Dataset col: {dataset_col}")
+
                 try:
                     ds_orig = dataset_col[varname].sel(collection=orig_label)
                     ds_comp = dataset_col[varname].sel(collection=comp_label)
@@ -341,10 +344,6 @@ def main():
 
         comparison_list = comp_dirs
 
-        # print out everytyhing
-        print("Metrics data var: ", metrics_data_var)
-        print("Comparison list: ", comparison_list)
-        print("Metrics info: ", metrics_info)
         # acually, log it
         logging.info(f"Metrics data var: {metrics_data_var}")
         logging.info(f"Comparison list: {comparison_list}")
