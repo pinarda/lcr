@@ -189,7 +189,7 @@ def main():
                 labels=labels,
                 data_type=data_type,
                 varnames=varnames
-            )
+            ).chunk(time=100)  # Adjust chunk size as needed
 
             # Store the opened dataset
             opened_datasets[varname] = dataset_col
