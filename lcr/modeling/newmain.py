@@ -239,10 +239,20 @@ def main():
 
         # Iterate over compression directories and compute metrics
         for comp_label in comp_labels:
-            # Extract corresponding subdir from comp_label
-            parts = comp_label.split('_')
-            subdir = parts[0]
-            orig_label = f"{subdir}_orig"
+            # Extract subdir from comp_label by splitting on '_'
+            subdir = comp_label.split('_')[0]
+
+            # Find the index of the subdir in sub_dirs
+            try:
+                subdir_index = sub_dirs.index(subdir)
+            except ValueError:
+                logging.error(f"Subdir '{subdir}' not found in sub_dirs list. Skipping comp_label '{comp_label}'.")
+                continue
+
+            # Use the index to get the corresponding original label
+            orig_label = orig_labels[subdir_index]
+
+
 
             for m in metric:
                 # Create a unique filename based on varname, orig_label, comp_label, and metric
