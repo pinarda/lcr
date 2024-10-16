@@ -189,12 +189,15 @@ def main():
                 labels=labels,
                 data_type=data_type,
                 varnames=varnames
-            ).chunk(time=100)  # Adjust chunk size as needed
-
+            ).chunk(time=100)  # Adjust chunk size as needed\
             # Store the opened dataset
             opened_datasets[varname] = dataset_col
     except Exception as e:
         logging.error(f"An error occurred: {e}")
+
+    # cut the data here to only use times[0] number of time steps
+    opened_datasets = {varname: ds.isel(time=slice(times[0])) for varname, ds in opened_datasets.items()}
+
 
     # Combine the datasets for all variables
     logging.info("Combining datasets for all variables...")
@@ -383,6 +386,9 @@ def main():
 
         # Select both 'ens1_orig' and 'ens2_orig' datasets
         data_var = data_var.sel(collection=[label for label in data_var['collection'].values if 'orig' in label])
+
+        # cut the dataset to only use times[0] number of time steps
+        # data_var = data_var.isel(time=slice(times[0]))
 
         # let's log all the labels
         logging.info(f"Labels for {varname}: {data_var['collection'].values}")
