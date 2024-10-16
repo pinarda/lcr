@@ -283,7 +283,7 @@ def main():
                     logging.error(f"Error: Time dimension '{time_dim_name}' not found in datasets. Skipping this pair.")
                     continue
 
-                num_time_steps = ds_orig_aligned.sizes[time_dim_name]
+                num_time_steps = times[0]
 
                 metric_values = []
 
