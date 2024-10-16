@@ -234,6 +234,9 @@ def main():
         orig_labels = [f"{subdir}_orig" for subdir in sub_dirs]
         comp_labels = [f"{subdir}_{comp_dir}" for comp_dir in comp_dirs for subdir in sub_dirs]
 
+        # log the original labels
+        logging.info(f"Original labels: {orig_labels}")
+
         # Iterate over compression directories and compute metrics
         for comp_label in comp_labels:
             # Extract corresponding subdir from comp_label
