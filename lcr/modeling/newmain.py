@@ -287,6 +287,9 @@ def main():
 
                 metric_values = []
 
+                # log the number of time steps
+                logging.info(f"Number of time steps: {num_time_steps}")
+
                 # Iterate over each time step
                 for t in range(num_time_steps):
                     # log the time step
