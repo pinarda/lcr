@@ -338,7 +338,14 @@ def main():
     for varname in var_list:
         metrics_data_var = metrics_data_combined[varname]
         # here
+
         comparison_list = comp_dirs
+
+        # print out everytyhing
+        print("Metrics data var: ", metrics_data_var)
+        print("Comparison list: ", comparison_list)
+        print("Metrics info: ", metrics_info)
+
         final_comparison_labels, final_labels = generate_classification_labels(metrics_info, metrics_data_var, comparison_list)
         final_comparison_labels_dict[varname] = final_comparison_labels
         final_labels_dict[varname] = final_labels
