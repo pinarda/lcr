@@ -168,7 +168,7 @@ def main():
     # Open datasets separately for each variable
     opened_datasets = {}
 
-    client = Client(n_workers=4, threads_per_worker=1, memory_limit='1GB')  # Adjust as needed
+    client = Client(n_workers=4, threads_per_worker=1, memory_limit='20GB')  # Adjust as needed
     try:
         for varname in var_list:
             logging.info(f"Opening datasets for variable: {varname}")
