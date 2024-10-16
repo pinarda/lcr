@@ -9,11 +9,11 @@
     "SubDirs": ["ens1", "ens2"],
     "CompDirs": ["zfp_1.0", "zfp_1e-1", "zfp_1e-3"],
     "OptLdcpyDevPath": "/Users/alex/git/ldcpy",
-    "Times": [60],
+    "Times": [5],
     "Navg": 1,
     "StorageLoc": "./data/",
     "Stride": 1,
     "CutDataset": 0,
-    "Metric": ["dssim", "pcc", "spre"],
+    "Metric": ["pcc", "spre"],
     "ModelType": "rf"
 }
