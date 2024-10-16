@@ -340,8 +340,19 @@ def main():
             for comp_label in metrics_data_var[metric_name]:
                 # comp_label is like 'ens1_zfp_1.0', 'ens2_zfp_1.0', etc.
                 parts = comp_label.split('_')
-                ens = parts[0]  # 'ens1' or 'ens2'
-                comp_level = '_'.join(parts[1:])  # e.g., 'zfp_1.0'
+
+                # Find the index of "zfp" in parts
+                try:
+                    zfp_index = parts.index('zfp')
+                except ValueError:
+                    logging.error(f"'zfp' not found in comp_label '{comp_label}'. Skipping.")
+                    continue
+
+                # Extract 'ens' part (everything before "zfp")
+                ens = '_'.join(parts[:zfp_index])
+
+                # Combine all elements starting with "zfp" into comp_level
+                comp_level = '_'.join(parts[zfp_index:])  # e.g., 'zfp_1.0'
                 if comp_level not in comp_level_dict:
                     comp_level_dict[comp_level] = []
                 data_array = metrics_data_var[metric_name][comp_label]
