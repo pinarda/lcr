@@ -9,7 +9,7 @@
     "SubDirs": ["lens1_ens25_1920", "lens1_ens25_2006"],
     "CompDirs": ["zfp_p_6", "zfp_p_14", "zfp_p_24"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "Times": [100],
+    "Times": [5],
     "Navg": 1,
     "StorageLoc": "./data/",
     "Stride": 1,
