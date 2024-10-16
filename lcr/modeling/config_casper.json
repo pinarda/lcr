@@ -11,7 +11,7 @@
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [5],
     "Navg": 1,
-    "StorageLoc": "./data/",
+    "StorageLoc": "./data",
     "Stride": 1,
     "CutDataset": 0,
     "Metric": ["dssim", "pcc", "spre"],
