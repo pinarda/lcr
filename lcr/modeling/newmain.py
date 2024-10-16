@@ -253,8 +253,9 @@ def main():
 
                 logging.info(f"Computing metrics between {orig_label} and {comp_label} for {m}...")
 
-                # log all the elements in the dataset_col
-                logging.info(f"Dataset col: {dataset_col}")
+                # log all the collections in the dataset
+                logging.info(f"Dataset collections: {dataset_col[varname]['collection'].values}")
+
 
                 try:
                     ds_orig = dataset_col[varname].sel(collection=orig_label)
