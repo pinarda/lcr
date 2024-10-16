@@ -234,25 +234,20 @@ def main():
         orig_labels = [f"{subdir}_orig" for subdir in sub_dirs]
         comp_labels = [f"{subdir}_{comp_dir}" for comp_dir in comp_dirs for subdir in sub_dirs]
 
+        label_mapping = {f"{subdir}_{comp_dir}": f"{subdir}_orig" for comp_dir in comp_dirs for subdir in sub_dirs}
+
         # log the original labels
         logging.info(f"Original labels: {orig_labels}")
 
         # Iterate over compression directories and compute metrics
         for comp_label in comp_labels:
-            # Extract subdir from comp_label by splitting on '_'
-            subdir = comp_label.split('_')[0]
-
-            # Find the index of the subdir in sub_dirs
-            try:
-                subdir_index = sub_dirs.index(subdir)
-            except ValueError:
-                logging.error(f"Subdir '{subdir}' not found in sub_dirs list. Skipping comp_label '{comp_label}'.")
+            orig_label = label_mapping.get(comp_label)
+            if orig_label is None:
+                logging.error(f"No matching orig_label found for comp_label '{comp_label}'. Skipping.")
                 continue
 
-            # Use the index to get the corresponding original label
-            orig_label = orig_labels[subdir_index]
-
-
+            # Proceed with the logic using the orig_label and comp_label
+            logging.info(f"Processing: orig_label={orig_label}, comp_label={comp_label}")
 
             for m in metric:
                 # Create a unique filename based on varname, orig_label, comp_label, and metric
