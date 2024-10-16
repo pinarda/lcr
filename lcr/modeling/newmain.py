@@ -574,8 +574,15 @@ def compute_features(data_xr, featurelist):
                 "n_s_first_differences_max",
                 "mean",
             ]:
+                # let's log the feature and value of i if i is a multiple of 10
+                if i % 10 == 0:
+                    logging.info(f"Computing feature {feature} for sample {i}")
+
                 feat_da = dc.get_calc(feature)
             else:
+                # also log here the feature and value of i if i is a multiple of 10
+                if i % 10 == 0:
+                    logging.info(f"Computing feature {feature} for sample {i}")
                 # For features that don't depend on spatial dimensions
                 dc_nospatial = ldcpy.Datasetcalcs(
                     sample_da, "cam-fv", [], weighted=False
