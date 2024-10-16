@@ -383,12 +383,12 @@ def main():
 
         # Extract data for this variable
         data_var = opened_datasets[varname][varname]  # Get the DataArray for the variable
-        logging.info(f" length of data_var {len(data_var['sample'])}")
 
         # Select both 'ens1_orig' and 'ens2_orig' datasets
         data_var = data_var.sel(collection=[label for label in data_var['collection'].values if 'orig' in label])
 
-        logging.info(f" length of data_var {len(data_var['sample'])}")
+        # log the number of time steps
+        logging.info(f" length of data_var time {len(data_var['time'])} and collection {len(data_var['collection'])}")
         # cut the dataset to only use times[0] number of time steps
         # data_var = data_var.isel(time=slice(times[0]))
 
