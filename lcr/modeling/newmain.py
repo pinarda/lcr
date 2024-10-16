@@ -383,10 +383,12 @@ def main():
 
         # Extract data for this variable
         data_var = opened_datasets[varname][varname]  # Get the DataArray for the variable
+        logging.info(f" length of data_var {len(data_var['sample'])}")
 
         # Select both 'ens1_orig' and 'ens2_orig' datasets
         data_var = data_var.sel(collection=[label for label in data_var['collection'].values if 'orig' in label])
 
+        logging.info(f" length of data_var {len(data_var['sample'])}")
         # cut the dataset to only use times[0] number of time steps
         # data_var = data_var.isel(time=slice(times[0]))
 
@@ -404,6 +406,7 @@ def main():
         # Get labels for this variable
         labels_var = final_comparison_labels_dict[varname]
 
+        logging.info(f"length of labels_var {len(labels_var)}")
         # Ensure labels are a flat array
         # first, convert to numpy array
         labels_var = labels_var.values
