@@ -289,6 +289,8 @@ def main():
 
                 # Iterate over each time step
                 for t in range(num_time_steps):
+                    # log the time step
+                    logging.info(f"Processing time step {t}...")
                     # Select the current time slice for original and compressed datasets
                     ds_orig_time = ds_orig_aligned.isel(**{time_dim_name: t})
                     ds_comp_time = ds_comp_aligned.isel(**{time_dim_name: t})
