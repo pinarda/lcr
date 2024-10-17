@@ -6,7 +6,7 @@
     "FilenamePost": [".19200101-20051231.nc", ".20060101-20801231.nc"],
     "OrigPath": "/glade/derecho/scratch/apinard/RF_store_classify/data/",
     "CompPath": "/glade/derecho/scratch/apinard/RF_store_classify/data/",
-    "SubDirs": ["lens1_ens25_1920", "lens1_ens25_2006"],
+    "SubDirs": ["lens1_ens25_1920", "lens1_ens31_2006_2080"],
     "CompDirs": ["zfp_p_6", "zfp_p_14", "zfp_p_24"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
     "Times": [5],
