@@ -221,9 +221,9 @@ def main():
     # This should include 'comparison' and 'threshold' for each metric
     # Example:
     metrics_info = {
-        'dssim': {'comparison': 'gt', 'threshold': 0.8},
-        'pcc': {'comparison': 'gt', 'threshold': 0.9},
-        'spre': {'comparison': 'lt', 'threshold': 0.1}
+        'dssim': {'comparison': 'gt', 'threshold': 0.995},
+        'pcc': {'comparison': 'gt', 'threshold': 0.9995},
+        'spre': {'comparison': 'lt', 'threshold': 0.05}
     }
 
     metrics_data = {varname: {m: {} for m in metric} for varname in var_list}  # Separate metrics_data for each variable
@@ -254,7 +254,8 @@ def main():
 
             for m in metric:
                 # Create a unique filename based on varname, orig_label, comp_label, and metric
-                metric_filename = f"{storage_loc}/{varname}_{orig_label}_{comp_label}_{m}_time{times[0]}.npy"
+                metric_filename = f"{storage_loc}/{varname}_{orig_label}_{comp_label}_{m}_time{times[0]}_second.npy"
+                # metric_filename = f"{storage_loc}/{varname}_{orig_label}_{comp_label}_{m}.npy"
 
                 # Check if the file already exists
                 if os.path.exists(metric_filename):
