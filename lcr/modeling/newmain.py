@@ -512,7 +512,7 @@ def main():
             transform='quantile',
             jobid=0,
             cut_windows=False,
-            metric=metric
+            metric=metric,
         )
 
     # stop the client
@@ -535,6 +535,9 @@ def main():
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
         test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy")
         label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", allow_pickle=True)
+
+    # print the label encodings
+    logging.info(f"Label encodings: {label_encoder.classes_}")
 
     # Expand the dimensions of the data arrays to include a channels dimension
     train_data_np = np.expand_dims(train_data_np, axis=-1)
