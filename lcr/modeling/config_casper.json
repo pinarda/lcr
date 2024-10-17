@@ -1,7 +1,7 @@
 {
     "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
     "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
-    "VarList":  ["PRECT", "PSL", "Q200", "Q500", "Q850", "SHFLX", "T200", "T500", "T850", "TAUX", "TAUY", "TREFHTMX", "TS", "U010", "FLNS", "LHFLX", "PRECSL"],
+    "VarList":  ["LHFLX", "PRECSL", "PRECT", "PSL", "Q200", "Q500", "Q850", "SHFLX", "T200", "T500", "T850", "TAUX", "TAUY", "TREFHTMX", "TS", "U010", "FLNS"],
     "FilenamePre": ["b.e11.B20TRC5CNBDRD.f09_g16.025.cam.h1."],
     "FilenamePost": [".19200101-20051231.nc"],
     "OrigPath": "/glade/derecho/scratch/apinard/RF_store_classify/data/",
