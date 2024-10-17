@@ -11,6 +11,8 @@ from math import floor
 from classification_labels import classify
 # os.environ["HDF5_PLUGIN_PATH"]
 #
+# logging
+import logging
 
 import dask
 dask.config.set(**{'array.slicing.split_large_chunks': True})
@@ -110,24 +112,31 @@ def split_data(
         # Number of samples to use for testing (all samples from one variable)
         test_samples = samples_per_var
 
+        logging.info(f"Total samples: {total_samples}")
         # Indices for the test set (first variable)
         test_indices = np.arange(0, test_samples)
 
+        logging.info(f"Test indices: {test_indices}")
         # Indices for training and validation sets (remaining variables)
         train_val_indices = np.arange(test_samples, total_samples)
 
+        logging.info(f"Train/val indices: {train_val_indices}")
         # Extract test data and labels
         X_test_val = dataset.isel(sample=test_indices)
         y_test_val = label[test_indices]
 
+
         # Extract training and validation data and labels
         X_train = dataset.isel(sample=train_val_indices)
+        logging.info(f"X_train shape: {X_train.shape}")
         y_train = label[train_val_indices]
+        logging.info(f"y_train shape: {y_train.shape}")
 
         # Further split training and validation sets (e.g., 80% training, 20% validation)
         X_test, X_val, y_test, y_val = xarray_train_test_split(
             X_test_val, y_test_val, test_size=0.5, random_state=None
         )
+        logging.info(f"X_val shape: {X_val.shape}")
 
     else:
         # Default random split if testset is not '1var'
@@ -544,6 +553,8 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
                                                                                                 jobid=jobid, j=j)
     else:
         train_data, val_data, test_data = split_data(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j)
+
+
 
     # check the echosave directory, open trial_results.csv
     # read the column mean_squared_error to find the row with the minimum value
