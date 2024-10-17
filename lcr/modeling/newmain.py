@@ -254,7 +254,7 @@ def main():
 
             for m in metric:
                 # Create a unique filename based on varname, orig_label, comp_label, and metric
-                metric_filename = f"{storage_loc}/{varname}_{orig_label}_{comp_label}_{m}.npy"
+                metric_filename = f"{storage_loc}/{varname}_{orig_label}_{comp_label}_{m}_time{times[0]}.npy"
 
                 # Check if the file already exists
                 if os.path.exists(metric_filename):
