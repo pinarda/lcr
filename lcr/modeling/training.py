@@ -587,14 +587,14 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     test_labels_np = test_labels.astype(int)
 
     # save the data and labels as numpy arrays
-    np.save(f"{storageloc}train_data_{j}{time}{modeltype}{jobid}.npy", train_data_np)
-    np.save(f"{storageloc}val_data_{j}{time}{modeltype}{jobid}.npy", val_data_np)
-    np.save(f"{storageloc}test_data_{j}{time}{modeltype}{jobid}.npy", test_data_np)
-    np.save(f"{storageloc}train_labels_{j}{time}{modeltype}{jobid}.npy", train_labels_np)
-    np.save(f"{storageloc}val_labels_{j}{time}{modeltype}{jobid}.npy", val_labels_np)
-    np.save(f"{storageloc}test_labels_{j}{time}{modeltype}{jobid}.npy", test_labels_np)
+    np.save(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy", train_data_np)
+    np.save(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", val_data_np)
+    np.save(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", test_data_np)
+    np.save(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy", train_labels_np)
+    np.save(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy", val_labels_np)
+    np.save(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy", test_labels_np)
     # save the encoding also
-    with open(f"{storageloc}label_encoder_{j}{time}{modeltype}{jobid}.pkl", "wb") as f:
+    with open(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", "wb") as f:
         pickle.dump(label_encoder, f)
 
     return
