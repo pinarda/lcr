@@ -9,11 +9,11 @@
     "SubDirs": ["lens1_ens25_1920"],
     "CompDirs": ["zfp_p_16", "zfp_p_26"],
     "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
-    "Times": [20],
+    "Times": [5],
     "Navg": 1,
     "StorageLoc": "./data",
     "Stride": 1,
     "CutDataset": 0,
     "Metric": ["dssim", "pcc", "spre"],
-    "ModelType": "rf"
+    "ModelType": "cnn"
 }
