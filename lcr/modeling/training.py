@@ -707,7 +707,7 @@ def train_cnn(
             train_labels_np,
             validation_data=(val_data_np, val_labels_np),
             epochs=num_epochs,
-            batch_size=batch_size,
+            batch_size=1,
         )
 
         # Evaluate the model on test data
