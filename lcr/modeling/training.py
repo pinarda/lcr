@@ -114,7 +114,9 @@ def split_data(
 
         logging.info(f"Total samples: {total_samples}")
         # Indices for the test set (first variable)
-        test_indices = np.arange(0, test_samples)
+        test_indices = np.arange(0, 2*test_samples)
+        # indices for the validation set (second variable)
+        # val_indices = np.arange(test_samples, 2*test_samples)
 
         logging.info(f"Test indices: {test_indices}")
         # Indices for training and validation sets (remaining variables)
@@ -128,15 +130,12 @@ def split_data(
 
         # Extract training and validation data and labels
         X_train = dataset.isel(sample=train_val_indices)
-        logging.info(f"X_train shape: {X_train.shape}")
         y_train = label[train_val_indices]
-        logging.info(f"y_train shape: {y_train.shape}")
 
         # Further split training and validation sets (e.g., 80% training, 20% validation)
         X_test, X_val, y_test, y_val = xarray_train_test_split(
             X_test_val, y_test_val, test_size=0.5, random_state=None
         )
-        logging.info(f"X_val shape: {X_val.shape}")
 
     else:
         # Default random split if testset is not '1var'
