@@ -593,6 +593,9 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     np.save(f"{storageloc}train_labels_{j}{time}{modeltype}{jobid}.npy", train_labels_np)
     np.save(f"{storageloc}val_labels_{j}{time}{modeltype}{jobid}.npy", val_labels_np)
     np.save(f"{storageloc}test_labels_{j}{time}{modeltype}{jobid}.npy", test_labels_np)
+    # save the encoding also
+    with open(f"{storageloc}label_encoder_{j}{time}{modeltype}{jobid}.pkl", "wb") as f:
+        pickle.dump(label_encoder, f)
 
     return
 
@@ -700,14 +703,14 @@ def train_cnn(
 
         # Train the model
         num_epochs = 10  # Adjust as needed
-        batch_size = 32  # Adjust as needed
+        batch_size = 5  # Adjust as needed
 
         model.fit(
             train_data_np,
             train_labels_np,
             validation_data=(val_data_np, val_labels_np),
             epochs=num_epochs,
-            batch_size=1,
+            batch_size=batch_size,
         )
 
         # Evaluate the model on test data

@@ -534,6 +534,7 @@ def main():
         train_labels_np = np.load(f"{storageloc}train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}val_labels_{j}{time}{modeltype}{jobid}.npy")
         test_labels_np = np.load(f"{storageloc}test_labels_{j}{time}{modeltype}{jobid}.npy")
+        label_encoder = np.load(f"{storageloc}label_encoder_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
 
     # Expand the dimensions of the data arrays to include a channels dimension
     train_data_np = np.expand_dims(train_data_np, axis=-1)
