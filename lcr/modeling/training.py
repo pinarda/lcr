@@ -679,7 +679,10 @@ def train_cnn(
         # Update input_shape
         input_shape = train_data_np.shape[1:]  # Now input_shape is (192, 288, 1)
         i = tf.keras.Input(shape=input_shape)
-        x = tf.keras.layers.Conv2D(filter1, kernel_size=(2, 2), activation="relu")(i)
+        x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu", filters=3)(i)
+        x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
+        x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu", filters=3)(x)
+        x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
         if conv_layers >= 3:
             x = tf.keras.layers.Conv2D(filter1, kernel_size=(2, 2), activation="relu")(x)
         x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
@@ -689,7 +692,8 @@ def train_cnn(
         x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dropout(dropout)(x)
-        outputs = tf.keras.layers.Dense(2, activation="softmax")(x)
+        x = tf.keras.layers.Dense(128, activation="relu")(x)
+        outputs = tf.keras.layers.Dense(1, activation="softmax")(x)
 
         model = tf.keras.Model(inputs=i, outputs=outputs)
         # Compile the model for classification
