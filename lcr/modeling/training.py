@@ -693,7 +693,8 @@ def train_cnn(
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dropout(dropout)(x)
         x = tf.keras.layers.Dense(128, activation="relu")(x)
-        outputs = tf.keras.layers.Dense(1, activation="softmax")(x)
+        # softmax for multi-class classification, (number of classes will be the number of unique training and validation labels)
+        outputs = tf.keras.layers.Dense(len(np.unique(train_labels_np)), activation="softmax")(x)
 
         model = tf.keras.Model(inputs=i, outputs=outputs)
         # Compile the model for classification
