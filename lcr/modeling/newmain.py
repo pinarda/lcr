@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def main():
     # Read the JSON configuration
-    with open('config_casper.json', 'r') as f:
+    with open('config_casper_test.json', 'r') as f:
         config = json.load(f)
 
     # Extract parameters
