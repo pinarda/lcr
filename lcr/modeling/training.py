@@ -683,6 +683,8 @@ def train_cnn(
         x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
         x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
         x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
+        x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
+        x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
         if conv_layers >= 3:
             x = tf.keras.layers.Conv2D(filter1, kernel_size=(2, 2), activation="relu")(x)
         x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
@@ -692,8 +694,8 @@ def train_cnn(
         x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dropout(dropout)(x)
-        x = tf.keras.layers.Dense(128, activation="relu")(x)
-        # softmax for multi-class classification, (number of classes will be the number of unique training and validation labels)
+        x = tf.keras.layers.Dense(64, activation="relu")(x)
+        # softmax for multi-class classification, (number of classes will be the number of unique training validation labels)
         outputs = tf.keras.layers.Dense(len(np.unique(train_labels_np)), activation="softmax")(x)
 
         model = tf.keras.Model(inputs=i, outputs=outputs)
