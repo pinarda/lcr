@@ -117,7 +117,7 @@ def main():
         # Create an array to hold the final conservative label for each element
         combined_final_labels = xr.full_like(final_labels_dict[next(iter(final_labels_dict))], "None", dtype="object")
 
-        for comp_level in compression_level_order:
+        for comp_level in compression_level_order[::-1]:
             for metric, label_da in final_labels_dict.items():
                 if label_da is None:
                     continue
@@ -128,10 +128,10 @@ def main():
                     combined_final_labels
                 )
 
-        # Ensure no elements remain labeled as "None", fill them with the least conservative option
+        # Ensure no elements remain labeled as "None", fill them with the most conservative option
         combined_final_labels = xr.where(
             combined_final_labels == "None",
-            compression_level_order[-1],  # Fallback to the least conservative compression level
+            compression_level_order[-1],  # Fallback to the most conservative compression level
             combined_final_labels
         )
 
@@ -223,7 +223,8 @@ def main():
     metrics_info = {
         'dssim': {'comparison': 'gt', 'threshold': 0.995},
         'pcc': {'comparison': 'gt', 'threshold': 0.9995},
-        'spre': {'comparison': 'lt', 'threshold': 0.05}
+        'spre': {'comparison': 'lt', 'threshold': 5},
+        'ks': {'comparison': 'lt', 'threshold': 0.05}
     }
 
     metrics_data = {varname: {m: {} for m in metric} for varname in var_list}  # Separate metrics_data for each variable
@@ -303,7 +304,7 @@ def main():
                     ds_comp_time = ds_comp_aligned.isel(**{time_dim_name: t})
 
                     # Create a new Diffcalcs object for the current time slice
-                    dc = ldcpy.Diffcalcs(ds_orig_time, ds_comp_time, data_type='cam-fv')
+                    dc = ldcpy.Diffcalcs(ds_orig_time, ds_comp_time, data_type='cam-fv', aggregate_dims=['lat', 'lon'])
 
                     # Compute metrics for each type
                     if m == 'dssim':
@@ -321,6 +322,9 @@ def main():
                     elif m == 'spre':
                         spre_values = dc.get_diff_calc('spatial_rel_error').values.flatten()
                         metric_values.extend(spre_values)
+                    elif m == 'ks':
+                        ks_values = dc.get_diff_calc('ks_p_value').values.flatten()
+                        metric_values.extend(ks_values)
 
                 # Save the computed metric to a file for future use
                 np.save(metric_filename, metric_values)
