@@ -1,0 +1,9 @@
+model:
+  num_dense: 2
+  dropout: 0.3
+  activation: "relu"
+optimizer:
+  learning_rate: 0.001
+trainer:
+  epochs: 10
+  batch_size: 32
