@@ -605,6 +605,10 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
         train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon').values
         val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon').values
         test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon').values
+    else:
+        train_data_np = train_data
+        val_data_np = val_data
+        test_data_np = test_data
 
     # Adjust the labels if necessary (ensure they are integers starting from 0)
     train_labels_np = train_labels.astype(int)
