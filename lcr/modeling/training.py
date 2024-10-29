@@ -601,9 +601,10 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     #         conv_layers = int(lines[min_mse_index].split(",")[7])
     # else:
         # First, convert the train_data to a NumPy array with shape (samples, lat, lon, variables)
-    train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon').values
-    val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon').values
-    test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon').values
+    if modeltype == "cnn":
+        train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon').values
+        val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon').values
+        test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon').values
 
     # Adjust the labels if necessary (ensure they are integers starting from 0)
     train_labels_np = train_labels.astype(int)
