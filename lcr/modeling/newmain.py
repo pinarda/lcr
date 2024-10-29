@@ -36,6 +36,7 @@ def main():
     metric = config.get('Metric')                    # ["dssim", "pcc", "spre"]
     save_dir = config.get('SaveDir')                  # "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/"
     modeltype = config.get('ModelType')               # "cnn"
+    featurelist = config.get('RFFeatureList')           # ["mean", "ns_con_var"]
 
     # Add ldcpy to sys.path
     if opt_ldcpy_dev_path:
@@ -458,7 +459,7 @@ def main():
     time = times[0]
 
     if modeltype == 'rf':
-        featurelist = ["mean", "ns_con_var"]
+        # featurelist = ["mean", "ns_con_var"]
         features_np = compute_features(dataset_xr, featurelist)
 
         # Use features_np and combined_labels directly
@@ -553,6 +554,7 @@ def main():
     val_labels_np = val_labels_np.astype(int)
     test_labels_np = test_labels_np.astype(int)
 
+
     # Call the function to train the model
     model = train_cnn(
         train_data_np,
@@ -586,46 +588,47 @@ def compute_features(data_xr, featurelist):
     features_list = []
     n_samples = data_xr.dims['sample']
 
-    for i in range(n_samples):
-        sample = data_xr.isel(sample=i)  # Get the i-th sample
-        sample_da = sample['combined']   # Assuming 'combined' is the variable name
+    # for i in range(n_samples):
+    # sample = data_xr.isel(sample=i)  # Get the i-th sample
+    sample = data_xr  # Get the i-th sample
 
-        # Create ldcpy Datasetcalcs object
-        dc = ldcpy.Datasetcalcs(
-            sample_da, "cam-fv", ["lat", "lon"], weighted=False
-        )
+    sample_da = sample['combined']   # Assuming 'combined' is the variable name
 
-        sample_features = []
-        for feature in featurelist:
-            if feature in [
-                "ns_con_var",
-                "ew_con_var",
-                "w_e_first_differences",
-                "n_s_first_differences",
-                "fftratio",
-                "fftmax",
-                "w_e_first_differences_max",
-                "n_s_first_differences_max",
-                "mean",
-            ]:
-                # let's log the feature and value of i if i is a multiple of 10
-                if i % 10 == 0:
-                    logging.info(f"Computing feature {feature} for sample {i}")
+    # Create ldcpy Datasetcalcs object
+    dc = ldcpy.Datasetcalcs(
+        sample_da, "cam-fv", ["lat", "lon"], weighted=False
+    )
 
-                feat_da = dc.get_calc(feature)
-            else:
-                # also log here the feature and value of i if i is a multiple of 10
-                if i % 10 == 0:
-                    logging.info(f"Computing feature {feature} for sample {i}")
-                # For features that don't depend on spatial dimensions
-                dc_nospatial = ldcpy.Datasetcalcs(
-                    sample_da, "cam-fv", [], weighted=False
-                )
-                feat_da = dc_nospatial.get_single_calc(feature)
+    sample_features = []
+    for feature in featurelist:
+        if feature in [
+            "ns_con_var",
+            "ew_con_var",
+            "w_e_first_differences",
+            "n_s_first_differences",
+            "fftratio",
+            "fftmax",
+            "w_e_first_differences_max",
+            "n_s_first_differences_max",
+            "mean",
+        ]:
+            # let's log the feature and value of i if i is a multiple of 10
+            logging.info(f"Computing feature {feature}")
 
-            # Convert feature DataArray to numpy array
-            feat_np = feat_da.values.flatten()
-            sample_features.extend(feat_np)
+            feat_da = dc.get_calc(feature)
+        else:
+            # also log here the feature and value of i if i is a multiple of 10
+            # if i % 10 == 0:
+            logging.info(f"Computing feature {feature}")
+            # For features that don't depend on spatial dimensions
+            dc_nospatial = ldcpy.Datasetcalcs(
+                sample_da, "cam-fv", [], weighted=False
+            )
+            feat_da = dc_nospatial.get_single_calc(feature)
+
+        # Convert feature DataArray to numpy array
+        feat_np = feat_da.values.flatten()
+        sample_features.extend(feat_np)
 
         features_list.append(sample_features)
 

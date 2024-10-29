@@ -15,5 +15,6 @@
     "Stride": 1,
     "CutDataset": 0,
     "Metric": ["dssim", "pcc", "spre"],
-    "ModelType": "cnn"
+    "ModelType": "rf",
+    "RFFeatureList": ["mean", "ns_con_var"]
 }
