@@ -103,7 +103,10 @@ def split_data(
     """
 
     # Total number of samples
-    total_samples = dataset.dims['sample']
+    if modeltype == "cnn":
+        total_samples = dataset.dims['sample']
+    else:
+        total_samples = len(dataset)
 
     if testset == '1var':
         # Calculate the number of samples per variable
@@ -124,12 +127,18 @@ def split_data(
 
         logging.info(f"Train/val indices: {train_val_indices}")
         # Extract test data and labels
-        X_test_val = dataset.isel(sample=test_indices)
+        if modeltype == "cnn":
+            X_test_val = dataset.isel(sample=test_indices)
+        else:
+            X_test_val = dataset[test_indices]
         y_test_val = label[test_indices]
 
 
         # Extract training and validation data and labels
-        X_train = dataset.isel(sample=train_val_indices)
+        if modeltype == "cnn":
+            X_train = dataset.isel(sample=train_val_indices)
+        else:
+            X_train = dataset[train_val_indices]
         y_train = label[train_val_indices]
 
         # Further split training and validation sets (e.g., 80% training, 20% validation)
@@ -682,9 +691,6 @@ def train_cnn(
         x = tf.keras.layers.Conv2D(filter1, kernel_size=(3, 3), activation="relu")(i)
         x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
         x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
-        x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
-        x = tf.keras.layers.Conv2D(filter2, kernel_size=(3, 3), activation="relu")(x)
-        x = tf.keras.layers.MaxPooling2D(pool_size=(3, 3))(x)
         if conv_layers >= 3:
             x = tf.keras.layers.Conv2D(filter1, kernel_size=(2, 2), activation="relu")(x)
         x = tf.keras.layers.MaxPooling2D(pool_size=(2, 2))(x)

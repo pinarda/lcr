@@ -464,18 +464,49 @@ def main():
 
         # Use features_np and combined_labels directly
         labels_np = np.array(combined_labels)
+        #transpose the features
+        features_np = features_np.T
 
         # Split data into training, validation, and test sets
         from sklearn.model_selection import train_test_split
 
-        X_train_val, X_test, y_train_val, y_test = train_test_split(
-            features_np, labels_np, test_size=0.25, shuffle=False, stratify=None
+        # X_train_val, X_test, y_train_val, y_test = train_test_split(
+        #     features_np, labels_np, test_size=0.25, shuffle=False, stratify=None
+        # )
+        #
+        # X_train, X_val, y_train, y_val = train_test_split(
+        #     X_train_val, y_train_val, test_size=0.33333, shuffle=False, stratify=None
+        # )
+        # This results in 50% train, 25% val, 25% test
+
+        get_data_labels(
+            dataset=features_np,
+            labels=labels_np,
+            time=times[0],  # Adjust based on train_cnn requirements
+            varname='_'.join(var_list) + '_combined',
+            nvar=nvars,
+            storageloc=storage_loc,
+            testset='1var',
+            j=0,
+            plotdir=save_dir,
+            window_size=11,  # As per WINDOWSIZE
+            only_data=False,
+            modeltype='rf',
+            feature=None,
+            featurelist=None,
+            transform='quantile',
+            jobid=0,
+            cut_windows=False,
+            metric=metric,
         )
 
-        X_train, X_val, y_train, y_val = train_test_split(
-            X_train_val, y_train_val, test_size=0.33333, shuffle=False, stratify=None
-        )
-        # This results in 50% train, 25% val, 25% test
+        train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
+        val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy")
+        test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
+        train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
+        val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
+        test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy")
+        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", allow_pickle=True)
 
         # Proceed to train the Random Forest model
         from sklearn.ensemble import RandomForestClassifier
@@ -485,16 +516,16 @@ def main():
         model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=0)
 
         # Train the model
-        model.fit(X_train, y_train)
+        model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
-        val_predictions = model.predict(X_val)
-        val_accuracy = accuracy_score(y_val, val_predictions)
+        val_predictions = model.predict(val_data_np)
+        val_accuracy = accuracy_score(val_labels_np, val_predictions)
         print(f"Validation Accuracy: {val_accuracy}")
 
         # Evaluate on test data
-        test_predictions = model.predict(X_test)
-        test_accuracy = accuracy_score(y_test, test_predictions)
+        test_predictions = model.predict(test_data_np)
+        test_accuracy = accuracy_score(test_labels_np, test_predictions)
         print(f"Test Accuracy: {test_accuracy}")
         return
 
@@ -628,9 +659,8 @@ def compute_features(data_xr, featurelist):
 
         # Convert feature DataArray to numpy array
         feat_np = feat_da.values.flatten()
-        sample_features.extend(feat_np)
 
-        features_list.append(sample_features)
+        features_list.append(feat_np)
 
     # Convert features_list to numpy array
     features_np = np.array(features_list)
