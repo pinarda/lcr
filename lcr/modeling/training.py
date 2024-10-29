@@ -142,19 +142,34 @@ def split_data(
         y_train = label[train_val_indices]
 
         # Further split training and validation sets (e.g., 80% training, 20% validation)
-        X_test, X_val, y_test, y_val = xarray_train_test_split(
-            X_test_val, y_test_val, test_size=0.5, random_state=None
-        )
+        if modeltype == "cnn":
+            X_test, X_val, y_test, y_val = xarray_train_test_split(
+                X_test_val, y_test_val, test_size=0.5, random_state=None
+            )
+        else:
+            X_test, X_val, y_test, y_val = train_test_split(
+                X_test_val, y_test_val, test_size=0.5, random_state=None
+            )
 
     else:
-        # Default random split if testset is not '1var'
-        X_train_val, X_test, y_train_val, y_test = xarray_train_test_split(
-            dataset, label, test_size=0.2, random_state=42
-        )
-        # Further split training and validation sets
-        X_train, X_val, y_train, y_val = xarray_train_test_split(
-            X_train_val, y_train_val, test_size=0.25, random_state=42
-        )
+        if modeltype == "cnn":
+            # Default random split if testset is not '1var'
+            X_train_val, X_test, y_train_val, y_test = xarray_train_test_split(
+                dataset, label, test_size=0.2, random_state=42
+            )
+            # Further split training and validation sets
+            X_train, X_val, y_train, y_val = xarray_train_test_split(
+                X_train_val, y_train_val, test_size=0.25, random_state=42
+            )
+        else:
+            # Default random split if testset is not '1var'
+            X_train_val, X_test, y_train_val, y_test = train_test_split(
+                dataset, label, test_size=0.2, random_state=42
+            )
+            # Further split training and validation sets
+            X_train, X_val, y_train, y_val = train_test_split(
+                X_train_val, y_train_val, test_size=0.25, random_state=42
+            )
         # This results in 60% train, 20% val, 20% test
 
     # Optionally cut the data into smaller windows
