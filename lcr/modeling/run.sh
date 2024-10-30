@@ -13,7 +13,7 @@ for config_file in "$config_dir"/rotated_config_*.json; do
     cat <<EOF > "$job_script"
 #!/bin/tcsh
 ### Job Name
-#PBS -N CNN11_${config_name}_mytest
+#PBS -N CNN11_${config_name}_1000
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
