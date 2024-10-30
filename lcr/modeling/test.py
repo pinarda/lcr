@@ -3,7 +3,6 @@ import glob
 import re
 
 def test():
-    # Directory containing the data files
     data_dir = "data/"
 
     # List of features to process
@@ -33,22 +32,28 @@ def test():
             print(f"No files found for feature '{feature}', skipping.")
             continue
 
-        # Load each file as an xarray DataArray and store varnames in order
-        data_arrays = []
-        varnames = []
+        # Extract varname and sort files by varname
+        files_with_varnames = []
         for file in file_list:
-            # Extract varname from the filename using the regex pattern
             match = varname_pattern.search(file)
             if match:
                 varname = match.group(1)
-                varnames.append(varname)
-                data_arrays.append(xr.open_dataarray(file))
+                files_with_varnames.append((varname, file))
+
+        # Sort files by varname alphabetically
+        files_with_varnames.sort(key=lambda x: x[0])
+
+        # Separate sorted filenames and varnames for later use
+        sorted_varnames, sorted_files = zip(*files_with_varnames)
+
+        # Load each file as an xarray DataArray in sorted order
+        data_arrays = [xr.open_dataarray(file) for file in sorted_files]
 
         # Combine all DataArrays along the 'sample' dimension
         combined_data = xr.concat(data_arrays, dim="sample")
 
-        # Create a filename based on the concatenated varnames in order
-        varname_str = "_".join(varnames)
+        # Create a filename based on the sorted varnames in order
+        varname_str = "_".join(sorted_varnames)
         output_filename = f"{data_dir}{varname_str}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
 
         # Save the combined dataset
