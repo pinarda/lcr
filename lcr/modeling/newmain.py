@@ -649,9 +649,9 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
+        if os.path.exists(f"{storage_loc}/all_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/all_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
             features_list.append(feat_da.values.flatten())
             continue
         if feature in [
