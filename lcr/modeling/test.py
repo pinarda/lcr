@@ -16,7 +16,7 @@ def test():
     # Loop over each feature and combine files
     for feature in features:
         # Define the filename pattern for the current feature, where only VARNAME changes
-        file_pattern = f"*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
+        file_pattern = f"data/*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
 
         # Find all files in the current directory matching this pattern
         file_list = glob.glob(file_pattern)
@@ -33,7 +33,7 @@ def test():
         combined_data = xr.concat(data_arrays, dim="sample")
 
         # Save the combined dataset with 'varname' set to "all"
-        output_filename = f"all_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
+        output_filename = f"data/all_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
         combined_data.to_netcdf(output_filename)
 
         print(f"Files for feature '{feature}' have been combined and saved as '{output_filename}'")
