@@ -11,12 +11,14 @@ from dask.distributed import Client
 import dask.array as da
 import numpy as np
 
+
+
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
     # Read the JSON configuration
-    with open('config_casper_test.json', 'r') as f:
+    with open('rotated_config_1.json', 'r') as f:
         config = json.load(f)
 
     # Extract parameters
@@ -37,6 +39,7 @@ def main():
     save_dir = config.get('SaveDir')                  # "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/"
     modeltype = config.get('ModelType')               # "cnn"
     featurelist = config.get('RFFeatureList')           # ["mean", "ns_con_var"]
+    flat_var_list =[var for group in var_list for var in group]
 
     # Add ldcpy to sys.path
     if opt_ldcpy_dev_path:
@@ -144,8 +147,8 @@ def main():
     # Mappings for prefixes and postfixes based on ensembles
 
     # Initialize dictionaries to store files and labels
-    files_dict = {varname: [] for varname in var_list}
-    labels_dict = {varname: [] for varname in var_list}
+    files_dict = {varname: [] for varname in flat_var_list}
+    labels_dict = {varname: [] for varname in flat_var_list}
 
     i = 0
     for subdir in sub_dirs:
@@ -154,7 +157,7 @@ def main():
         post = filename_post[i]
         i = i + 1
 
-        for varname in var_list:
+        for varname in flat_var_list:
             # Original data files and labels
             orig_file = os.path.join(base_orig_path, subdir, 'orig', pre + varname + post)
             files_dict[varname].append(orig_file)
@@ -171,7 +174,7 @@ def main():
 
     client = Client(n_workers=4, threads_per_worker=1, memory_limit='20GB')  # Adjust as needed
     try:
-        for varname in var_list:
+        for varname in flat_var_list:
             logging.info(f"Opening datasets for variable: {varname}")
 
             # Retrieve files and labels for the current variable
@@ -206,7 +209,7 @@ def main():
     # Initialize an empty list to collect datasets
     datasets_to_merge = []
 
-    for varname in var_list:
+    for varname in flat_var_list:
         dataset = opened_datasets[varname]
         datasets_to_merge.append(dataset)
 
@@ -228,9 +231,9 @@ def main():
         'ks': {'comparison': 'lt', 'threshold': 0.05}
     }
 
-    metrics_data = {varname: {m: {} for m in metric} for varname in var_list}  # Separate metrics_data for each variable
+    metrics_data = {varname: {m: {} for m in metric} for varname in flat_var_list}  # Separate metrics_data for each variable
 
-    for varname in var_list:
+    for varname in flat_var_list:
         logging.info(f"Computing metrics for variable: {varname}")
 
         dataset_col = opened_datasets[varname]
@@ -337,7 +340,7 @@ def main():
 
     # Combine metrics data from 'ens1' and 'ens2' under each compression level
     metrics_data_combined = {}
-    for varname in var_list:
+    for varname in flat_var_list:
         metrics_data_var = metrics_data[varname]
         metrics_data_combined[varname] = {}
         for metric_name in metrics_data_var:
@@ -372,7 +375,7 @@ def main():
     final_comparison_labels_dict = {}
     final_labels_dict = {}
 
-    for varname in var_list:
+    for varname in flat_var_list:
         metrics_data_var = metrics_data_combined[varname]
         # here
 
@@ -395,7 +398,7 @@ def main():
     # Initialize list to store combined labels for each variable
     combined_labels_list = []
 
-    for varname in var_list:
+    for varname in flat_var_list:
         logging.info(f"Processing variable: {varname}")
 
         # Extract data for this variable
@@ -448,7 +451,7 @@ def main():
     logging.info("Data prepared successfully.")
 
     # Number of variables
-    nvars = len(var_list)  # Should be equal to len(var_list)
+    nvars = len(flat_var_list)  # Should be equal to len(var_list)
 
     # Call train_cnn
     logging.info("Calling train_cnn for training...")
@@ -483,7 +486,7 @@ def main():
             dataset=features_np,
             labels=labels_np,
             time=times[0],  # Adjust based on train_cnn requirements
-            varname='_'.join(var_list) + '_combined',
+            varname='_'.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='1var',
@@ -498,6 +501,7 @@ def main():
             jobid=0,
             cut_windows=False,
             metric=metric,
+            vars = var_list
         )
 
         train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
@@ -534,7 +538,7 @@ def main():
             dataset=dataset_xr,
             labels=combined_labels,
             time=times[0],  # Adjust based on train_cnn requirements
-            varname='_'.join(var_list) + '_combined',
+            varname='_'.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='1var',
@@ -549,6 +553,7 @@ def main():
             jobid=0,
             cut_windows=False,
             metric=metric,
+            vars = var_list
         )
 
     # stop the client

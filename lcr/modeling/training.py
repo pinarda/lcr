@@ -65,7 +65,8 @@ def split_data(
     metric=None,
     modeltype=None,
     jobid=None,
-    j=None
+    j=None,
+    vars=None,
 ) -> tuple:
     """
     Splits the data into training, validation, and testing sets based on the `testset` variable.
@@ -113,9 +114,11 @@ def split_data(
         samples_per_var = total_samples // nvar
 
         # Number of samples to use for testing (all samples from one variable)
-        test_samples = samples_per_var
 
         logging.info(f"Total samples: {total_samples}")
+        # first, find out how big the first variable group is (length of vars[0])
+        # then, use that to determine the number of samples to use for testing
+        test_samples = len(vars[0]) * samples_per_var
         # Indices for the test set (first variable)
         test_indices = np.arange(0, 2*test_samples)
         # indices for the validation set (second variable)
@@ -123,7 +126,7 @@ def split_data(
 
         logging.info(f"Test indices: {test_indices}")
         # Indices for training and validation sets (remaining variables)
-        train_val_indices = np.arange(test_samples, total_samples)
+        train_val_indices = np.arange(2*test_samples, total_samples)
 
         logging.info(f"Train/val indices: {train_val_indices}")
         # Extract test data and labels
@@ -497,7 +500,7 @@ def convert_np_to_xr(np_arrays, titles=None):
     return ldcpy_da
 
 def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, storageloc,
-                                   testset="random", j=None, plotdir=None, window_size=WINDOWSIZE, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0, cut_windows=True, metric=["dssim"]) -> float:
+                                   testset="random", j=None, plotdir=None, window_size=WINDOWSIZE, only_data=False, modeltype="cnn", feature=None, featurelist=None, transform="quantile", jobid=0, cut_windows=True, metric=["dssim"], vars=None) -> float:
     """
     Train a CNN for DSSIM regression and return the average error.
 
@@ -573,9 +576,9 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
                                                                                                 storageloc=storageloc,
                                                                                                 metric=metric,
                                                                                                 modeltype=modeltype,
-                                                                                                jobid=jobid, j=j)
+                                                                                                jobid=jobid, j=j, vars=vars)
     else:
-        train_data, val_data, test_data = split_data(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j)
+        train_data, val_data, test_data = split_data(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j, vars=vars)
 
 
 
