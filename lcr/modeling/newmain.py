@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def main():
     # Read the JSON configuration
-    with open('rotated_config_1.json', 'r') as f:
+    with open('rotated_config_2.json', 'r') as f:
         config = json.load(f)
 
     # Extract parameters
