@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Process a configuration JSON file.")
-    parser.add_argument('-c', '--config', type=str, default='config.json',
+    parser.add_argument('-c', '--config', type=str, default='config_casper_test.json',
                         help="Path to the configuration JSON file (default: config.json)")
 
     # Parse the arguments
@@ -649,9 +649,22 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/all_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
+        if os.path.exists(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_labeled_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/all_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_labeled_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+
+            # Remove '_combined' from the end of the varname string and split by '_'
+            desired_order = varname.replace("_combined", "").split("_")
+
+            # Get the current 'sample' coordinate, which contains the variable labels
+            current_order = feat_da.coords['sample'].values
+
+            # Create an index array to reorder the data according to desired_order
+            reorder_index = [np.where(current_order == var)[0][0] for var in desired_order if var in current_order]
+
+            # Reorder the DataArray along the 'sample' dimension
+            reordered_data = feat_da.isel(sample=reorder_index)
+
             features_list.append(feat_da.values.flatten())
             continue
         if feature in [
