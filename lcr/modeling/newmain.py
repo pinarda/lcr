@@ -10,16 +10,27 @@ import gc
 from dask.distributed import Client
 import dask.array as da
 import numpy as np
-
+import argparse
 
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
-    # Read the JSON configuration
-    with open('rotated_config_2.json', 'r') as f:
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Process a configuration JSON file.")
+    parser.add_argument('-c', '--config', type=str, default='config.json',
+                        help="Path to the configuration JSON file (default: config.json)")
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Read the specified JSON configuration
+    with open(args.config, 'r') as f:
         config = json.load(f)
+
+    # Your existing code that processes 'config' goes here
+    print("Loaded configuration:", config)
 
     # Extract parameters
     base_orig_path = config.get('OrigPath')          # e.g., "/Users/alex/git/ldcpy/data/cam-fv/orig/"
@@ -463,7 +474,7 @@ def main():
 
     if modeltype == 'rf':
         # featurelist = ["mean", "ns_con_var"]
-        features_np = compute_features(dataset_xr, featurelist)
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, '_'.join(flat_var_list) + '_combined', orig_label, "all", times)
 
         # Use features_np and combined_labels directly
         labels_np = np.array(combined_labels)
@@ -606,7 +617,7 @@ def main():
     evaluate_model(model, test_data_np, test_labels_np)
 
 
-def compute_features(data_xr, featurelist):
+def compute_features(data_xr, featurelist, storage_loc="./data", varname="combined", orig_label="orig", m="metric", times=None):
     """
     Compute features for each sample in the dataset using ldcpy.
 
@@ -637,6 +648,12 @@ def compute_features(data_xr, featurelist):
 
     sample_features = []
     for feature in featurelist:
+        # check if the file already exists
+        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
+            logging.info(f"Loading cached feature: {feature}")
+            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+            features_list.append(feat_da.values.flatten())
+            continue
         if feature in [
             "ns_con_var",
             "ew_con_var",
@@ -661,6 +678,13 @@ def compute_features(data_xr, featurelist):
                 sample_da, "cam-fv", [], weighted=False
             )
             feat_da = dc_nospatial.get_single_calc(feature)
+
+        # save the feature to file
+        # Flatten the MultiIndex by resetting it to coordinates
+        flat_da = feat_da.reset_index('sample')  # Replace 'sample' with the appropriate dimension name if different
+
+        # Save as a NetCDF file
+        flat_da.to_netcdf(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
 
         # Convert feature DataArray to numpy array
         feat_np = feat_da.values.flatten()
