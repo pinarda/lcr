@@ -60,6 +60,7 @@ def main():
     from training import get_data_labels, train_cnn, evaluate_model
     from classification_labels import compare_across_metrics
 
+
     # Define the custom labeling function
     def generate_classification_labels(metrics_info, metrics_data, compression_level_order):
         """
@@ -649,23 +650,32 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_labeled_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
+        if os.path.exists(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_labeled_combined_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc")
 
+            # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
             # Remove '_combined' from the end of the varname string and split by '_'
             desired_order = varname.replace("_combined", "").split("_")
 
             # Get the current 'sample' coordinate, which contains the variable labels
-            current_order = feat_da.coords['sample'].values
+            filename_order_string = "FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010"
+            current_order = filename_order_string.split("_")
 
-            # Create an index array to reorder the data according to desired_order
-            reorder_index = [np.where(current_order == var)[0][0] for var in desired_order if var in current_order]
+            # Repeat each variable name in `current_order` 100 times to match the data structure
+            expanded_current_order = np.repeat(current_order, 100)
+
+            # Create an index array to reorder the data according to `desired_order`
+            reorder_index = np.concatenate([
+                np.where(expanded_current_order == var)[0] for var in desired_order if var in expanded_current_order
+            ])
 
             # Reorder the DataArray along the 'sample' dimension
             reordered_data = feat_da.isel(sample=reorder_index)
 
-            features_list.append(feat_da.values.flatten())
+            print("Data has been reordered according to the specified varname order and saved as 'reordered_data.nc'")
+
+            features_list.append(reordered_data.values.flatten())
             continue
         if feature in [
             "ns_con_var",
