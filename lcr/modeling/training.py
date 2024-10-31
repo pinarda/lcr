@@ -706,6 +706,10 @@ def train_cnn(
     filter2 = 64
     dropout = 0.5
     conv_layers = 2
+    # set the random seed
+    np.random.seed(42)
+    tf.random.set_seed(42)
+
 
     if modeltype == "cnn":
         # Update input_shape

@@ -3,6 +3,13 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "TREFHTMX",
+      "TS"
+    ],
+    [
+      "LHFLX"
+    ],
+    [
       "PRECSL",
       "PRECT"
     ],
@@ -31,13 +38,6 @@
     ],
     [
       "FLNS"
-    ],
-    [
-      "TREFHTMX",
-      "TS"
-    ],
-    [
-      "LHFLX"
     ]
   ],
   "FilenamePre": [
@@ -68,9 +68,8 @@
     "pcc",
     "spre"
   ],
-  "ModelType": "rf",
+  "ModelType": "cnn",
   "RFFeatureList": [
-    "mean",
     "ns_con_var",
     "ew_con_var",
     "n_s_first_differences",

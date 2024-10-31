@@ -11,6 +11,8 @@ from dask.distributed import Client
 import dask.array as da
 import numpy as np
 import argparse
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 # Setup logging
@@ -556,10 +558,28 @@ def main():
 
         print(cr)
 
+        # Get the labels from the label encoder
+        labels = label_encoder.classes_
+
+        # Check dimensions and assign labels
+        if confusion_matrix.shape == (2, 2):
+            confusion_df = pd.DataFrame(confusion_matrix, index=labels, columns=labels)
+        elif confusion_matrix.shape == (1, 1):
+            # Use the single label for both row and column
+            confusion_df = pd.DataFrame(confusion_matrix, index=[labels[0]], columns=[labels[0]])
+        else:
+            raise ValueError("Unexpected confusion matrix dimensions")
+
+        # Display the labeled DataFrame
+        print(confusion_df)
+
         # save them to a file
-        np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cm)
         np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr)
-        return
+        # save the confusion matrix df as csv
+        confusion_df.to_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
+
+        # let's also save the label encoder classes
+        np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
 
     else:
         get_data_labels(
@@ -584,8 +604,8 @@ def main():
             vars = var_list
         )
 
-    # stop the client
-    client.close()
+        # stop the client
+        client.close()
 
     # load all this data:
     # np.save(f"{storageloc}train_data_{j}{time}{modeltype}{jobid}.npy", train_data_np)
@@ -605,37 +625,90 @@ def main():
         test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy")
         label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", allow_pickle=True)
 
-    # print the label encodings
-    logging.info(f"Label encodings: {label_encoder.classes_}")
+        # print the label encodings
+        logging.info(f"Label encodings: {label_encoder.classes_}")
 
-    # Expand the dimensions of the data arrays to include a channels dimension
-    train_data_np = np.expand_dims(train_data_np, axis=-1)
-    val_data_np = np.expand_dims(val_data_np, axis=-1)
-    test_data_np = np.expand_dims(test_data_np, axis=-1)
+        # Expand the dimensions of the data arrays to include a channels dimension
+        train_data_np = np.expand_dims(train_data_np, axis=-1)
+        val_data_np = np.expand_dims(val_data_np, axis=-1)
+        test_data_np = np.expand_dims(test_data_np, axis=-1)
 
-    # Adjust the labels if necessary (ensure they are integers starting from 0)
-    train_labels_np = train_labels_np.astype(int)
-    val_labels_np = val_labels_np.astype(int)
-    test_labels_np = test_labels_np.astype(int)
+        # Adjust the labels if necessary (ensure they are integers starting from 0)
+        train_labels_np = train_labels_np.astype(int)
+        val_labels_np = val_labels_np.astype(int)
+        test_labels_np = test_labels_np.astype(int)
 
 
-    # Call the function to train the model
-    model = train_cnn(
-        train_data_np,
-        train_labels_np,
-        val_data_np,
-        val_labels_np,
-        test_data_np,
-        test_labels_np,
-        modeltype="cnn",
-        transform=None,
-    )
+        # Call the function to train the model
+        model = train_cnn(
+            train_data_np,
+            train_labels_np,
+            val_data_np,
+            val_labels_np,
+            test_data_np,
+            test_labels_np,
+            modeltype="cnn",
+            transform=None,
+        )
 
-    accuracy, confusion, classreport = evaluate_model(model, test_data_np, test_labels_np)
+        accuracy, confusion, classreport = evaluate_model(model, test_data_np, test_labels_np)
 
-    # save the confusion matrix and classification report
-    np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", confusion)
-    np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", classreport)
+        # Get the labels from the label encoder
+        labels = label_encoder.classes_
+
+        # Check dimensions and assign labels
+        if confusion_matrix.shape == (2, 2):
+            confusion_df = pd.DataFrame(confusion_matrix, index=labels, columns=labels)
+        elif confusion_matrix.shape == (1, 1):
+            # Use the single label for both row and column
+            confusion_df = pd.DataFrame(confusion_matrix, index=[labels[0]], columns=[labels[0]])
+        else:
+            raise ValueError("Unexpected confusion matrix dimensions")
+
+        # Display the labeled DataFrame
+        print(confusion_df)
+
+
+        # save the confusion matrix and classification report
+        np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", classreport)
+        # save the confusion matrix df as csv
+        confusion_df.to_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
+        # save the label encoder classes
+        np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
+
+    # make a plot of the confusion matrix where the height is the sum of the row, and the diagonal element in the row is shaded in a different color
+
+    # Calculate column sums
+    column_sums = confusion_df.sum(axis=0)
+
+    # Get diagonal and off-diagonal values
+    diagonal_values = np.diag(confusion_df)
+    off_diagonal_values = column_sums - diagonal_values
+
+    # Plotting
+    fig, ax = plt.subplots()
+
+    # Create bars with different colors for diagonal and off-diagonal elements
+    for i, label in enumerate(labels):
+        ax.bar(
+            label,
+            column_sums[i],
+            color='lightgray',  # Color for off-diagonal
+            label="Incorrect" if i == 0 else "",  # Label only once for legend
+        )
+        ax.bar(
+            label,
+            diagonal_values[i],
+            color='darkblue',  # Bold color for correct predictions
+            label="Correct" if i == 0 else "",  # Label only once for legend
+        )
+
+    # Add labels and legend
+    ax.set_ylabel("Counts")
+    ax.set_title("Confusion Matrix Summary by Label")
+    ax.legend()
+
+    plt.show()
 
 def compute_features(data_xr, featurelist, storage_loc="./data", varname="combined", orig_label="orig", m="metric", times=None):
     """
