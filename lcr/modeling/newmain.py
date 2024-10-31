@@ -723,6 +723,8 @@ def main():
     ax.legend()
 
     plt.show()
+    # save the plot
+    fig.savefig(f"{storageloc}/confusion_matrix_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
 
 def compute_features(data_xr, featurelist, storage_loc="./data", varname="combined", orig_label="orig", m="metric", times=None):
     """
