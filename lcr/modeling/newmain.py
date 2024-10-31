@@ -562,11 +562,11 @@ def main():
         labels = label_encoder.classes_
 
         # Check dimensions and assign labels
-        if confusion_matrix.shape == (2, 2):
-            confusion_df = pd.DataFrame(confusion_matrix, index=labels, columns=labels)
-        elif confusion_matrix.shape == (1, 1):
+        if cm.shape == (2, 2):
+            confusion_df = pd.DataFrame(cm, index=labels, columns=labels)
+        elif cm.shape == (1, 1):
             # Use the single label for both row and column
-            confusion_df = pd.DataFrame(confusion_matrix, index=[labels[0]], columns=[labels[0]])
+            confusion_df = pd.DataFrame(cm, index=[labels[0]], columns=[labels[0]])
         else:
             raise ValueError("Unexpected confusion matrix dimensions")
 
@@ -657,11 +657,11 @@ def main():
         labels = label_encoder.classes_
 
         # Check dimensions and assign labels
-        if confusion_matrix.shape == (2, 2):
-            confusion_df = pd.DataFrame(confusion_matrix, index=labels, columns=labels)
-        elif confusion_matrix.shape == (1, 1):
+        if confusion.shape == (2, 2):
+            confusion_df = pd.DataFrame(confusion, index=labels, columns=labels)
+        elif confusion.shape == (1, 1):
             # Use the single label for both row and column
-            confusion_df = pd.DataFrame(confusion_matrix, index=[labels[0]], columns=[labels[0]])
+            confusion_df = pd.DataFrame(confusion, index=[labels[0]], columns=[labels[0]])
         else:
             raise ValueError("Unexpected confusion matrix dimensions")
 
