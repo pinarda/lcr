@@ -690,6 +690,19 @@ def main():
 
     # Create bars with different colors for diagonal and off-diagonal elements
     for i, label in enumerate(labels):
+        if len(column_sums) == 1 and i == 1:
+            ax.bar(
+                label,
+                0,
+                color='lightgray',  # Color for off-diagonal
+                label="Incorrect" if i == 0 else "",  # Label only once for legend
+            )
+            ax.bar(
+                label,
+                0,
+                color='darkblue',  # Bold color for correct predictions
+                label="Correct" if i == 0 else "",  # Label only once for legend
+            )
         ax.bar(
             label,
             column_sums[i],
