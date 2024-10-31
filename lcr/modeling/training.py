@@ -753,6 +753,8 @@ def train_cnn(
             batch_size=batch_size,
         )
 
+
+
         # Evaluate the model on test data
         test_loss, test_accuracy = model.evaluate(test_data_np, test_labels_np)
         print(f"Test Accuracy: {test_accuracy}")
@@ -795,7 +797,10 @@ def evaluate_model(model, test_data, test_labels):
     print("Classification Report:")
     print(class_report)
 
-    return accuracy, conf_matrix, class_report
+    # save the confusion matrix and classification report
+
+
+    return accuracy, conf_matrix, class_report, predictions
 
     # # Define filter sizes, dropout rate, and number of convolutional layers as needed
     # filter1 = 32  # Example value, adjust as needed
