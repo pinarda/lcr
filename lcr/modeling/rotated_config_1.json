@@ -70,13 +70,11 @@
   ],
   "ModelType": "rf",
   "RFFeatureList": [
-    "mean",
     "ns_con_var",
     "ew_con_var",
     "n_s_first_differences",
     "w_e_first_differences",
     "n_s_first_differences_max",
-    "w_e_first_differences_max",
-    "real_information_cutoff"
+    "w_e_first_differences_max"
   ]
 }
