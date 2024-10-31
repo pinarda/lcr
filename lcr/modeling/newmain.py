@@ -703,18 +703,19 @@ def main():
                 color='darkblue',  # Bold color for correct predictions
                 label="Correct" if i == 0 else "",  # Label only once for legend
             )
-        ax.bar(
-            label,
-            column_sums[i],
-            color='lightgray',  # Color for off-diagonal
-            label="Incorrect" if i == 0 else "",  # Label only once for legend
-        )
-        ax.bar(
-            label,
-            diagonal_values[i],
-            color='darkblue',  # Bold color for correct predictions
-            label="Correct" if i == 0 else "",  # Label only once for legend
-        )
+        else:
+            ax.bar(
+                label,
+                column_sums[i],
+                color='lightgray',  # Color for off-diagonal
+                label="Incorrect" if i == 0 else "",  # Label only once for legend
+            )
+            ax.bar(
+                label,
+                diagonal_values[i],
+                color='darkblue',  # Bold color for correct predictions
+                label="Correct" if i == 0 else "",  # Label only once for legend
+            )
 
     # Add labels and legend
     ax.set_ylabel("Counts")
