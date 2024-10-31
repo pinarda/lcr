@@ -120,13 +120,13 @@ def split_data(
         # then, use that to determine the number of samples to use for testing
         test_samples = len(vars[0]) * samples_per_var
         # Indices for the test set (first variable)
-        test_indices = np.arange(0, 2*test_samples)
+        test_indices = np.arange(0, test_samples)
         # indices for the validation set (second variable)
         # val_indices = np.arange(test_samples, 2*test_samples)
 
         logging.info(f"Test indices: {test_indices}")
         # Indices for training and validation sets (remaining variables)
-        train_val_indices = np.arange(2*test_samples, total_samples)
+        train_val_indices = np.arange(test_samples, total_samples)
 
         logging.info(f"Train/val indices: {train_val_indices}")
         # Extract test data and labels

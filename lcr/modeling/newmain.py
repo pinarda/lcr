@@ -544,7 +544,21 @@ def main():
         test_accuracy = accuracy_score(test_labels_np, test_predictions)
         print(f"Test Accuracy: {test_accuracy}")
 
-        evaluate_model(model, test_data_np, test_labels_np)
+        # let's create a confusion matrix and classification report
+        from sklearn.metrics import confusion_matrix, classification_report
+
+        # confusion matrix
+        cm = confusion_matrix(test_labels_np, test_predictions)
+        print(cm)
+
+        # classification report
+        cr = classification_report(test_labels_np, test_predictions)
+
+        print(cr)
+
+        # save them to a file
+        np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}.npy", cm)
+        np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}.npy", cr)
         return
 
     else:
