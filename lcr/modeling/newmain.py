@@ -557,21 +557,22 @@ def main():
         cr = classification_report(test_labels_np, test_predictions)
 
         print(cr)
+        # Map numerical predictions back to original labels
+        predicted_labels = label_encoder.inverse_transform(test_predictions)
 
-        # Get the labels from the label encoder
-        newlabels = label_encoder.classes_
+        # Identify unique labels present in predictions
+        unique_labels = np.unique(predicted_labels)
 
-        # Check dimensions and assign labels
-        if cm.shape == (2, 2):
-            confusion_df = pd.DataFrame(cm, index=newlabels, columns=labels)
-        elif cm.shape == (1, 1):
-            # Use the single label for both row and column
-            confusion_df = pd.DataFrame(cm, index=[newlabels[0]], columns=[labels[0]])
-        else:
-            raise ValueError("Unexpected confusion matrix dimensions")
 
-        # Display the labeled DataFrame
-        print(confusion_df)
+        # Define all possible labels
+        all_labels = list(label_encoder.classes_)
+
+        # Set up confusion matrix DataFrame with both labels, filling missing values with 0
+        confusion_df = pd.DataFrame(
+            cm,
+            index=unique_labels,
+            columns=unique_labels
+        ).reindex(index=all_labels, columns=all_labels, fill_value=0)
 
         # save them to a file
         np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr)
@@ -651,23 +652,23 @@ def main():
             transform=None,
         )
 
-        accuracy, confusion, classreport = evaluate_model(model, test_data_np, test_labels_np)
+        accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
 
-        # Get the labels from the label encoder
-        newlabels = label_encoder.classes_
+        # Map numerical predictions back to original labels
+        predicted_labels = label_encoder.inverse_transform(test_predictions)
 
-        # Check dimensions and assign labels
-        if confusion.shape == (2, 2):
-            confusion_df = pd.DataFrame(confusion, index=newlabels, columns=labels)
-        elif confusion.shape == (1, 1):
-            # Use the single label for both row and column
-            confusion_df = pd.DataFrame(confusion, index=[newlabels[0]], columns=[labels[0]])
-        else:
-            raise ValueError("Unexpected confusion matrix dimensions")
+        # Identify unique labels present in predictions
+        unique_labels = np.unique(predicted_labels)
 
-        # Display the labeled DataFrame
-        print(confusion_df)
+        # Define all possible labels
+        all_labels = list(label_encoder.classes_)
 
+        # Set up confusion matrix DataFrame with both labels, filling missing values with 0
+        confusion_df = pd.DataFrame(
+            confusion,
+            index=unique_labels,
+            columns=unique_labels
+        ).reindex(index=all_labels, columns=all_labels, fill_value=0)
 
         # save the confusion matrix and classification report
         np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", classreport)
@@ -678,48 +679,26 @@ def main():
 
     # make a plot of the confusion matrix where the height is the sum of the row, and the diagonal element in the row is shaded in a different color
 
-    # Calculate column sums
-    column_sums = confusion_df.sum(axis=0)
+    # Calculate the column sums
+    col_sums = confusion_df.sum(axis=0)
 
-    # Get diagonal and off-diagonal values
-    diagonal_values = np.diag(confusion_df)
-    off_diagonal_values = column_sums - diagonal_values
+    # Extract diagonal (correct predictions) and off-diagonal values for plotting
+    diagonal = np.diag(confusion_df)
+    off_diagonal = col_sums - diagonal
 
     # Plotting
     fig, ax = plt.subplots()
 
-    # Create bars with different colors for diagonal and off-diagonal elements
-    for i, label in enumerate(newlabels):
-        # if len(column_sums) == 1 and i == 1:
-        #     ax.bar(
-        #         label,
-        #         0,
-        #         color='lightgray',  # Color for off-diagonal
-        #         label="Incorrect" if i == 0 else "",  # Label only once for legend
-        #     )
-        #     ax.bar(
-        #         label,
-        #         0,
-        #         color='darkblue',  # Bold color for correct predictions
-        #         label="Correct" if i == 0 else "",  # Label only once for legend
-        #     )
-        # else:
-        ax.bar(
-            label,
-            column_sums[i],
-            color='lightgray',  # Color for off-diagonal
-            label="Incorrect" if i == 0 else "",  # Label only once for legend
-        )
-        ax.bar(
-            label,
-            diagonal_values[i],
-            color='darkblue',  # Bold color for correct predictions
-            label="Correct" if i == 0 else "",  # Label only once for legend
-        )
+    # Plot correct predictions in bold color
+    ax.bar(all_labels, diagonal, label="Correct Predictions", color="blue", edgecolor="black")
 
-    # Add labels and legend
+    # Plot misclassifications in a lighter color, stacked on top of correct predictions
+    ax.bar(all_labels, off_diagonal, bottom=diagonal, label="Misclassifications", color="lightblue", edgecolor="black")
+
+    # Adding labels and legend
+    ax.set_xlabel("Labels")
     ax.set_ylabel("Counts")
-    ax.set_title("Confusion Matrix Summary by Label")
+    ax.set_title("Confusion Matrix Summary")
     ax.legend()
 
     plt.show()
