@@ -557,8 +557,8 @@ def main():
         print(cr)
 
         # save them to a file
-        np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}.npy", cm)
-        np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}.npy", cr)
+        np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cm)
+        np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr)
         return
 
     else:
