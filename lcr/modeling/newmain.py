@@ -543,6 +543,8 @@ def main():
         test_predictions = model.predict(test_data_np)
         test_accuracy = accuracy_score(test_labels_np, test_predictions)
         print(f"Test Accuracy: {test_accuracy}")
+
+        evaluate_model(model, test_data_np, test_labels_np)
         return
 
     else:
