@@ -631,8 +631,11 @@ def main():
         transform=None,
     )
 
-    evaluate_model(model, test_data_np, test_labels_np)
+    accuracy, confusion, classreport = evaluate_model(model, test_data_np, test_labels_np)
 
+    # save the confusion matrix and classification report
+    np.save(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", confusion)
+    np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", classreport)
 
 def compute_features(data_xr, featurelist, storage_loc="./data", varname="combined", orig_label="orig", m="metric", times=None):
     """
