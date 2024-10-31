@@ -559,14 +559,14 @@ def main():
         print(cr)
 
         # Get the labels from the label encoder
-        labels = label_encoder.classes_
+        newlabels = label_encoder.classes_
 
         # Check dimensions and assign labels
         if cm.shape == (2, 2):
-            confusion_df = pd.DataFrame(cm, index=labels, columns=labels)
+            confusion_df = pd.DataFrame(cm, index=newlabels, columns=labels)
         elif cm.shape == (1, 1):
             # Use the single label for both row and column
-            confusion_df = pd.DataFrame(cm, index=[labels[0]], columns=[labels[0]])
+            confusion_df = pd.DataFrame(cm, index=[newlabels[0]], columns=[labels[0]])
         else:
             raise ValueError("Unexpected confusion matrix dimensions")
 
@@ -654,14 +654,14 @@ def main():
         accuracy, confusion, classreport = evaluate_model(model, test_data_np, test_labels_np)
 
         # Get the labels from the label encoder
-        labels = label_encoder.classes_
+        newlabels = label_encoder.classes_
 
         # Check dimensions and assign labels
         if confusion.shape == (2, 2):
-            confusion_df = pd.DataFrame(confusion, index=labels, columns=labels)
+            confusion_df = pd.DataFrame(confusion, index=newlabels, columns=labels)
         elif confusion.shape == (1, 1):
             # Use the single label for both row and column
-            confusion_df = pd.DataFrame(confusion, index=[labels[0]], columns=[labels[0]])
+            confusion_df = pd.DataFrame(confusion, index=[newlabels[0]], columns=[labels[0]])
         else:
             raise ValueError("Unexpected confusion matrix dimensions")
 
@@ -689,33 +689,33 @@ def main():
     fig, ax = plt.subplots()
 
     # Create bars with different colors for diagonal and off-diagonal elements
-    for i, label in enumerate(labels):
-        if len(column_sums) == 1 and i == 1:
-            ax.bar(
-                label,
-                0,
-                color='lightgray',  # Color for off-diagonal
-                label="Incorrect" if i == 0 else "",  # Label only once for legend
-            )
-            ax.bar(
-                label,
-                0,
-                color='darkblue',  # Bold color for correct predictions
-                label="Correct" if i == 0 else "",  # Label only once for legend
-            )
-        else:
-            ax.bar(
-                label,
-                column_sums[i],
-                color='lightgray',  # Color for off-diagonal
-                label="Incorrect" if i == 0 else "",  # Label only once for legend
-            )
-            ax.bar(
-                label,
-                diagonal_values[i],
-                color='darkblue',  # Bold color for correct predictions
-                label="Correct" if i == 0 else "",  # Label only once for legend
-            )
+    for i, label in enumerate(newlabels):
+        # if len(column_sums) == 1 and i == 1:
+        #     ax.bar(
+        #         label,
+        #         0,
+        #         color='lightgray',  # Color for off-diagonal
+        #         label="Incorrect" if i == 0 else "",  # Label only once for legend
+        #     )
+        #     ax.bar(
+        #         label,
+        #         0,
+        #         color='darkblue',  # Bold color for correct predictions
+        #         label="Correct" if i == 0 else "",  # Label only once for legend
+        #     )
+        # else:
+        ax.bar(
+            label,
+            column_sums[i],
+            color='lightgray',  # Color for off-diagonal
+            label="Incorrect" if i == 0 else "",  # Label only once for legend
+        )
+        ax.bar(
+            label,
+            diagonal_values[i],
+            color='darkblue',  # Bold color for correct predictions
+            label="Correct" if i == 0 else "",  # Label only once for legend
+        )
 
     # Add labels and legend
     ax.set_ylabel("Counts")
