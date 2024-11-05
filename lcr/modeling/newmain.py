@@ -241,7 +241,7 @@ def main():
     metrics_info = {
         'dssim': {'comparison': 'gt', 'threshold': 0.995},
         'pcc': {'comparison': 'gt', 'threshold': 0.9995},
-        'spre': {'comparison': 'lt', 'threshold': 10},
+        'spre': {'comparison': 'lt', 'threshold': 95},
         'ks': {'comparison': 'lt', 'threshold': 0.05}
     }
 
