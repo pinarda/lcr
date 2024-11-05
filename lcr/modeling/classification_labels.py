@@ -145,7 +145,7 @@ def setup(config_path, metrics, cdirs, storageloc):
 
     # Metrics, their thresholds, and comparison types
     # metrics = ['dssim', 'pcc']
-    thresholds = {'dssim': 0.995, 'spre': 5, 'pcc': 0.9995, 'ks': 0.05}
+    thresholds = {'dssim': 0.995, 'spre': 100, 'pcc': 0.9995, 'ks': 0.05}
     comparisons = {'dssim': 'gt', 'spre': 'lt', 'pcc': 'gt', 'ks': 'lt'}
 
     # Base pattern for filenames

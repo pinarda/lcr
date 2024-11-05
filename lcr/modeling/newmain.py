@@ -462,7 +462,7 @@ def main():
             f"Number of samples ({dataset_xr.dims['sample']}) does not match number of labels ({combined_labels.size})."
         )
 
-    logging.info("Data prepared successfully.")
+    logging.info("MLData prepared successfully.")
 
     # Number of variables
     nvars = len(flat_var_list)  # Should be equal to len(var_list)
