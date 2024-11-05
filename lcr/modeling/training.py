@@ -131,8 +131,13 @@ def split_data(
         logging.info(f"Train/val indices: {train_val_indices}")
 
         # let's printn out all the labels (without any newlines)
+        np.set_printoptions(threshold=np.inf)
+
         logging.info(f"Labels: {label}")
-        
+
+        # set the print options back to default
+        np.set_printoptions(threshold=1000)
+
 
         # Extract test data and labels
         if modeltype == "cnn":
