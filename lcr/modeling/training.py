@@ -129,6 +129,11 @@ def split_data(
         train_val_indices = np.arange(test_samples, total_samples)
 
         logging.info(f"Train/val indices: {train_val_indices}")
+
+        # let's printn out all the labels (without any newlines)
+        logging.info(f"Labels: {label}")
+        
+
         # Extract test data and labels
         if modeltype == "cnn":
             X_test_val = dataset.isel(sample=test_indices)
