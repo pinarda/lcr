@@ -3,27 +3,42 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "PRECSL",
+      "LHFLX"
+    ],
+    [
+      "PRECSL"
+    ],
+    [
       "PRECT"
     ],
     [
       "PSL"
     ],
     [
-      "Q200",
-      "Q500",
+      "Q200"
+    ],
+    [
+      "Q500"
+    ],
+    [
       "Q850"
     ],
     [
       "SHFLX"
     ],
     [
-      "T200",
-      "T500",
+      "T200"
+    ],
+    [
+      "T500"
+    ],
+    [
       "T850"
     ],
     [
-      "TAUX",
+      "TAUX"
+    ],
+    [
       "TAUY"
     ],
     [
@@ -33,11 +48,10 @@
       "FLNS"
     ],
     [
-      "TREFHTMX",
-      "TS"
+      "TREFHTMX"
     ],
     [
-      "LHFLX"
+      "TS"
     ]
   ],
   "FilenamePre": [
