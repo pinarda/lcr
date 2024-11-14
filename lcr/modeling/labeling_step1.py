@@ -54,9 +54,11 @@ for feature in features:
     for file in sorted_files:
         da = xr.open_dataarray(file)
 
-        # Check if the dimension is 'multi_index' and rename it to 'sample'
+        # Check if the dimension or coordinate is 'multi_index' and rename both to 'sample'
         if 'multi_index' in da.dims:
             da = da.rename({'multi_index': 'sample'})
+        if 'multi_index' in da.coords:
+            da = da.rename_coords({'multi_index': 'sample'})
 
         data_arrays.append(da)
 
