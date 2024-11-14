@@ -8,8 +8,8 @@ fi
 
 USER=$1
 
-# Get list of job IDs for the specified user
-job_ids=$(qstat -u "$USER" | awk 'NR>2 {print $1}')
+# Get list of job IDs for the specified user, extracting only the part before the first dot
+job_ids=$(qstat -u "$USER" | awk 'NR>2 {split($1, a, "."); print a[1]}')
 
 # Check if any jobs are found
 if [ -z "$job_ids" ]; then
