@@ -13,7 +13,10 @@ def labeling():
         "n_s_first_differences",
         "mean",
         "ew_con_var",
-        "ns_con_var"
+        "ns_con_var",
+        "real_information_cutoff",
+        "entropy",
+        "magnitude_range"
     ]
 
     # Define the variable names in the desired order
