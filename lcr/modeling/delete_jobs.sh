@@ -8,19 +8,17 @@ fi
 
 USER=$1
 
-# Get list of job IDs for the specified user, extracting only the part before the first dot
-job_ids=$(qstat -u "$USER" | awk 'NR>2 {split($1, a, "."); print a[1]}')
+# Get list of job IDs and job names for the specified user
+qstat -u "$USER" | awk 'NR>2 {split($1, a, "."); print a[1], $3}' | while read -r job_id job_name; do
+  # Skip jobs with the name "stdin"
+  if [ "$job_name" = "STDIN" ]; then
+    echo "Skipping job $job_id with name 'stdin'"
+    continue
+  fi
 
-# Check if any jobs are found
-if [ -z "$job_ids" ]; then
-  echo "No jobs found for user $USER"
-  exit 0
-fi
-
-# Delete each job found for the user
-for job_id in $job_ids; do
+  # Delete the job if it doesn't have the name "stdin"
   qdel "$job_id"
-  echo "Deleted job $job_id for user $USER"
+  echo "Deleted job $job_id for user $USER (name: $job_name)"
 done
 
-echo "All jobs for user $USER have been deleted."
+echo "Finished processing jobs for user $USER."
