@@ -430,7 +430,10 @@ def main():
         logging.info(f"Labels for {varname}: {data_var['collection'].values}")
 
         # Stack 'collection' and 'time' into 'sample'
+        # data_var = data_var.stack(sample=('collection', 'time')).reset_index('sample', drop=True)
         data_var = data_var.stack(sample=('collection', 'time'))
+        data_var = data_var.assign_coords(sample=data_var['sample'])
+        data_var = data_var.reset_index('sample', drop=True)
 
         # Expand 'variable' dimension to size 1 and assign variable name
         data_var = data_var.assign_coords(variable=varname)
@@ -774,6 +777,8 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             "w_e_first_differences_max",
             "n_s_first_differences_max",
             "mean",
+            "magnitude_range",
+            "fftmax"
         ]:
             # let's log the feature and value of i if i is a multiple of 10
             logging.info(f"Computing feature {feature}")
@@ -784,22 +789,60 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             # if i % 10 == 0:
             logging.info(f"Computing feature {feature}")
             # For features that don't depend on spatial dimensions
-            dc_nospatial = ldcpy.Datasetcalcs(
-                sample_da, "cam-fv", [], weighted=False
+
+
+            # dc_nospatial = ldcpy.Datasetcalcs(
+            #     sample_da, "cam-fv", [], weighted=False
+            # )
+            # feat_da = dc_nospatial.get_single_calc(feature)
+
+
+            # Loop over each sample in sample_da, apply get_single_calc, and collect results
+            results = []
+            for i in range(len(sample_da['sample'])):
+                single_sample = sample_da.isel(sample=i)
+                dc_nospatial_single = ldcpy.Datasetcalcs(single_sample, "cam-fv", ["lat", "lon"], weighted=False)
+                result = dc_nospatial_single.get_single_calc(feature)
+                if hasattr(result, 'values'):
+                    # If result.values is a single-element array, extract the scalar
+                    if isinstance(result.values, np.ndarray) and result.values.size == 1:
+                        result = result.values.item()  # Convert single-element arrays to scalars
+                    elif isinstance(result.values, np.ndarray):
+                        result = result.values[0]  # Or handle multi-element arrays as needed
+                else:
+                    # result is already a scalar, so no further processing is needed
+                    pass
+                results.append(result)
+
+            # Convert the list of results to a numpy array, then to a DataArray
+            feat_da = xr.DataArray(
+                np.array(results),
+                dims=["sample"],
+                coords={"sample": sample_da["sample"]}
             )
-            feat_da = dc_nospatial.get_single_calc(feature)
 
         # save the feature to file
         # Flatten the MultiIndex by resetting it to coordinates
-        flat_da = feat_da.reset_index('sample')  # Replace 'sample' with the appropriate dimension name if different
+        # flat_da = feat_da.reset_index('sample')  # Replace 'sample' with the appropriate dimension name if different
+        flat_da = feat_da
 
         # Save as a NetCDF file
+        if 'weighted' in flat_da.attrs:
+            del flat_da.attrs['weighted']
+
+        # if there's a multi-index, we need to handle it
+        if 'multi_index' in flat_da.indexes:
+            # Now remove the MultiIndex by dropping the dimension
+            flat_da = flat_da.drop_vars('multi_index')
+
         flat_da.to_netcdf(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
 
         # Convert feature DataArray to numpy array
-        feat_np = feat_da.values.flatten()
+        feat_np = feat_da.values
 
         features_list.append(feat_np)
+
+
 
     # Convert features_list to numpy array
     features_np = np.array(features_list)

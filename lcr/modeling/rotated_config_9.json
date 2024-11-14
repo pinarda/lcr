@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "Q500"
-    ],
-    [
       "Q850"
     ],
     [
@@ -52,6 +49,9 @@
     ],
     [
       "Q200"
+    ],
+    [
+      "Q500"
     ]
   ],
   "FilenamePre": [
@@ -89,6 +89,9 @@
     "n_s_first_differences",
     "w_e_first_differences",
     "n_s_first_differences_max",
-    "w_e_first_differences_max"
+    "w_e_first_differences_max",
+    "real_information_cutoff",
+    "entropy",
+    "magnitude_range"
   ]
 }

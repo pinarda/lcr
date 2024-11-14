@@ -3,6 +3,27 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "U010"
+    ],
+    [
+      "FLNS"
+    ],
+    [
+      "TREFHTMX"
+    ],
+    [
+      "TS"
+    ],
+    [
+      "LHFLX"
+    ],
+    [
+      "PRECSL"
+    ],
+    [
+      "PRECT"
+    ],
+    [
       "PSL"
     ],
     [
@@ -31,27 +52,6 @@
     ],
     [
       "TAUY"
-    ],
-    [
-      "U010"
-    ],
-    [
-      "FLNS"
-    ],
-    [
-      "TREFHTMX"
-    ],
-    [
-      "TS"
-    ],
-    [
-      "LHFLX"
-    ],
-    [
-      "PRECSL"
-    ],
-    [
-      "PRECT"
     ]
   ],
   "FilenamePre": [
@@ -82,13 +82,16 @@
     "pcc",
     "spre"
   ],
-  "ModelType": "cnn",
+  "ModelType": "rf",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
     "n_s_first_differences",
     "w_e_first_differences",
     "n_s_first_differences_max",
-    "w_e_first_differences_max"
+    "w_e_first_differences_max",
+    "real_information_cutoff",
+    "entropy",
+    "magnitude_range"
   ]
 }
