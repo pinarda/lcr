@@ -14,7 +14,7 @@ features = [
     "mean",
     "ew_con_var",
     "ns_con_var",
-    "entropy"
+    "magnitude_range"
 ]
 
 # Regex pattern to extract varname from the filename
