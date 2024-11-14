@@ -3,6 +3,15 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "Q200"
+    ],
+    [
+      "Q500"
+    ],
+    [
+      "Q850"
+    ],
+    [
       "SHFLX"
     ],
     [
@@ -43,15 +52,6 @@
     ],
     [
       "PSL"
-    ],
-    [
-      "Q200"
-    ],
-    [
-      "Q500"
-    ],
-    [
-      "Q850"
     ]
   ],
   "FilenamePre": [
@@ -82,7 +82,7 @@
     "pcc",
     "spre"
   ],
-  "ModelType": "rf",
+  "ModelType": "cnn",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",

@@ -3,21 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "SHFLX"
-    ],
-    [
-      "T200"
-    ],
-    [
-      "T500"
-    ],
-    [
-      "T850"
-    ],
-    [
-      "TAUX"
-    ],
-    [
       "TAUY"
     ],
     [
@@ -52,6 +37,21 @@
     ],
     [
       "Q850"
+    ],
+    [
+      "SHFLX"
+    ],
+    [
+      "T200"
+    ],
+    [
+      "T500"
+    ],
+    [
+      "T850"
+    ],
+    [
+      "TAUX"
     ]
   ],
   "FilenamePre": [
@@ -82,7 +82,7 @@
     "pcc",
     "spre"
   ],
-  "ModelType": "rf",
+  "ModelType": "cnn",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
