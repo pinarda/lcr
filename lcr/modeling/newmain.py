@@ -431,7 +431,7 @@ def main():
 
         # Stack 'collection' and 'time' into 'sample'
         # data_var = data_var.stack(sample=('collection', 'time')).reset_index('sample', drop=True)
-        data_var = data_var.stack(sample=('collection', 'time'))
+        data_var = data_var.stack(sample=('collection', 'time')).drop_vars('collection')
         data_var = data_var.assign_coords(sample=data_var['sample'])
         data_var = data_var.reset_index('sample', drop=True)
 
