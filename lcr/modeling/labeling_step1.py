@@ -14,6 +14,8 @@ features = [
     "mean",
     "ew_con_var",
     "ns_con_var",
+    "real_information_cutoff",
+    "entropy",
     "magnitude_range"
 ]
 
@@ -48,7 +50,15 @@ for feature in features:
     sorted_varnames, sorted_files = zip(*files_with_varnames)
 
     # Load each file as an xarray DataArray in sorted order
-    data_arrays = [xr.open_dataarray(file) for file in sorted_files]
+    data_arrays = []
+    for file in sorted_files:
+        da = xr.open_dataarray(file)
+
+        # Check if the dimension is 'multi_index' and rename it to 'sample'
+        if 'multi_index' in da.dims:
+            da = da.rename({'multi_index': 'sample'})
+
+        data_arrays.append(da)
 
     # Combine all DataArrays along the 'sample' dimension
     combined_data = xr.concat(data_arrays, dim="sample")
