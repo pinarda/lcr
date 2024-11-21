@@ -129,21 +129,30 @@ def main():
     # fig.savefig(f"{storageloc}/confusion_matrix_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
 
 
+
+
+
+
+
     # Count occurrences of each class in true labels, CNN predictions, and RF predictions
     true_label_counts = Counter(test_labels_np_cnn)
     cnn_prediction_counts = Counter(test_predictions_cnn)
     rf_prediction_counts = Counter(test_predictions_rf)
 
-    # Get all unique labels across true labels, CNN predictions, and RF predictions
-    all_labels = sorted(set(true_label_counts.keys()).union(cnn_prediction_counts.keys(), rf_prediction_counts.keys()))
+    # Get all unique numeric labels across true labels, CNN predictions, and RF predictions
+    all_numeric_labels = sorted(
+        set(true_label_counts.keys()).union(cnn_prediction_counts.keys(), rf_prediction_counts.keys()))
+
+    # Use the label encoder to get the corresponding class names
+    all_label_names = label_encoder_cnn.inverse_transform(all_numeric_labels)
 
     # Ensure counts are in the same order for all
-    true_counts = [true_label_counts.get(label, 0) for label in all_labels]
-    cnn_counts = [cnn_prediction_counts.get(label, 0) for label in all_labels]
-    rf_counts = [rf_prediction_counts.get(label, 0) for label in all_labels]
+    true_counts = [true_label_counts.get(label, 0) for label in all_numeric_labels]
+    cnn_counts = [cnn_prediction_counts.get(label, 0) for label in all_numeric_labels]
+    rf_counts = [rf_prediction_counts.get(label, 0) for label in all_numeric_labels]
 
     # Set up the bar positions
-    x = np.arange(len(all_labels))  # Label positions
+    x = np.arange(len(all_label_names))  # Label positions
     bar_width = 0.3  # Width of each bar
 
     # Plotting
@@ -163,7 +172,7 @@ def main():
     ax.set_ylabel("Counts")
     ax.set_title("True Labels vs. CNN Predictions vs. RF Predictions")
     ax.set_xticks(x)
-    ax.set_xticklabels(all_labels)
+    ax.set_xticklabels(all_label_names, rotation=45, ha='right')  # Rotate for better readability
     ax.legend()
 
     # Display the plot
