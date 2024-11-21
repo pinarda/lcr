@@ -16,26 +16,31 @@ def process_config(config_file):
     time = times[0]
     j = 0
     jobid = 0
-    var_list = config.get('VarList')                # ["TS", "PRECT"]
+    var_list = config.get('VarList')                # [["TS"], ["PRECT"]]
+
+    # Flatten var_list and take the first element of the first list
+    variable = var_list[0][0] if var_list and isinstance(var_list[0], list) else "Unknown"
 
     # Load data for CNN
-    test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{var_list[0]}.npy")
-    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy")
+    test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{variable}.npy")
+    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{variable}.npy")
 
     # Load data for RF
-    test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{var_list[0]}.npy")
-    test_predictions_rf = np.load(f"{storageloc}/test_predictions_{j}{time}rf{jobid}_{var_list[0]}.npy")
+    test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable}.npy")
+    test_predictions_rf = np.load(f"{storageloc}/test_predictions_{j}{time}rf{jobid}_{variable}.npy")
 
     # Compute F1 scores
-    f1_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='weighted')
-    f1_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='weighted')
+    f1_weighted_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='weighted')
+    f1_macro_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='macro')
+    f1_weighted_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='weighted')
+    f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
-    return var_list[0], f1_cnn, f1_rf
+    return variable, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf
 
 
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Generate F1 score plot from multiple configuration JSON files.")
+    parser = argparse.ArgumentParser(description="Generate F1 score plots from multiple configuration JSON files.")
     parser.add_argument('-n', '--num_configs', type=int, default=17,
                         help="Number of configuration files to process (default: 17)")
     parser.add_argument('-p', '--config_prefix', type=str, default='rotated_config_',
@@ -48,37 +53,48 @@ def main():
 
     # Store results for plotting
     var_list = []
-    f1_scores_cnn = []
-    f1_scores_rf = []
+    f1_weighted_cnn = []
+    f1_macro_cnn = []
+    f1_weighted_rf = []
+    f1_macro_rf = []
 
     # Iterate over all configuration files
     for i in range(1, args.num_configs + 1):
         config_file = f"{args.config_prefix}{i}{args.suffix}"
         if os.path.exists(config_file):
             print(f"Processing {config_file}...")
-            var, f1_cnn, f1_rf = process_config(config_file)
-            var_list.append(var)
-            f1_scores_cnn.append(f1_cnn)
-            f1_scores_rf.append(f1_rf)
+            (variable, weighted_cnn, macro_cnn,
+             weighted_rf, macro_rf) = process_config(config_file)
+            var_list.append(variable)
+            f1_weighted_cnn.append(weighted_cnn)
+            f1_macro_cnn.append(macro_cnn)
+            f1_weighted_rf.append(weighted_rf)
+            f1_macro_rf.append(macro_rf)
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
 
-    # Plotting
+    # Plotting Weighted F1 Scores
     x = np.arange(len(var_list))  # X-axis positions
-    bar_width = 0.4  # Width of each bar
+    bar_width = 0.2  # Width of each bar
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
-    # CNN F1 scores
-    ax.bar(x - bar_width / 2, f1_scores_rf, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
+    # CNN Weighted F1 scores
+    ax.bar(x - bar_width * 1.5, f1_weighted_rf, bar_width, label="CNN Weighted F1", color="blue", edgecolor="black")
 
-    # RF F1 scores
-    ax.bar(x + bar_width / 2, f1_scores_rf , bar_width, label="RF F1 Score", color="red", edgecolor="black")
+    # CNN Macro F1 scores
+    ax.bar(x - bar_width / 2, f1_macro_rf, bar_width, label="CNN Macro F1", color="lightblue", edgecolor="black")
+
+    # RF Weighted F1 scores
+    ax.bar(x + bar_width / 2, f1_weighted_rf, bar_width, label="RF Weighted F1", color="orange", edgecolor="black")
+
+    # RF Macro F1 scores
+    ax.bar(x + bar_width * 1.5, f1_macro_rf, bar_width, label="RF Macro F1", color="gold", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
     ax.set_ylabel("F1 Score")
-    ax.set_title("F1 Score Comparison for CNN and RF Models")
+    ax.set_title("F1 Score Comparison for CNN and RF Models (Weighted and Macro)")
     ax.set_xticks(x)
     ax.set_xticklabels(var_list, rotation=45, ha='right')  # Rotate for better readability
     ax.legend()
@@ -88,7 +104,7 @@ def main():
     plt.show()
 
     # Save the plot
-    plot_filename = f"data/f1_score_comparison.png"
+    plot_filename = f"f1_score_comparison_weighted_macro.png"
     plt.savefig(plot_filename)
     print(f"Plot saved to {plot_filename}")
 
