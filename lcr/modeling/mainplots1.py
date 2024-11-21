@@ -88,7 +88,7 @@ def main():
     plt.show()
 
     # Save the plot
-    plot_filename = f"f1_score_comparison.png"
+    plot_filename = f"data/f1_score_comparison.png"
     plt.savefig(plot_filename)
     print(f"Plot saved to {plot_filename}")
 
