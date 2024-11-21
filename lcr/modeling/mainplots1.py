@@ -133,7 +133,7 @@ def main():
             plot_feature_importances(
                 variable,
                 feature_importances,
-                f"feature_importances_{variable}.png"
+                f"data/feature_importances_{variable}.png"
             )
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
