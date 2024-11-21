@@ -70,10 +70,10 @@ def main():
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
-    ax.bar(x - bar_width / 2, f1_scores_cnn, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
+    ax.bar(x - bar_width / 2, f1_scores_rf, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
 
     # RF F1 scores
-    ax.bar(x + bar_width / 2, f1_scores_rf, bar_width, label="RF F1 Score", color="orange", edgecolor="black")
+    ax.bar(x + bar_width / 2, f1_scores_rf , bar_width, label="RF F1 Score", color="red", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
