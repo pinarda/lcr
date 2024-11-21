@@ -134,25 +134,29 @@ def main():
 
 
 
-    # Count occurrences of each class in true labels, CNN predictions, and RF predictions
+
+
+
+
+    # Get all possible class labels from both encoders
+    all_possible_labels = sorted(set(label_encoder_cnn.classes_).union(label_encoder_rf.classes_))
+
+    # Map the string labels back to numeric indices for counting
+    numeric_labels_cnn = label_encoder_cnn.transform(all_possible_labels)
+    numeric_labels_rf = label_encoder_rf.transform(all_possible_labels)
+
+    # Count occurrences of each numeric label in true labels, CNN predictions, and RF predictions
     true_label_counts = Counter(test_labels_np_cnn)
     cnn_prediction_counts = Counter(test_predictions_cnn)
     rf_prediction_counts = Counter(test_predictions_rf)
 
-    # Get all unique numeric labels across true labels, CNN predictions, and RF predictions
-    all_numeric_labels = sorted(
-        set(true_label_counts.keys()).union(cnn_prediction_counts.keys(), rf_prediction_counts.keys()))
-
-    # Use the label encoder to get the corresponding class names
-    all_label_names = label_encoder_cnn.inverse_transform(all_numeric_labels)
-
     # Ensure counts are in the same order for all
-    true_counts = [true_label_counts.get(label, 0) for label in all_numeric_labels]
-    cnn_counts = [cnn_prediction_counts.get(label, 0) for label in all_numeric_labels]
-    rf_counts = [rf_prediction_counts.get(label, 0) for label in all_numeric_labels]
+    true_counts = [true_label_counts.get(label, 0) for label in numeric_labels_cnn]
+    cnn_counts = [cnn_prediction_counts.get(label, 0) for label in numeric_labels_cnn]
+    rf_counts = [rf_prediction_counts.get(label, 0) for label in numeric_labels_rf]
 
     # Set up the bar positions
-    x = np.arange(len(all_label_names))  # Label positions
+    x = np.arange(len(all_possible_labels))  # Label positions
     bar_width = 0.3  # Width of each bar
 
     # Plotting
@@ -172,7 +176,7 @@ def main():
     ax.set_ylabel("Counts")
     ax.set_title("True Labels vs. CNN Predictions vs. RF Predictions")
     ax.set_xticks(x)
-    ax.set_xticklabels(all_label_names, rotation=45, ha='right')  # Rotate for better readability
+    ax.set_xticklabels(all_possible_labels, rotation=45, ha='right')  # Rotate for better readability
     ax.legend()
 
     # Display the plot
