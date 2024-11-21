@@ -559,9 +559,15 @@ def main():
         # classification report
         cr = classification_report(test_labels_np, test_predictions)
 
+        # save the test predictions
+        np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)
+
         print(cr)
         # Map numerical predictions back to original labels
         predicted_labels = label_encoder.inverse_transform(test_predictions)
+
+        # save the predictions
+        np.save(f"{storageloc}/predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", predicted_labels)
 
         # Identify unique labels present in predictions
         unique_labels = np.unique(predicted_labels)
@@ -584,6 +590,10 @@ def main():
 
         # let's also save the label encoder classes
         np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
+
+        # let's also get feature importances
+        feature_importances = model.feature_importances_
+        np.save(f"{storageloc}/feature_importances_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", feature_importances)
 
     else:
         get_data_labels(
@@ -657,8 +667,14 @@ def main():
 
         accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
 
+        # save the test predictions
+        np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)
+
         # Map numerical predictions back to original labels
         predicted_labels = label_encoder.inverse_transform(test_predictions)
+
+        # save the predictions
+        np.save(f"{storageloc}/predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", predicted_labels)
 
         # Identify unique labels present in predictions
         unique_labels = np.unique(predicted_labels)
@@ -707,6 +723,8 @@ def main():
     plt.show()
     # save the plot
     fig.savefig(f"{storageloc}/confusion_matrix_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
+
+
 
 def compute_features(data_xr, featurelist, storage_loc="./data", varname="combined", orig_label="orig", m="metric", times=None):
     """
