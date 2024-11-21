@@ -55,7 +55,7 @@ def main():
     val_labels_np_cnn = np.load(f"{storageloc}/val_labels_{j}{time}cnn{jobid}.npy")
     test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{var_list[0]}.npy")
     label_encoder_cnn = np.load(f"{storageloc}/label_encoder_{j}{time}cnn{jobid}_{var_list[0]}.pkl", allow_pickle=True)
-    predictions_cnn = np.load(f"{storageloc}/predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy")
+    predictions_cnn = np.load(f"{storageloc}/predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy", allow_pickle=True)
     test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy")
 
     train_data_np_rf = np.load(f"{storageloc}/train_data_{j}{time}rf{jobid}.npy")
@@ -65,7 +65,7 @@ def main():
     val_labels_np_rf = np.load(f"{storageloc}/val_labels_{j}{time}rf{jobid}.npy")
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{var_list[0]}.npy")
     label_encoder_rf = np.load(f"{storageloc}/label_encoder_{j}{time}rf{jobid}_{var_list[0]}.pkl", allow_pickle=True)
-    predictions_rf = np.load(f"{storageloc}/predictions_{j}{time}rf{jobid}_{var_list[0]}.npy")
+    predictions_rf = np.load(f"{storageloc}/predictions_{j}{time}rf{jobid}_{var_list[0]}.npy", allow_pickle=True)
     test_predictions_rf = np.load(f"{storageloc}/test_predictions_{j}{time}rf{jobid}_{var_list[0]}.npy")
 
     # Compute accuracy for CNN
