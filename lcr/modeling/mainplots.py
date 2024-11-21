@@ -163,13 +163,13 @@ def main():
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # True label bars
-    ax.bar(x - bar_width, true_counts, bar_width, label="True Labels", color="green", edgecolor="black")
+    ax.bar(x - bar_width, true_counts, bar_width, label="True Labels", color="black", edgecolor="black")
 
     # CNN prediction bars
     ax.bar(x, cnn_counts, bar_width, label="CNN Predictions", color="blue", edgecolor="black")
 
     # RF prediction bars
-    ax.bar(x + bar_width, rf_counts, bar_width, label="RF Predictions", color="orange", edgecolor="black")
+    ax.bar(x + bar_width, rf_counts, bar_width, label="RF Predictions", color="red", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Labels")
