@@ -526,8 +526,8 @@ def main():
         test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
-        test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy")
-        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", allow_pickle=True)
+        test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy")
+        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl", allow_pickle=True)
 
         # Proceed to train the Random Forest model
         from sklearn.ensemble import RandomForestClassifier
@@ -636,8 +636,8 @@ def main():
         test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
-        test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}.npy")
-        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}.pkl", allow_pickle=True)
+        test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy")
+        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl", allow_pickle=True)
 
         # print the label encodings
         logging.info(f"Label encodings: {label_encoder.classes_}")
