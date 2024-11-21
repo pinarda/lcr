@@ -48,10 +48,10 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
-    ax.bar(x - bar_width / 2, cnn_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
+    ax.bar(x - bar_width / 2, rf_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
 
     # RF F1 scores
-    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="orange", edgecolor="black")
+    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="red", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
@@ -104,10 +104,10 @@ def main():
             print(f"Configuration file {config_file} not found. Skipping.")
 
     # Plot Weighted F1 Scores
-    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "f1_score_comparison_weighted.png")
+    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
 
     # Plot Macro F1 Scores
-    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "f1_score_comparison_macro.png")
+    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
 
 
 if __name__ == "__main__":
