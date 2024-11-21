@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import argparse
 import json
+from collections import Counter
+
 
 def main():
     # Set up argument parser
@@ -51,8 +53,8 @@ def main():
     test_data_np_cnn = np.load(f"{storageloc}/test_data_{j}{time}cnn{jobid}.npy")
     train_labels_np_cnn = np.load(f"{storageloc}/train_labels_{j}{time}cnn{jobid}.npy")
     val_labels_np_cnn = np.load(f"{storageloc}/val_labels_{j}{time}cnn{jobid}.npy")
-    test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}.npy")
-    label_encoder_cnn = np.load(f"{storageloc}/label_encoder_{j}{time}cnn{jobid}.pkl", allow_pickle=True)
+    test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{var_list[0]}.npy")
+    label_encoder_cnn = np.load(f"{storageloc}/label_encoder_{j}{time}cnn{jobid}_{var_list[0]}.pkl", allow_pickle=True)
     predictions_cnn = np.load(f"{storageloc}/predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy")
     test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{var_list[0]}.npy")
 
@@ -61,8 +63,8 @@ def main():
     test_data_np_rf = np.load(f"{storageloc}/test_data_{j}{time}rf{jobid}.npy")
     train_labels_np_rf = np.load(f"{storageloc}/train_labels_{j}{time}rf{jobid}.npy")
     val_labels_np_rf = np.load(f"{storageloc}/val_labels_{j}{time}rf{jobid}.npy")
-    test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}.npy")
-    label_encoder_rf = np.load(f"{storageloc}/label_encoder_{j}{time}rf{jobid}.pkl", allow_pickle=True)
+    test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{var_list[0]}.npy")
+    label_encoder_rf = np.load(f"{storageloc}/label_encoder_{j}{time}rf{jobid}_{var_list[0]}.pkl", allow_pickle=True)
     predictions_rf = np.load(f"{storageloc}/predictions_{j}{time}rf{jobid}_{var_list[0]}.npy")
     test_predictions_rf = np.load(f"{storageloc}/test_predictions_{j}{time}rf{jobid}_{var_list[0]}.npy")
 
@@ -124,7 +126,52 @@ def main():
 
     plt.show()
     # save the plot
-    fig.savefig(f"{storageloc}/confusion_matrix_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
+    # fig.savefig(f"{storageloc}/confusion_matrix_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
+
+
+    # Count occurrences of each class in true labels, CNN predictions, and RF predictions
+    true_label_counts = Counter(test_labels_np_cnn)
+    cnn_prediction_counts = Counter(test_predictions_cnn)
+    rf_prediction_counts = Counter(test_predictions_rf)
+
+    # Get all unique labels across true labels, CNN predictions, and RF predictions
+    all_labels = sorted(set(true_label_counts.keys()).union(cnn_prediction_counts.keys(), rf_prediction_counts.keys()))
+
+    # Ensure counts are in the same order for all
+    true_counts = [true_label_counts.get(label, 0) for label in all_labels]
+    cnn_counts = [cnn_prediction_counts.get(label, 0) for label in all_labels]
+    rf_counts = [rf_prediction_counts.get(label, 0) for label in all_labels]
+
+    # Set up the bar positions
+    x = np.arange(len(all_labels))  # Label positions
+    bar_width = 0.3  # Width of each bar
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # True label bars
+    ax.bar(x - bar_width, true_counts, bar_width, label="True Labels", color="green", edgecolor="black")
+
+    # CNN prediction bars
+    ax.bar(x, cnn_counts, bar_width, label="CNN Predictions", color="blue", edgecolor="black")
+
+    # RF prediction bars
+    ax.bar(x + bar_width, rf_counts, bar_width, label="RF Predictions", color="orange", edgecolor="black")
+
+    # Adding labels and legend
+    ax.set_xlabel("Labels")
+    ax.set_ylabel("Counts")
+    ax.set_title("True Labels vs. CNN Predictions vs. RF Predictions")
+    ax.set_xticks(x)
+    ax.set_xticklabels(all_labels)
+    ax.legend()
+
+    # Display the plot
+    plt.tight_layout()
+    plt.show()
+
+    # Save the plot
+    fig.savefig(f"{storageloc}/comparison_bar_plot_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
 
 
 if __name__ == "__main__":
