@@ -552,6 +552,30 @@ def main():
         # let's create a confusion matrix and classification report
         from sklearn.metrics import confusion_matrix, classification_report
 
+        from sklearn.tree import plot_tree
+
+        # Access the first tree in the random forest
+        single_tree = model.estimators_[0]
+        # Plot the tree
+        plt.figure(figsize=(20, 10))  # Adjust the size for readability
+        plot_tree(
+            single_tree,
+            feature_names=train_data_np.columns if hasattr(train_data_np, "columns") else None,
+            # Use feature names if available
+            class_names=[str(cls) for cls in model.classes_],  # Class names from the model
+            filled=True,  # Use color to represent node purity
+            rounded=True,  # Rounded corners for nodes
+            fontsize=10  # Font size for text
+        )
+
+        # Show the plot
+        plt.title("Single Decision Tree from Random Forest")
+        plt.show()
+
+        # save the plot
+        plt.savefig(f"{storageloc}/single_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
+
+
         # confusion matrix
         cm = confusion_matrix(test_labels_np, test_predictions)
         print(cm)
