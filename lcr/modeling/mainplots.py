@@ -9,7 +9,7 @@ from collections import Counter
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Process a configuration JSON file.")
-    parser.add_argument('-c', '--config', type=str, default='config.json',
+    parser.add_argument('-c', '--config', type=str, default='rotated_config_1.json',
                         help="Path to the configuration JSON file (default: config.json)")
 
     # Parse the arguments
