@@ -37,7 +37,14 @@ def process_config(config_file):
     f1_weighted_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='weighted')
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
-    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf
+    # Load feature importances for RF
+    feature_importance_file = f"{storageloc}/feature_importances_0100rf0_{variable_file}.npy"
+    if os.path.exists(feature_importance_file):
+        feature_importances = np.load(feature_importance_file)
+    else:
+        feature_importances = None
+
+    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf, feature_importances
 
 
 def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
@@ -48,10 +55,10 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
-    ax.bar(x - bar_width / 2, rf_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
+    ax.bar(x - bar_width / 2, cnn_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
 
     # RF F1 scores
-    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="red", edgecolor="black")
+    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="orange", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
@@ -68,9 +75,30 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     print(f"{metric_name} F1 score plot saved to {filename}")
 
 
+def plot_feature_importances(variable, feature_importances, filename):
+    """Plot feature importances for a given variable."""
+    if feature_importances is not None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Bar plot of feature importances
+        x = np.arange(len(feature_importances))
+        ax.bar(x, feature_importances, color="green", edgecolor="black")
+
+        # Adding labels and legend
+        ax.set_xlabel("Features")
+        ax.set_ylabel("Importance")
+        ax.set_title(f"Feature Importances for {variable}")
+
+        # Display and save the plot
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
+        print(f"Feature importance plot saved to {filename}")
+
+
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Generate separate F1 score plots from multiple configuration JSON files.")
+    parser = argparse.ArgumentParser(description="Generate F1 score and feature importance plots from multiple configuration JSON files.")
     parser.add_argument('-n', '--num_configs', type=int, default=17,
                         help="Number of configuration files to process (default: 17)")
     parser.add_argument('-p', '--config_prefix', type=str, default='rotated_config_',
@@ -94,20 +122,27 @@ def main():
         if os.path.exists(config_file):
             print(f"Processing {config_file}...")
             (variable, weighted_cnn, macro_cnn,
-             weighted_rf, macro_rf) = process_config(config_file)
+             weighted_rf, macro_rf, feature_importances) = process_config(config_file)
             var_list.append(variable)
             f1_weighted_cnn.append(weighted_cnn)
             f1_macro_cnn.append(macro_cnn)
             f1_weighted_rf.append(weighted_rf)
             f1_macro_rf.append(macro_rf)
+
+            # Plot feature importances for this variable
+            plot_feature_importances(
+                variable,
+                feature_importances,
+                f"feature_importances_{variable}.png"
+            )
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
 
     # Plot Weighted F1 Scores
-    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
+    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "f1_score_comparison_weighted.png")
 
     # Plot Macro F1 Scores
-    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
+    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "f1_score_comparison_macro.png")
 
 
 if __name__ == "__main__":
