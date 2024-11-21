@@ -17,6 +17,7 @@ def process_config(config_file):
     j = 0
     jobid = 0
     var_list = config.get('VarList')                # [["TS"], ["PRECT"]]
+    rf_feature_list = config.get('RFFeatureList')   # Feature names for RF
 
     # Use var_list[0] for file names directly
     variable_file = var_list[0]
@@ -44,7 +45,7 @@ def process_config(config_file):
     else:
         feature_importances = None
 
-    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf, feature_importances
+    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf, feature_importances, rf_feature_list
 
 
 def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
@@ -55,10 +56,10 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
-    ax.bar(x - bar_width / 2, cnn_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
+    ax.bar(x - bar_width / 2, rf_scores, bar_width, label="CNN F1 Score", color="blue", edgecolor="black")
 
     # RF F1 scores
-    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="orange", edgecolor="black")
+    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="red", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
@@ -75,9 +76,9 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     print(f"{metric_name} F1 score plot saved to {filename}")
 
 
-def plot_feature_importances(variable, feature_importances, filename):
+def plot_feature_importances(variable, feature_importances, feature_names, filename):
     """Plot feature importances for a given variable."""
-    if feature_importances is not None:
+    if feature_importances is not None and feature_names is not None:
         fig, ax = plt.subplots(figsize=(10, 6))
 
         # Bar plot of feature importances
@@ -88,6 +89,8 @@ def plot_feature_importances(variable, feature_importances, filename):
         ax.set_xlabel("Features")
         ax.set_ylabel("Importance")
         ax.set_title(f"Feature Importances for {variable}")
+        ax.set_xticks(x)
+        ax.set_xticklabels(feature_names, rotation=45, ha='right')  # Rotate labels for better readability
 
         # Display and save the plot
         plt.tight_layout()
@@ -122,7 +125,7 @@ def main():
         if os.path.exists(config_file):
             print(f"Processing {config_file}...")
             (variable, weighted_cnn, macro_cnn,
-             weighted_rf, macro_rf, feature_importances) = process_config(config_file)
+             weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
             var_list.append(variable)
             f1_weighted_cnn.append(weighted_cnn)
             f1_macro_cnn.append(macro_cnn)
@@ -133,16 +136,17 @@ def main():
             plot_feature_importances(
                 variable,
                 feature_importances,
+                rf_feature_list,
                 f"data/feature_importances_{variable}.png"
             )
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
 
     # Plot Weighted F1 Scores
-    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "f1_score_comparison_weighted.png")
+    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
 
     # Plot Macro F1 Scores
-    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "f1_score_comparison_macro.png")
+    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
 
 
 if __name__ == "__main__":
