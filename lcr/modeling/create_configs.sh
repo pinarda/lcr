@@ -17,6 +17,26 @@ original_file="config_casper_test.json" # Original JSON file
 #  '["FLNS"]'
 #)
 
+#var_list=(
+#  '["TREFHTMX"]'
+#  '["TS"]'
+#  '["LHFLX"]'
+#  '["PRECSL"]'
+#  '["PRECT"]'
+#  '["PSL"]'
+#  '["Q200"]'
+#  '["Q500"]'
+#  '["Q850"]'
+#  '["SHFLX"]'
+#  '["T200"]'
+#  '["T500"]'
+#  '["T850"]'
+#  '["TAUX"]'
+#  '["TAUY"]'
+#  '["U010"]'
+#  '["FLNS"]'
+#)
+
 var_list=(
   '["TREFHTMX"]'
   '["TS"]'
@@ -35,7 +55,38 @@ var_list=(
   '["TAUY"]'
   '["U010"]'
   '["FLNS"]'
+  '["FLNSC"]'
+  '["FSNS"]'
+  '["FSNSC"]'
+  '["PRECL"]'
+  '["PRECSC"]'
+  '["QBOT"]'
+  '["T010"]'
+  '["TMQ"]'
+  '["TREFHT"]'
+  '["TREFHTMN"]'
+  '["U200"]'
+  '["U500"]'
+  '["U850"]'
+  '["UBOT"]'
+  '["V200"]'
+  '["V500"]'
+  '["V850"]'
+  '["VBOT"]'
+  '["WSPDSRFAV"]'
+  '["Z050"]'
+  '["Z500"]'
+  '["bc_a1_SRF"]'
+  '["dst_a1_SRF"]'
+  '["dst_a3_SRF"]'
+  '["pom_a1_SRF"]'
+  '["so4_a1_SRF"]'
+  '["so4_a2_SRF"]'
+  '["so4_a3_SRF"]'
+  '["soa_a1_SRF"]'
+  '["soa_a2_SRF"]'
 )
+
 
 
 # Output directory (current directory)
@@ -51,7 +102,7 @@ for ((i=0; i<${#var_list[@]}; i++)); do
     rotated_var_list_json="[$rotated_var_list_json]"
 
     # Generate a new filename for this rotation
-    output_file="$output_dir/rotated_config_$((i+11)).json"
+    output_file="$output_dir/rotated_config_$((i+1)).json"
 
     # Replace VarList in the JSON file
     jq --argjson new_var_list "$rotated_var_list_json" '.VarList = $new_var_list' "$original_file" > "$output_file"

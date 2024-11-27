@@ -1,7 +1,7 @@
 {
     "Location": "/Users/alex/git/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
     "SaveDir": "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/",
-    "VarList":  ["TS", "PRECT"],
+    "VarList":  [["TS"]],
     "FilenamePre":["", ""],
     "FilenamePost": [ ".100days.nc", ".100days.nc"],
     "OrigPath": "/Users/alex/git/ldcpy/data/cam-fv/",
@@ -15,6 +15,6 @@
     "Stride": 1,
     "CutDataset": 0,
     "Metric": ["pcc", "spre", "dssim", "ks"],
-    "ModelType": "rf",
-    "RFFeatureList": ["mean", "ns_con_var"]
+    "ModelType": "cnn",
+    "RFFeatureList": ["mean", "ns_con_var", "real_information_cutoff", "entropy", "magnitude_range"]
 }

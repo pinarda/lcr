@@ -3,55 +3,9 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "T850"
-    ],
-    [
-      "TAUX"
-    ],
-    [
-      "TAUY"
-    ],
-    [
-      "U010"
-    ],
-    [
-      "FLNS"
-    ],
-    [
-      "TREFHTMX"
-    ],
-    [
-      "TS"
-    ],
-    [
-      "LHFLX"
-    ],
-    [
-      "PRECSL"
-    ],
-    [
-      "PRECT"
-    ],
-    [
-      "PSL"
-    ],
-    [
-      "Q200"
-    ],
-    [
-      "Q500"
-    ],
-    [
-      "Q850"
-    ],
-    [
-      "SHFLX"
-    ],
-    [
-      "T200"
-    ],
-    [
-      "T500"
+      [
+        "U850"
+      ]
     ]
   ],
   "FilenamePre": [
@@ -71,7 +25,7 @@
   ],
   "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
   "Times": [
-    100
+    1600
   ],
   "Navg": 1,
   "StorageLoc": "./data",
@@ -82,7 +36,7 @@
     "pcc",
     "spre"
   ],
-  "ModelType": "cnn",
+  "ModelType": "rf",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
