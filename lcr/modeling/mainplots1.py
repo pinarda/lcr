@@ -76,32 +76,59 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     print(f"{metric_name} F1 score plot saved to {filename}")
 
 
-def plot_feature_importances(variable, feature_importances, feature_names, filename):
-    """Plot feature importances for a given variable."""
-    if feature_importances is not None and feature_names is not None:
-        fig, ax = plt.subplots(figsize=(10, 6))
+def plot_feature_importances(features, all_importances, variable_names, filename):
+    """
+    Create a grouped bar plot for feature importances across all variables.
 
-        # Bar plot of feature importances
-        x = np.arange(len(feature_importances))
-        ax.bar(x, feature_importances, color="green", edgecolor="black")
+    Parameters:
+        features (list): List of feature names.
+        all_importances (list of lists): 2D list where each inner list contains feature importances for a variable.
+        variable_names (list): List of variable names corresponding to all_importances.
+        filename (str): Path to save the plot.
+    """
+    if not all_importances or not features:
+        print("No data for feature importance plot.")
+        return
 
-        # Adding labels and legend
-        ax.set_xlabel("Features")
-        ax.set_ylabel("Importance")
-        ax.set_title(f"Feature Importances for {variable}")
-        ax.set_xticks(x)
-        ax.set_xticklabels(feature_names, rotation=45, ha='right')  # Rotate labels for better readability
+    # Number of features and variables
+    n_features = len(features)
+    n_variables = len(all_importances)
 
-        # Display and save the plot
-        plt.tight_layout()
-        plt.savefig(filename)
-        plt.close()
-        print(f"Feature importance plot saved to {filename}")
+    # X-axis positions
+    x = np.arange(n_features)  # Positions for features
+    bar_width = 0.8 / n_variables  # Width of each bar, distributed evenly
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(15, 8))
+
+    # Plot each variable's importances
+    for i, importances in enumerate(all_importances):
+        ax.bar(
+            x + i * bar_width,  # Shift each group by `i * bar_width`
+            importances,
+            bar_width,
+            label=variable_names[i]
+        )
+
+    # Add labels and legend
+    ax.set_xlabel("Features")
+    ax.set_ylabel("Importance")
+    ax.set_title("Feature Importances Across Variables")
+    ax.set_xticks(x + bar_width * (n_variables - 1) / 2)  # Center the group of bars
+    ax.set_xticklabels(features, rotation=45, ha='right')  # Rotate labels for better readability
+    ax.legend(title="Variables")
+
+    # Save the plot
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+    print(f"Feature importance comparison plot saved to {filename}")
 
 
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Generate F1 score and feature importance plots from multiple configuration JSON files.")
+    parser = argparse.ArgumentParser(
+        description="Generate F1 score and feature importance plots from multiple configuration JSON files.")
     parser.add_argument('-n', '--num_configs', type=int, default=17,
                         help="Number of configuration files to process (default: 17)")
     parser.add_argument('-p', '--config_prefix', type=str, default='rotated_config_',
@@ -118,6 +145,8 @@ def main():
     f1_macro_cnn = []
     f1_weighted_rf = []
     f1_macro_rf = []
+    all_importances = []  # Collect all feature importances
+    feature_names = None  # To store feature names from the first config
 
     # Iterate over all configuration files
     for i in range(1, args.num_configs + 1):
@@ -126,19 +155,19 @@ def main():
             print(f"Processing {config_file}...")
             (variable, weighted_cnn, macro_cnn,
              weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
+
             var_list.append(variable)
             f1_weighted_cnn.append(weighted_cnn)
             f1_macro_cnn.append(macro_cnn)
             f1_weighted_rf.append(weighted_rf)
             f1_macro_rf.append(macro_rf)
 
-            # Plot feature importances for this variable
-            plot_feature_importances(
-                variable,
-                feature_importances,
-                rf_feature_list,
-                f"data/feature_importances_{variable}.png"
-            )
+            # Save feature importances and feature names
+            if feature_importances is not None:
+                all_importances.append(feature_importances)
+                if feature_names is None:  # Store feature names once
+                    feature_names = rf_feature_list
+
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
 
@@ -147,6 +176,15 @@ def main():
 
     # Plot Macro F1 Scores
     plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
+
+    # Plot Feature Importances for all variables
+    if all_importances and feature_names:
+        plot_feature_importances(
+            feature_names,
+            all_importances,
+            var_list,
+            "data/feature_importances_comparison.png"
+        )
 
 
 if __name__ == "__main__":
