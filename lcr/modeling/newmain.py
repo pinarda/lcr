@@ -13,7 +13,13 @@ import numpy as np
 import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.tree import plot_tree
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Process a configuration JSON file.")
-    parser.add_argument('-c', '--config', type=str, default='config_casper_test.json',
+    parser.add_argument('-c', '--config', type=str, default='config.json',
                         help="Path to the configuration JSON file (default: config.json)")
 
     # Parse the arguments
@@ -479,46 +485,33 @@ def main():
     time = times[0]
 
     if modeltype == 'rf':
-        # featurelist = ["mean", "ns_con_var"]
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, '_'.join(flat_var_list) + '_combined', orig_label, "all", times)
-
-        # Use features_np and combined_labels directly
+        # Feature computation and data loading
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, '_'.join(flat_var_list) + '_combined',
+                                       orig_label, "all", times)
         labels_np = np.array(combined_labels)
-        #transpose the features
-        features_np = features_np.T
+        features_np = features_np.T  # Transpose features
 
-        # Split data into training, validation, and test sets
-        from sklearn.model_selection import train_test_split
-
-        # X_train_val, X_test, y_train_val, y_test = train_test_split(
-        #     features_np, labels_np, test_size=0.25, shuffle=False, stratify=None
-        # )
-        #
-        # X_train, X_val, y_train, y_val = train_test_split(
-        #     X_train_val, y_train_val, test_size=0.33333, shuffle=False, stratify=None
-        # )
-        # This results in 50% train, 25% val, 25% test
-
+        # Prepare data
         get_data_labels(
             dataset=features_np,
             labels=labels_np,
-            time=times[0],  # Adjust based on train_cnn requirements
+            time=times[0],
             varname='_'.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='1var',
             j=0,
             plotdir=save_dir,
-            window_size=11,  # As per WINDOWSIZE
+            window_size=11,
             only_data=False,
-            modeltype='rf',
+            modeltype=modeltype,
             feature=None,
             featurelist=None,
             transform='quantile',
             jobid=0,
             cut_windows=False,
             metric=metric,
-            vars = var_list
+            vars=var_list
         )
 
         train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
@@ -527,97 +520,90 @@ def main():
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
         test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy")
-        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl", allow_pickle=True)
+        label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl",
+                                allow_pickle=True)
 
-        # Proceed to train the Random Forest model
-        from sklearn.ensemble import RandomForestClassifier
-        from sklearn.metrics import accuracy_score
-
-        # Initialize the Random Forest classifier
-        model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=0)
-
-        # Train the model
-        model.fit(train_data_np, train_labels_np)
+        # --- Random Forest ---
+        print("Training Random Forest...")
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=0)
+        rf_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
-        val_predictions = model.predict(val_data_np)
-        val_accuracy = accuracy_score(val_labels_np, val_predictions)
-        print(f"Validation Accuracy: {val_accuracy}")
+        val_predictions_rf = rf_model.predict(val_data_np)
+        val_accuracy_rf = accuracy_score(val_labels_np, val_predictions_rf)
+        print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
 
         # Evaluate on test data
-        test_predictions = model.predict(test_data_np)
-        test_accuracy = accuracy_score(test_labels_np, test_predictions)
-        print(f"Test Accuracy: {test_accuracy}")
+        test_predictions_rf = rf_model.predict(test_data_np)
+        test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
+        print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
 
-        # let's create a confusion matrix and classification report
-        from sklearn.metrics import confusion_matrix, classification_report
+        # Confusion matrix and classification report for Random Forest
+        cm_rf = confusion_matrix(test_labels_np, test_predictions_rf)
+        cr_rf = classification_report(test_labels_np, test_predictions_rf)
+        print(cm_rf)
+        print(cr_rf)
 
-        from sklearn.tree import plot_tree
+        # Feature Importances for Random Forest
+        rf_feature_importances = rf_model.feature_importances_
+        np.save(f"{storageloc}/feature_importances_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy",
+                rf_feature_importances)
 
-        # Access the first tree in the random forest
-        single_tree = model.estimators_[0]
-        # Plot the tree
-        plt.figure(figsize=(20, 10))  # Adjust the size for readability
+        # Save Random Forest predictions and metrics
+        np.save(f"{storageloc}/test_predictions_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions_rf)
+        np.save(f"{storageloc}/classification_report_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr_rf)
+
+        # Save Confusion Matrix for Random Forest
+        rf_confusion_df = pd.DataFrame(cm_rf, index=label_encoder.classes_, columns=label_encoder.classes_)
+        rf_confusion_df.to_csv(f"{storageloc}/confusion_matrix_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
+
+        # --- Decision Tree ---
+        print("Training Decision Tree...")
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=0)
+        dt_model.fit(train_data_np, train_labels_np)
+
+        # Evaluate on validation data
+        val_predictions_dt = dt_model.predict(val_data_np)
+        val_accuracy_dt = accuracy_score(val_labels_np, val_predictions_dt)
+        print(f"Decision Tree Validation Accuracy: {val_accuracy_dt}")
+
+        # Evaluate on test data
+        test_predictions_dt = dt_model.predict(test_data_np)
+        test_accuracy_dt = accuracy_score(test_labels_np, test_predictions_dt)
+        print(f"Decision Tree Test Accuracy: {test_accuracy_dt}")
+
+        # Confusion matrix and classification report for Decision Tree
+        cm_dt = confusion_matrix(test_labels_np, test_predictions_dt)
+        cr_dt = classification_report(test_labels_np, test_predictions_dt)
+        print(cm_dt)
+        print(cr_dt)
+
+        # Plot Decision Tree
+        plt.figure(figsize=(20, 10))
         plot_tree(
-            single_tree,
+            dt_model,
             feature_names=train_data_np.columns if hasattr(train_data_np, "columns") else None,
-            # Use feature names if available
-            class_names=[str(cls) for cls in model.classes_],  # Class names from the model
-            filled=True,  # Use color to represent node purity
-            rounded=True,  # Rounded corners for nodes
-            fontsize=10  # Font size for text
+            class_names=[str(cls) for cls in dt_model.classes_],
+            filled=True,
+            rounded=True,
+            fontsize=10
         )
-
-        # Show the plot
-        plt.title("Single Decision Tree from Random Forest")
+        plt.title("Decision Tree Visualization")
+        plt.savefig(f"{storageloc}/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
         plt.show()
 
-        # save the plot
-        plt.savefig(f"{storageloc}/single_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}.png")
+        # Save Decision Tree predictions and metrics
+        np.save(f"{storageloc}/test_predictions_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions_dt)
+        np.save(f"{storageloc}/classification_report_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr_dt)
 
+        # Save Confusion Matrix for Decision Tree
+        dt_confusion_df = pd.DataFrame(cm_dt, index=label_encoder.classes_, columns=label_encoder.classes_)
+        dt_confusion_df.to_csv(f"{storageloc}/confusion_matrix_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
 
-        # confusion matrix
-        cm = confusion_matrix(test_labels_np, test_predictions)
-        print(cm)
-
-        # classification report
-        cr = classification_report(test_labels_np, test_predictions)
-
-        # save the test predictions
-        np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)
-
-        print(cr)
-        # Map numerical predictions back to original labels
-        predicted_labels = label_encoder.inverse_transform(test_predictions)
-
-        # save the predictions
-        np.save(f"{storageloc}/predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", predicted_labels)
-
-        # Identify unique labels present in predictions
-        unique_labels = np.unique(predicted_labels)
-
-
-        # Define all possible labels
-        all_labels = list(label_encoder.classes_)
-
-        # Set up confusion matrix DataFrame with both labels, filling missing values with 0
-        confusion_df = pd.DataFrame(
-            cm,
-            index=unique_labels,
-            columns=unique_labels
-        ).reindex(index=all_labels, columns=all_labels, fill_value=0)
-
-        # save them to a file
-        np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr)
-        # save the confusion matrix df as csv
-        confusion_df.to_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
-
-        # let's also save the label encoder classes
-        np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
-
-        # let's also get feature importances
-        feature_importances = model.feature_importances_
-        np.save(f"{storageloc}/feature_importances_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", feature_importances)
+        # Feature Importances for Decision Tree
+        dt_feature_importances = dt_model.feature_importances_
+        np.save(f"{storageloc}/feature_importances_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy",
+                dt_feature_importances)
 
     else:
         get_data_labels(
