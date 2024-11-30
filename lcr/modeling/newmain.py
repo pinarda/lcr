@@ -775,16 +775,16 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"):
+        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_all_time100_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_all_time100_second.nc")
 
             # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
             # Remove '_combined' from the end of the varname string and split by '_'
             desired_order = varname.replace("_combined", "").split("_")
 
             # Get the current 'sample' coordinate, which contains the variable labels
-            filename_order_string = "FLNS_LHFLX_PRECSL_PRECT_PSL_Q200_Q500_Q850_SHFLX_T200_T500_T850_TAUX_TAUY_TREFHTMX_TS_U010"
+            filename_order_string = f"{varname}"
             current_order = filename_order_string.split("_")
 
             # Repeat each variable name in `current_order` 100 times to match the data structure
