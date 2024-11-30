@@ -60,6 +60,9 @@ def main():
     featurelist = config.get('RFFeatureList')           # ["mean", "ns_con_var"]
     flat_var_list =[var for group in var_list for var in group]
 
+    # let's grab start time here
+    start_time = pd.Timestamp.now()
+
     # log the flat var list
     logging.info(f"Flat var list: {flat_var_list}")
 
@@ -491,12 +494,21 @@ def main():
     storageloc = storage_loc
     time = times[0]
 
+    # get time here and log it with a description
+    end_time = pd.Timestamp.now()
+    logging.info(f"Time taken for data preparation: {end_time - start_time}")
+
     if modeltype == 'rf':
         # Feature computation and data loading
         features_np = compute_features(dataset_xr, featurelist, storage_loc, '_'.join(flat_var_list) + '_combined',
                                        orig_label, "all", times)
         labels_np = np.array(combined_labels)
         features_np = features_np.T  # Transpose features
+
+        # also get time here and log it with a description
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for feature computation: {end_time - start_time}")
+
 
         # Prepare data
         get_data_labels(
@@ -611,8 +623,15 @@ def main():
         dt_feature_importances = dt_model.feature_importances_
         np.save(f"{storageloc}/feature_importances_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy",
                 dt_feature_importances)
+        # log the time taken for the entire process
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for Random Forest and Decision Tree training: {end_time - start_time}")
 
     else:
+        # log time and start the process
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for data preparation: {end_time - start_time}")
+
         get_data_labels(
             dataset=dataset_xr,
             labels=combined_labels,
@@ -648,6 +667,9 @@ def main():
 
 
     if modeltype == "cnn":
+        #log time and start the process
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for data preparation: {end_time - start_time}")
         train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
         val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy")
         test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
@@ -682,6 +704,9 @@ def main():
             transform=None,
         )
 
+        # log time and start the process
+        end_time = pd.Timestamp.now()
+
         accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
 
         # save the test predictions
@@ -712,6 +737,8 @@ def main():
         confusion_df.to_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
         # save the label encoder classes
         np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
+        logging.info(f"Time taken for CNN training: {end_time - start_time}")
+
 
     # make a plot of the confusion matrix where the height is the sum of the row, and the diagonal element in the row is shaded in a different color
 
