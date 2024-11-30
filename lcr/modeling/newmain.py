@@ -170,8 +170,12 @@ def main():
     # Mappings for prefixes and postfixes based on ensembles
 
     # Initialize dictionaries to store files and labels
+    # files_dict = {varname: [] for varname in flat_var_list}
+
+    flat_var_list = [item for sublist in flat_var_list for item in sublist]
     files_dict = {varname: [] for varname in flat_var_list}
     labels_dict = {varname: [] for varname in flat_var_list}
+    print(files_dict)
 
     i = 0
     for subdir in sub_dirs:
