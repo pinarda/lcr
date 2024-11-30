@@ -60,6 +60,9 @@ def main():
     featurelist = config.get('RFFeatureList')           # ["mean", "ns_con_var"]
     flat_var_list =[var for group in var_list for var in group]
 
+    # log the flat var list
+    logging.info(f"Flat var list: {flat_var_list}")
+
     # Add ldcpy to sys.path
     if opt_ldcpy_dev_path:
         sys.path.insert(0, opt_ldcpy_dev_path)
