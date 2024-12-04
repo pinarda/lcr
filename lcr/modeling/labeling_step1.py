@@ -7,7 +7,9 @@ data_dir = "data/"
 
 # List of features to process
 features = [
+    "w_e_first_differences_max",
     "w_e_first_differences",
+    "n_s_first_differences_max",
     "n_s_first_differences",
     "ew_con_var",
     "ns_con_var",
@@ -50,6 +52,9 @@ for feature in features:
     data_arrays = []
     for file in sorted_files:
         da = xr.open_dataarray(file)
+
+        # print the file name
+        print(file)
 
         # Check if the dimension or coordinate is 'multi_index' and rename both to 'sample'
         if 'multi_index' in da.dims:
