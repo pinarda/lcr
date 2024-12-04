@@ -544,7 +544,7 @@ def main():
 
         # --- Random Forest ---
         print("Training Random Forest...")
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=0)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=1)
         rf_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
