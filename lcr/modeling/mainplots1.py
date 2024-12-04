@@ -152,21 +152,22 @@ def main():
     for i in range(1, args.num_configs + 1):
         config_file = f"{args.config_prefix}{i}{args.suffix}"
         if os.path.exists(config_file):
-            print(f"Processing {config_file}...")
-            (variable, weighted_cnn, macro_cnn,
-             weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
+            if config_file != "rotated_config_23.json":
+                print(f"Processing {config_file}...")
+                (variable, weighted_cnn, macro_cnn,
+                 weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
 
-            var_list.append(variable)
-            f1_weighted_cnn.append(weighted_cnn)
-            f1_macro_cnn.append(macro_cnn)
-            f1_weighted_rf.append(weighted_rf)
-            f1_macro_rf.append(macro_rf)
+                var_list.append(variable)
+                f1_weighted_cnn.append(weighted_cnn)
+                f1_macro_cnn.append(macro_cnn)
+                f1_weighted_rf.append(weighted_rf)
+                f1_macro_rf.append(macro_rf)
 
-            # Save feature importances and feature names
-            if feature_importances is not None:
-                all_importances.append(feature_importances)
-                if feature_names is None:  # Store feature names once
-                    feature_names = rf_feature_list
+                # Save feature importances and feature names
+                if feature_importances is not None:
+                    all_importances.append(feature_importances)
+                    if feature_names is None:  # Store feature names once
+                        feature_names = rf_feature_list
 
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
