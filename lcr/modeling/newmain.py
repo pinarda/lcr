@@ -754,7 +754,7 @@ def main():
         # save the confusion matrix df as csv
         confusion_df.to_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
         # save the label encoder classes
-        np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", label_encoder.classes_)
+        np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl", label_encoder.classes_)
         logging.info(f"Time taken for CNN training: {end_time - start_time}")
 
 
