@@ -774,6 +774,8 @@ def main():
     # Plotting
     fig, ax = plt.subplots()
 
+    all_labels = list(confusion_df.index)
+
     # Plot correct predictions in bold color
     ax.bar(all_labels, diagonal, label="Correct Predictions", color="blue", edgecolor="black")
 
