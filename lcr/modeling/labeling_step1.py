@@ -7,11 +7,8 @@ data_dir = "data/"
 
 # List of features to process
 features = [
-    "w_e_first_differences_max",
     "w_e_first_differences",
-    "n_s_first_differences_max",
     "n_s_first_differences",
-    "mean",
     "ew_con_var",
     "ns_con_var",
     "real_information_cutoff",
