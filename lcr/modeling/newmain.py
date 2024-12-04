@@ -774,7 +774,8 @@ def main():
     # Plotting
     fig, ax = plt.subplots()
 
-    all_labels = list(confusion_df.index)
+    label_encoder = np.load(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", allow_pickle=True)
+    all_labels = list(label_encoder.classes_)
 
     # Plot correct predictions in bold color
     ax.bar(all_labels, diagonal, label="Correct Predictions", color="blue", edgecolor="black")
