@@ -129,7 +129,7 @@ def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(
         description="Generate F1 score and feature importance plots from multiple configuration JSON files.")
-    parser.add_argument('-n', '--num_configs', type=int, default=17,
+    parser.add_argument('-n', '--num_configs', type=int, default=47,
                         help="Number of configuration files to process (default: 17)")
     parser.add_argument('-p', '--config_prefix', type=str, default='rotated_config_',
                         help="Prefix for the configuration files (default: rotated_config_)")
