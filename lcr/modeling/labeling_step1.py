@@ -24,7 +24,7 @@ varname_pattern = re.compile(r"([^/]+)_combined_lens1_ens25_1920_orig_FEATURE_")
 # Loop over each feature and combine files
 for feature in features:
     # Define the filename pattern for the current feature, with directory prefix
-    file_pattern = f"{data_dir}*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
+    file_pattern = f"{data_dir}*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time1600_second.nc"
 
     # Find all files in the specified directory matching this pattern
     file_list = glob.glob(file_pattern)
