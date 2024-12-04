@@ -26,7 +26,7 @@ def process_config(config_file):
 
     # Load data for CNN
     test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{variable_file}.npy")
-    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_rf_{j}{time}cnn{jobid}_{variable_file}.npy")
+    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{variable_file}.npy")
 
     # Load data for RF
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
@@ -39,7 +39,7 @@ def process_config(config_file):
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_rf_11600rf0_{variable_file}.npy"
+    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file}.npy"
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
     else:
