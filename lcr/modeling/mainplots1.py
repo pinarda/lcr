@@ -26,11 +26,11 @@ def process_config(config_file):
 
     # Load data for CNN
     test_labels_np_cnn = np.load(f"{storageloc}/test_labels_{j}{time}cnn{jobid}_{variable_file}.npy")
-    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{variable_file}.npy")
+    test_predictions_cnn = np.load(f"{storageloc}/test_predictions_rf_{j}{time}cnn{jobid}_{variable_file}.npy")
 
     # Load data for RF
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
-    test_predictions_rf = np.load(f"{storageloc}/test_predictions_{j}{time}rf{jobid}_{variable_file}.npy")
+    test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file}.npy")
 
     # Compute F1 scores
     f1_weighted_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='weighted')
@@ -183,7 +183,7 @@ def main():
             feature_names,
             all_importances,
             var_list,
-            "data/feature_importances_comparison.png"
+            "data/feature_importances_rf_comparison.png"
         )
 
 
