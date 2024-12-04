@@ -742,6 +742,10 @@ def main():
 
     # make a plot of the confusion matrix where the height is the sum of the row, and the diagonal element in the row is shaded in a different color
 
+    if modeltype == "cnn":
+        confusion_df = pd.read_csv(f"{storageloc}/confusion_matrix_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv", index_col=0)
+    elif modeltype == "rf":
+        confusion_df = pd.read_csv(f"{storageloc}/confusion_matrix_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv", index_col=0)
     # Calculate the column sums
     col_sums = confusion_df.sum(axis=0)
 
