@@ -3,6 +3,42 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "soa_a2_SRF"
+    ],
+    [
+      "TREFHTMX"
+    ],
+    [
+      "TS"
+    ],
+    [
+      "LHFLX"
+    ],
+    [
+      "PRECSL"
+    ],
+    [
+      "PRECT"
+    ],
+    [
+      "PSL"
+    ],
+    [
+      "Q200"
+    ],
+    [
+      "Q500"
+    ],
+    [
+      "Q850"
+    ],
+    [
+      "SHFLX"
+    ],
+    [
+      "T200"
+    ],
+    [
       "T500"
     ],
     [
@@ -106,42 +142,6 @@
     ],
     [
       "soa_a1_SRF"
-    ],
-    [
-      "soa_a2_SRF"
-    ],
-    [
-      "TREFHTMX"
-    ],
-    [
-      "TS"
-    ],
-    [
-      "LHFLX"
-    ],
-    [
-      "PRECSL"
-    ],
-    [
-      "PRECT"
-    ],
-    [
-      "PSL"
-    ],
-    [
-      "Q200"
-    ],
-    [
-      "Q500"
-    ],
-    [
-      "Q850"
-    ],
-    [
-      "SHFLX"
-    ],
-    [
-      "T200"
     ]
   ],
   "FilenamePre": [
