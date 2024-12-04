@@ -58,7 +58,8 @@ def main():
     save_dir = config.get('SaveDir')                  # "/Users/alex/git/lcr/lcr/data_analysis/RFnew/plots/"
     modeltype = config.get('ModelType')               # "cnn"
     featurelist = config.get('RFFeatureList')           # ["mean", "ns_con_var"]
-    flat_var_list =[var for group in var_list for var in group]
+    # flat_var_list =[var for group in var_list for var in group]
+    flat_var_list = [var[0] for var in var_list]
 
     # let's grab start time here
     start_time = pd.Timestamp.now()
