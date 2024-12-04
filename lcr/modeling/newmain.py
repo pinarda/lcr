@@ -500,7 +500,7 @@ def main():
 
     if modeltype == 'rf':
         # Feature computation and data loading
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, '_'.join(flat_var_list) + '_combined',
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
                                        orig_label, "all", times)
         labels_np = np.array(combined_labels)
         features_np = features_np.T  # Transpose features
@@ -515,7 +515,7 @@ def main():
             dataset=features_np,
             labels=labels_np,
             time=times[0],
-            varname='_'.join(flat_var_list) + '_combined',
+            varname=','.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='1var',
@@ -636,7 +636,7 @@ def main():
             dataset=dataset_xr,
             labels=combined_labels,
             time=times[0],  # Adjust based on train_cnn requirements
-            varname='_'.join(flat_var_list) + '_combined',
+            varname=','.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='1var',
@@ -802,17 +802,19 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_all_time1600_second.nc"):
+        if os.path.exists(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_all_time1600_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc")
 
             # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
             # Remove '_combined' from the end of the varname string and split by '_'
-            desired_order = varname.replace("_combined", "").split("_")
+            desired_order = varname.replace("_combined", "").split(",")
 
             # Get the current 'sample' coordinate, which contains the variable labels
-            filename_order_string = f"{varname}"
-            current_order = filename_order_string.split("_")
+            # filename_order_string = f"{varname}"
+
+            filename_order_string = "FLNS,FLNSC,FSNS,FSNSC,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF,soa_a2_SRF"
+            current_order = filename_order_string.split(",")
 
             # Repeat each variable name in `current_order` 100 times to match the data structure
             expanded_current_order = np.repeat(current_order, 1600)
@@ -825,7 +827,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             # Reorder the DataArray along the 'sample' dimension
             reordered_data = feat_da.isel(sample=reorder_index)
 
-            print("Data has been reordered according to the specified varname order and saved as 'reordered_data.nc'")
+            print("Data has been reordered according to the specified varname order, continuing.")
 
             features_list.append(reordered_data.values.flatten())
             continue
