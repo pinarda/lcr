@@ -39,7 +39,7 @@ def process_config(config_file):
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_01600rf0_{variable_file}.npy"
+    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file}.npy"
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
     else:
