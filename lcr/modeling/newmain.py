@@ -563,6 +563,15 @@ def main():
         print(cm_rf)
         print(cr_rf)
 
+        # Ensure all classes are present in the confusion matrix
+        num_classes = len(label_encoder.classes_)
+        cm_full = np.zeros((num_classes, num_classes), dtype=int)
+
+        # Populate the confusion matrix with the actual results
+        for i in range(cm_rf.shape[0]):
+            for j in range(cm_rf.shape[1]):
+                cm_full[i, j] = cm_rf[i, j]
+
         # Feature Importances for Random Forest
         rf_feature_importances = rf_model.feature_importances_
         np.save(f"{storageloc}/feature_importances_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy",
@@ -573,7 +582,7 @@ def main():
         np.save(f"{storageloc}/classification_report_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr_rf)
 
         # Save Confusion Matrix for Random Forest
-        rf_confusion_df = pd.DataFrame(cm_rf, index=label_encoder.classes_, columns=label_encoder.classes_)
+        rf_confusion_df = pd.DataFrame(cm_full, index=label_encoder.classes_, columns=label_encoder.classes_)
         rf_confusion_df.to_csv(f"{storageloc}/confusion_matrix_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
 
         # --- Decision Tree ---
@@ -597,6 +606,15 @@ def main():
         print(cm_dt)
         print(cr_dt)
 
+        # Ensure all classes are present in the confusion matrix
+        num_classes = len(label_encoder.classes_)
+        cm_dt_full = np.zeros((num_classes, num_classes), dtype=int)
+
+        # Populate the confusion matrix with the actual results
+        for i in range(cm_rf.shape[0]):
+            for j in range(cm_rf.shape[1]):
+                cm_full[i, j] = cm_rf[i, j]
+
         # Plot Decision Tree
         plt.figure(figsize=(20, 10))
         plot_tree(
@@ -616,7 +634,7 @@ def main():
         np.save(f"{storageloc}/classification_report_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr_dt)
 
         # Save Confusion Matrix for Decision Tree
-        dt_confusion_df = pd.DataFrame(cm_dt, index=label_encoder.classes_, columns=label_encoder.classes_)
+        dt_confusion_df = pd.DataFrame(cm_dt_full, index=label_encoder.classes_, columns=label_encoder.classes_)
         dt_confusion_df.to_csv(f"{storageloc}/confusion_matrix_dt_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
 
         # Feature Importances for Decision Tree
