@@ -587,7 +587,7 @@ def main():
 
         # --- Decision Tree ---
         print("Training Decision Tree...")
-        dt_model = DecisionTreeClassifier(max_depth=10, random_state=0)
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=0, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
