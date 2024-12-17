@@ -113,7 +113,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
             x + i * bar_width,  # Shift each group by `i * bar_width`
             importances,
             bar_width,
-            label=variable_names[i]
+            label=variable_names[i][0]
         )
 
     # Add labels and legend
