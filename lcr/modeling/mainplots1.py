@@ -116,7 +116,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_title("Feature Importances Across Variables")
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)  # Center the group of bars
     ax.set_xticklabels(features, rotation=45, ha='right')  # Rotate labels for better readability
-    ax.legend(title="Variables")
+    ax.legend(title="Variables", loc='upper left', bbox_to_anchor=(1.05, 1))
 
     # Save the plot
     plt.tight_layout()
