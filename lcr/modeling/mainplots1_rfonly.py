@@ -106,7 +106,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
 
 
     # Create the plot
-    plt.rcParams.update({'font.size': 30})
+    plt.rcParams.update({'font.size': 16})
 
     fig, ax = plt.subplots(figsize=(15, 8))
 
