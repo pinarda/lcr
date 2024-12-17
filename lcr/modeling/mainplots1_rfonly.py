@@ -104,8 +104,10 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     x = np.arange(n_features)  # Positions for features
     bar_width = 0.8 / n_variables  # Width of each bar, distributed evenly
 
+
     # Create the plot
     fig, ax = plt.subplots(figsize=(15, 8))
+    plt.rcParams.update({'font.size': 14})
 
     # Plot each variable's importances
     for i, importances in enumerate(all_importances):
@@ -122,7 +124,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_title("Feature Importances Across Variables")
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)  # Center the group of bars
     ax.set_xticklabels(features, rotation=45, ha='right')  # Rotate labels for better readability
-    ax.legend(title="Variables", loc='upper left', bbox_to_anchor=(1.05, 1))
+    ax.legend(title="Variables", loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=10)
 
     # Save the plot
     plt.tight_layout()
