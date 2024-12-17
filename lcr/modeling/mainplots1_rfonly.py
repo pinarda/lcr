@@ -106,8 +106,9 @@ def plot_feature_importances(features, all_importances, variable_names, filename
 
 
     # Create the plot
+    plt.rcParams.update({'font.size': 30})
+
     fig, ax = plt.subplots(figsize=(15, 8))
-    plt.rcParams.update({'font.size': 20})
 
     # Plot each variable's importances
     for i, importances in enumerate(all_importances):
