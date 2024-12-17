@@ -90,6 +90,8 @@ def plot_feature_importances(features, all_importances, variable_names, filename
         print("No data for feature importance plot.")
         return
 
+    print(variable_names)
+
     # Number of features and variables
     n_features = len(features)
     n_variables = len(all_importances)
