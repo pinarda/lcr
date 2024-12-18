@@ -1,0 +1,195 @@
+{
+  "Location": "/glade/u/home/apinard/newldcpy/ldcpy/data/cam-fv/orig.PRECT.100days.nc",
+  "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
+  "VarList": [
+    [
+      "TREFHT"
+    ],
+    [
+      "TREFHTMN"
+    ],
+    [
+      "U200"
+    ],
+    [
+      "U500"
+    ],
+    [
+      "U850"
+    ],
+    [
+      "UBOT"
+    ],
+    [
+      "V200"
+    ],
+    [
+      "V500"
+    ],
+    [
+      "V850"
+    ],
+    [
+      "VBOT"
+    ],
+    [
+      "WSPDSRFAV"
+    ],
+    [
+      "Z050"
+    ],
+    [
+      "Z500"
+    ],
+    [
+      "bc_a1_SRF"
+    ],
+    [
+      "dst_a1_SRF"
+    ],
+    [
+      "dst_a3_SRF"
+    ],
+    [
+      "pom_a1_SRF"
+    ],
+    [
+      "so4_a1_SRF"
+    ],
+    [
+      "so4_a2_SRF"
+    ],
+    [
+      "so4_a3_SRF"
+    ],
+    [
+      "soa_a1_SRF"
+    ],
+    [
+      "soa_a2_SRF"
+    ],
+    [
+      "TREFHTMX"
+    ],
+    [
+      "TS"
+    ],
+    [
+      "LHFLX"
+    ],
+    [
+      "PRECSL"
+    ],
+    [
+      "PRECT"
+    ],
+    [
+      "PSL"
+    ],
+    [
+      "Q200"
+    ],
+    [
+      "Q500"
+    ],
+    [
+      "Q850"
+    ],
+    [
+      "SHFLX"
+    ],
+    [
+      "T200"
+    ],
+    [
+      "T500"
+    ],
+    [
+      "T850"
+    ],
+    [
+      "TAUX"
+    ],
+    [
+      "TAUY"
+    ],
+    [
+      "U010"
+    ],
+    [
+      "FLNS"
+    ],
+    [
+      "FLNSC"
+    ],
+    [
+      "FSNS"
+    ],
+    [
+      "FSNSC"
+    ],
+    [
+      "PRECL"
+    ],
+    [
+      "PRECSC"
+    ],
+    [
+      "QBOT"
+    ],
+    [
+      "T010"
+    ],
+    [
+      "TMQ"
+    ]
+  ],
+  "FilenamePre": [
+    "b.e11.B20TRC5CNBDRD.f09_g16.025.cam.h1."
+  ],
+  "FilenamePost": [
+    ".19200101-20051231.nc"
+  ],
+  "OrigPath": "/glade/derecho/scratch/apinard/RF_store_classify/data/",
+  "CompPath": "/glade/derecho/scratch/apinard/RF_store_classify/data/",
+  "SubDirs": [
+    "lens1_ens25_1920"
+  ],
+  "CompDirs": [
+    "zfp_p_8",
+    "zfp_p_10",
+    "zfp_p_12",
+    "zfp_p_14",
+    "zfp_p_16",
+    "zfp_p_18",
+    "zfp_p_20",
+    "zfp_p_22",
+    "zfp_p_24",
+    "zfp_p_26"
+  ],
+  "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
+  "Times": [
+    1600
+  ],
+  "Navg": 1,
+  "StorageLoc": "./data",
+  "Stride": 1,
+  "CutDataset": 0,
+  "Metric": [
+    "dssim",
+    "pcc",
+    "spre"
+  ],
+  "ModelType": "rf",
+  "RFFeatureList": [
+    "ns_con_var",
+    "ew_con_var",
+    "n_s_first_differences",
+    "w_e_first_differences",
+    "n_s_first_differences_max",
+    "w_e_first_differences_max",
+    "real_information_cutoff",
+    "entropy",
+    "magnitude_range"
+  ]
+}
