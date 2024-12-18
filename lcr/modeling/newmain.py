@@ -544,8 +544,31 @@ def main():
 
         # --- Random Forest ---
         print("Training Random Forest...")
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=1, min_samples_leaf=5)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
         rf_model.fit(train_data_np, train_labels_np)
+
+        from sklearn.tree import export_graphviz, plot_tree
+        import matplotlib.pyplot as plt
+        import os
+
+        # Directory to save tree plots
+        # output_dir = "decision_tree_plots"
+        # os.makedirs(output_dir, exist_ok=True)
+
+        # Iterate through each tree in the Random Forest
+        for i, tree in enumerate(rf_model.estimators_):
+            # Create a plot for each tree
+            plt.figure(figsize=(20, 10))
+            plot_tree(tree, filled=True, feature_names=train_data_np.columns, class_names=True)
+
+            # Save the plot to a file
+            file_name = os.path.join(f"{storageloc}/trees/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}_{i}.png")
+            plt.savefig(file_name)
+            plt.close()
+
+            print(f"Tree {i} saved to {file_name}")
+
+        print("All decision tree plots have been saved.")
 
         # Evaluate on validation data
         val_predictions_rf = rf_model.predict(val_data_np)
@@ -587,7 +610,7 @@ def main():
 
         # --- Decision Tree ---
         print("Training Decision Tree...")
-        dt_model = DecisionTreeClassifier(max_depth=10, random_state=0, min_samples_leaf=5)
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=11, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
