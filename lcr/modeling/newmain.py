@@ -562,7 +562,7 @@ def main():
             plot_tree(tree, filled=True, feature_names=train_data_np.columns, class_names=True)
 
             # Save the plot to a file
-            file_name = os.path.join(f"{storageloc}/trees/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}_{i}.png")
+            file_name = f"{storageloc}/trees/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}_{i}.png"
             plt.savefig(file_name)
             plt.close()
 
