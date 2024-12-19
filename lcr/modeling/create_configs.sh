@@ -87,6 +87,18 @@ var_list=(
   '["soa_a2_SRF"]'
 )
 
+#  var_list = [
+#    "TREFHTMX", "TS", "LHFLX", "PRECSL", "PRECT", "PSL", "Q200", "Q500", "Q850",
+#    "SHFLX", "T200", "T500", "T850", "TAUX", "TAUY", "U010", "FLNS",
+#
+#]
+#
+#  var_list2 = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNSC",
+#    "FSNS", "FSNSC", "pom_a1_SRF",  "PRECL", "PRECSC", "QBOT",
+#     "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "TMQ", "TREFHT",
+#    "TREFHTMN", "U200", "U500", "U850", "UBOT",  "V200", "V500", "V850", "VBOT",  "WSPDSRFAV", "Z050", "Z500",
+
+
 
 
 # Output directory (current directory)
