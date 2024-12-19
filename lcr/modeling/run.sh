@@ -13,16 +13,17 @@ for config_file in "$config_dir"/rotated_config_*.json; do
     cat <<EOF > "$job_script"
 #!/bin/tcsh
 ### Job Name
-#PBS -N CNN11_${config_name}_1600
+#PBS -N CNN11_${config_name}_1000
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
 #PBS -l select=1:ngpus=1
 ### Specify that the GPUs will be V100s
+#PBS -l gpu_type=a100
 ### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
 ### Route the job to the casper queue
-#PBS -q casper
+#PBS -q main
 ### Join output and error streams into single file
 #PBS -j oe
 
