@@ -547,10 +547,6 @@ def main():
         rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
         rf_model.fit(train_data_np, train_labels_np)
 
-        from sklearn.tree import export_graphviz, plot_tree
-        import matplotlib.pyplot as plt
-        import os
-
         # Directory to save tree plots
         # output_dir = "decision_tree_plots"
         # os.makedirs(output_dir, exist_ok=True)
