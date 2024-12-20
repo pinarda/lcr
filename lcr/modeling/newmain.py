@@ -555,7 +555,7 @@ def main():
         for i, tree in enumerate(rf_model.estimators_):
             # Create a plot for each tree
             plt.figure(figsize=(20, 10))
-            plot_tree(tree, filled=True, feature_names=train_data_np.columns, class_names=True)
+            plot_tree(tree, filled=True, feature_names=train_data_np.columns if hasattr(train_data_np, "columns") else None, class_names=True)
 
             # Save the plot to a file
             file_name = f"{storageloc}/trees/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}_{i}.png"
