@@ -544,7 +544,7 @@ def main():
 
         # --- Random Forest ---
         print("Training Random Forest...")
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=111, min_samples_leaf=5)
         rf_model.fit(train_data_np, train_labels_np)
 
         # Directory to save tree plots
@@ -575,7 +575,7 @@ def main():
         test_predictions_rf = rf_model.predict(test_data_np)
         test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
         print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
-
+        #h
         # Confusion matrix and classification report for Random Forest
         cm_rf = confusion_matrix(test_labels_np, test_predictions_rf)
         cr_rf = classification_report(test_labels_np, test_predictions_rf)
@@ -606,7 +606,7 @@ def main():
 
         # --- Decision Tree ---
         print("Training Decision Tree...")
-        dt_model = DecisionTreeClassifier(max_depth=10, random_state=11, min_samples_leaf=5)
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=111, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
