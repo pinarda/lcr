@@ -544,7 +544,7 @@ def main():
 
         # --- Random Forest ---
         print("Training Random Forest...")
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=1111, min_samples_leaf=5)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
         rf_model.fit(train_data_np, train_labels_np)
 
         # Directory to save tree plots
@@ -606,7 +606,7 @@ def main():
 
         # --- Decision Tree ---
         print("Training Decision Tree...")
-        dt_model = DecisionTreeClassifier(max_depth=10, random_state=1111, min_samples_leaf=5)
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=11, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data
