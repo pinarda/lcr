@@ -4,6 +4,7 @@ from sklearn.metrics import f1_score
 import argparse
 import json
 import os
+import pandas as pd
 
 def process_config(config_file):
     """Process a single configuration file and calculate F1 scores."""
@@ -32,11 +33,15 @@ def process_config(config_file):
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
     test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
 
+
+
     # Compute F1 scores
     # f1_weighted_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='weighted')
     # f1_macro_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='macro')
     f1_weighted_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='weighted')
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
+
+
 
     # Load feature importances for RF
     feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file[0]}.npy"
@@ -44,6 +49,33 @@ def process_config(config_file):
         feature_importances = np.load(feature_importance_file)
     else:
         feature_importances = None
+
+
+    compression_labels = {0: "zfp_p_16", 1: "zfp_p_22"}
+    table_data = []
+
+    for label, prediction in zip(test_labels_np_rf, test_predictions_rf):
+        label_name = compression_labels.get(label, "Unknown")
+        prediction_name = compression_labels.get(prediction, "Unknown")
+        table_data.append((variable_file[0], label_name, f"{label_name}, {prediction_name}"))
+
+    # Convert to DataFrame
+    df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Labels and Predictions"])
+    df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
+
+    # Print the pivot table
+    print("Pivot Table:")
+    print(df_pivot)
+
+    # Format the table as LaTeX
+    latex_table = df_pivot.to_latex(index=True, caption="Labels and Predictions for Compression Methods")
+
+    # Save the LaTeX table to a file
+    latex_file_path = f"{storageloc}/table_output.tex"
+    with open(latex_file_path, "w") as f:
+        f.write(latex_table)
+
+    print(f"LaTeX table saved to {latex_file_path}")
 
     return variable_display, f1_weighted_rf, f1_macro_rf, feature_importances, rf_feature_list
 
