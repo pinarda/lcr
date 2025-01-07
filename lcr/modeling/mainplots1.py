@@ -47,29 +47,35 @@ def process_config(config_file):
     else:
         feature_importances = None
 
-
+    # Create a table with counts
     compression_labels = {0: "zfp_p_16", 1: "zfp_p_22"}
     table_data = []
 
     for label, prediction in zip(test_labels_np_rf, test_predictions_rf):
         label_name = compression_labels.get(label, "Unknown")
         prediction_name = compression_labels.get(prediction, "Unknown")
-        table_data.append((variable_file[0], label_name, f"{label_name}, {prediction_name}"))
+        table_data.append((variable_file[0], label_name, f"({label_name}, {prediction_name})"))
 
     # Convert to DataFrame
-    df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Labels and Predictions"])
-    print("DataFrame Before Pivoting:")
-    print(df.head())
-    df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
+    df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Label-Prediction Pair"])
+
+    # Count occurrences of each Label-Prediction Pair
+    df_counts = df.groupby(["Variable", "Compression Label", "Label-Prediction Pair"]).size().reset_index(name="Count")
+
+    # Pivot the DataFrame
+    df_pivot = df_counts.pivot_table(
+        index="Variable",
+        columns="Compression Label",
+        values="Count",
+        aggfunc="sum"
+    ).fillna(0).astype(int)
 
     # Print the pivot table
     print("Pivot Table:")
     print(df_pivot)
 
-    # Format the table as LaTeX
-    latex_table = df_pivot.to_latex(index=True, caption="Labels and Predictions for Compression Methods")
-
-    # Save the LaTeX table to a file
+    # Save as LaTeX
+    latex_table = df_pivot.to_latex(index=True, caption="Count of Label-Prediction Pairs by Compression Method")
     latex_file_path = f"{storageloc}/table_output.tex"
     with open(latex_file_path, "w") as f:
         f.write(latex_table)
