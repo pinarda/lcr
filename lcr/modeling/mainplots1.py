@@ -206,11 +206,28 @@ def main():
     print("Combined Pivot Table:")
     print(df_pivot)
 
-    # Save as LaTeX
-    latex_table = df_pivot.to_latex(index=True, caption="Count of Label-Prediction Pairs by Compression Method")
+    # Format the LaTeX table with alternating gray rows
+    latex_table = r"\begin{table*}[h!]" + "\n"
+    latex_table += r"\centering" + "\n"
+    latex_table += r"\begin{tabular}{|c|c|c|}" + "\n"
+    latex_table += r"\hline" + "\n"
+    latex_table += r"\rowcolor{gray!25} \textbf{Variable} & \textbf{zfp\_p\_16 (labels)} & \textbf{zfp\_p\_22 (labels)}\\ \hline" + "\n"
+
+    # Add rows with alternating gray background
+    for i, (variable, row) in enumerate(df_pivot.iterrows()):
+        row_color = r"\rowcolor{gray!20} " if i % 2 else ""
+        latex_table += f"{row_color}{variable} & {row['zfp_p_16']} & {row['zfp_p_22']} \\\\ \\hline\n"
+
+    latex_table += r"\end{tabular}" + "\n"
+    latex_table += r"\caption{Counts of labels only (predictions removed).}" + "\n"
+    latex_table += r"\label{tab:counts_counts}" + "\n"
+    latex_table += r"\end{table*}" + "\n"
+
+    # Save the LaTeX table to a file
     latex_file_path = "./table_output.tex"  # Adjust path as needed
     with open(latex_file_path, "w") as f:
         f.write(latex_table)
+
 
     print(f"LaTeX table saved to {latex_file_path}")
 
