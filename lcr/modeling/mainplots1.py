@@ -58,6 +58,8 @@ def process_config(config_file):
 
     # Convert to DataFrame
     df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Labels and Predictions"])
+    print("DataFrame Before Pivoting:")
+    print(df.head())
     df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
 
     # Print the pivot table
