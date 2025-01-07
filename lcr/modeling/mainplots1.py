@@ -54,35 +54,15 @@ def process_config(config_file):
     for label, prediction in zip(test_labels_np_rf, test_predictions_rf):
         label_name = compression_labels.get(label, "Unknown")
         prediction_name = compression_labels.get(prediction, "Unknown")
-        table_data.append((variable_file[0], label_name, f"({label_name}, {prediction_name})"))
+        table_data.append((variable_file[0], label_name, prediction_name))
 
     # Convert to DataFrame
-    df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Label-Prediction Pair"])
+    df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Prediction Label"])
 
     # Count occurrences of each Label-Prediction Pair
-    df_counts = df.groupby(["Variable", "Compression Label", "Label-Prediction Pair"]).size().reset_index(name="Count")
+    df_counts = df.groupby(["Variable", "Compression Label", "Prediction Label"]).size().reset_index(name="Count")
 
-    # Pivot the DataFrame
-    df_pivot = df_counts.pivot_table(
-        index="Variable",
-        columns="Compression Label",
-        values="Count",
-        aggfunc="sum"
-    ).fillna(0).astype(int)
-
-    # Print the pivot table
-    print("Pivot Table:")
-    print(df_pivot)
-
-    # Save as LaTeX
-    latex_table = df_pivot.to_latex(index=True, caption="Count of Label-Prediction Pairs by Compression Method")
-    latex_file_path = f"{storageloc}/table_output.tex"
-    with open(latex_file_path, "w") as f:
-        f.write(latex_table)
-
-    print(f"LaTeX table saved to {latex_file_path}")
-
-    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf, feature_importances, rf_feature_list
+    return variable_display, f1_weighted_cnn, f1_macro_cnn, f1_weighted_rf, f1_macro_rf, feature_importances, rf_feature_list, df_counts
 
 
 def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
@@ -184,6 +164,7 @@ def main():
     f1_macro_rf = []
     all_importances = []  # Collect all feature importances
     feature_names = None  # To store feature names from the first config
+    all_data = []
 
     # Iterate over all configuration files
     for i in range(1, args.num_configs + 1):
@@ -192,7 +173,8 @@ def main():
             if i not in [23, 24, 36, 37, 40, 41, 43, 44]:
                 print(f"Processing {config_file}...")
                 (variable, weighted_cnn, macro_cnn,
-                 weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
+                 weighted_rf, macro_rf, feature_importances, rf_feature_list, df_counts) = process_config(config_file)
+                all_data.append(df_counts)
 
                 var_list.append(variable)
                 f1_weighted_cnn.append(weighted_cnn)
@@ -208,6 +190,29 @@ def main():
 
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
+
+    # Combine all data into a single DataFrame
+    combined_df = pd.concat(all_data, ignore_index=True)
+
+    # Pivot the combined DataFrame
+    df_pivot = combined_df.pivot_table(
+        index="Variable",
+        columns="Compression Label",
+        values="Count",
+        aggfunc="sum"
+    ).fillna(0).astype(int)
+
+    # Print the combined pivot table
+    print("Combined Pivot Table:")
+    print(df_pivot)
+
+    # Save as LaTeX
+    latex_table = df_pivot.to_latex(index=True, caption="Count of Label-Prediction Pairs by Compression Method")
+    latex_file_path = "./table_output.tex"  # Adjust path as needed
+    with open(latex_file_path, "w") as f:
+        f.write(latex_table)
+
+    print(f"LaTeX table saved to {latex_file_path}")
 
     # Plot Weighted F1 Scores
     plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
