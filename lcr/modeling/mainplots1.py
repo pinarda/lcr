@@ -4,6 +4,7 @@ from sklearn.metrics import f1_score
 import argparse
 import json
 import os
+import pandas as pd
 
 def process_config(config_file):
     """Process a single configuration file and calculate F1 scores."""
@@ -31,7 +32,7 @@ def process_config(config_file):
 
     # Load data for RF
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
-    test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
+    test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file}.npy")
 
     # Compute F1 scores
     f1_weighted_cnn = f1_score(test_labels_np_cnn, test_predictions_cnn, average='weighted')
@@ -40,7 +41,7 @@ def process_config(config_file):
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file[0]}.npy"
+    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file}.npy"
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
     else:
