@@ -53,6 +53,26 @@ var_list=(
   '["soa_a1_SRF"]'
   '["soa_a2_SRF"]'
 )
+#
+#var_list=(
+#  '["TREFHTMX"]'
+#  '["TS"]'
+#  '["LHFLX"]'
+#  '["PRECSL"]'
+#  '["PRECT"]'
+#  '["PSL"]'
+#  '["Q200"]'
+#  '["Q500"]'
+#  '["Q850"]'
+#  '["SHFLX"]'
+#  '["T200"]'
+#  '["T500"]'
+#  '["T850"]'
+#  '["TAUX"]'
+#  '["TAUY"]'
+#  '["U010"]'
+#  '["FLNS"]'
+#)
 
 # Output directory (current directory)
 output_dir="."
@@ -66,7 +86,7 @@ for ((i=0; i<${#var_list[@]}; i++)); do
     first_var="${rotated_vars[0]}"
 
     # Format the selected element as a nested JSON array
-    rotated_var_list_json="[[$first_var]]"
+    rotated_var_list_json="[$first_var]"
 
     # Generate a new filename for this rotation
     output_file="$output_dir/rotated_config_$((i+1)).json"
