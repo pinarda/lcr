@@ -518,7 +518,7 @@ def main():
             varname=','.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
-            testset='1var',
+            testset='not_1var',
             j=0,
             plotdir=save_dir,
             window_size=11,
@@ -676,7 +676,7 @@ def main():
             varname=','.join(flat_var_list) + '_combined',
             nvar=nvars,
             storageloc=storage_loc,
-            testset='1var',
+            testset='not_1var',
             j=0,
             plotdir=save_dir,
             window_size=11,  # As per WINDOWSIZE
