@@ -33,7 +33,7 @@ if [ -f "$config_file" ]; then
 conda activate my-npl-2023a
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
-cd /glade/derecho/scratch/apinard/lcr2/lcr/lcr/modeling
+cd /glade/derecho/scratch/apinard/lcr3/lcr/modeling
 
 python newmain.py -c $config_file
 EOF
