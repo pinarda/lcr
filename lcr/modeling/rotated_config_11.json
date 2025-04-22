@@ -18,19 +18,27 @@
     "lens1_ens25_1920"
   ],
   "CompDirs": [
+    "zfp_p_12",
+    "zfp_p_14",
     "zfp_p_16",
-    "zfp_p_26"
+    "zfp_p_18",
+    "zfp_p_20",
+    "zfp_p_22",
+    "zfp_p_24"
   ],
   "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
   "Times": [
-    1600
+    2000
   ],
   "Navg": 1,
   "StorageLoc": "./data",
   "Stride": 1,
   "CutDataset": 0,
   "Metric": [
-    "ks"
+    "ks",
+    "dssim",
+    "pcc",
+    "spre"
   ],
   "ModelType": "rf",
   "RFFeatureList": [
