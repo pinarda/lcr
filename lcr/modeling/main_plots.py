@@ -462,7 +462,10 @@ def main_plots():
                 writer.writerow(["vnames", "algorithms"])
 
             # Write the data
-            writer.writerow([", ".join(flat_vlist), ", ".join(classifyd)])
+            writer.writerow([
+                ", ".join(flat_vlist),  # already strings
+                ", ".join(map(str, classifyd))  # ← make each label a string
+            ])
 
         print("MLData written to", file_name)
 
