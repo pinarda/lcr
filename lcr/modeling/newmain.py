@@ -764,9 +764,10 @@ def main():
         # Set up confusion matrix DataFrame with both labels, filling missing values with 0
         confusion_df = pd.DataFrame(
             confusion,
-            index=unique_labels,
-            columns=unique_labels
-        ).reindex(index=all_labels, columns=all_labels, fill_value=0)
+            index=all_labels,
+            columns=all_labels
+        )
+        # ).reindex(index=all_labels, columns=all_labels, fill_value=0)
 
         # save the confusion matrix and classification report
         np.save(f"{storageloc}/classification_report_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", classreport)
