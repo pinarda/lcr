@@ -329,7 +329,7 @@ def main_plots():
             # Add labels, title, and legend
             ax.set_xlabel('True Labels')
             ax.set_ylabel('Count')
-            ax.set_title(f'Counts of Correct and Incorrect Predictions by True Label for {", ".join(vlist)}')
+            ax.set_title(f'Counts of Correct and Incorrect Predictions by True Label for {", ".join(vliststring)}')
             ax.set_xticks(x)
             ax.set_xticklabels(unique_labels, rotation=45)
             ax.legend()
