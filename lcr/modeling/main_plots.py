@@ -107,23 +107,6 @@ def main_plots():
     fname = j.split(".")[0]
 
 
-    # start by clearing the storage directory
-    # os.system(f"rm -rf {storageloc}*")
-    # #
-    # if (runonlydata):
-    #     main(metric_overwrite=metric, feature_override=True, newfeature=feature, only_data_override=True, newonlydata=True, j=j,
-    #             testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=feature, only_data=only_data, labelsonly=labelsonly)
-    #     # main(metric_overwrite="dssim", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
-    #     # main(metric_overwrite="ks", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
-    #     # main(metric_overwrite="pcc", feature_override=True, newfeature="mean", only_data_override=True, newonlydata=True)
-    #
-    # only_data = False
-    # feature = None
-    # main(metric_overwrite=metric, feature_override=True, newfeature=None, only_data_override=True, newonlydata=False, j=j,
-    #             testset=testset, featurelist=featurelist, xform=xform, jobid=jobid, model=model, feature=None, only_data=only_data, labelsonly=labelsonly)
-    # # main(metric_overwrite="dssim", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
-    # # main(metric_overwrite="ks", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
-    # # main(metric_overwrite="pcc", feature_override=True, newfeature=None, only_data_override=True, newonlydata=False)
 
     if ldcpypath:
         import sys
@@ -211,40 +194,6 @@ def main_plots():
                             f"{storageloc}predictions_{metric}_{fname_rf}{t * len(subdirs)}rf{jobid}_classify.npy",
                             allow_pickle=True)
 
-        #
-        #             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
-        #             # first, strip the top and bottom 5 rows from the dssims
-        #
-        #             steps = int((i*len(subdirs)) * 0.75)
-                    # steps = int((i*len(subdirs)) * 0.2)
-        #
-        #             # errs = preds - dssims[:,5:-5,steps[0]:]
-        #             # # now if the value is greater than 0, set it to 1, otherwise set it to 0
-        #             # truepass = np.where(errs > 0, 1, 0)
-        #             # compute the average dssim over the entire time slice
-        #             adssims = np.mean(dssims[:, :, steps:], axis=(0, 1))
-        #             # compute the average prediction over the entire time slice
-        #             if cut_dataset:
-        #                 apreds = np.mean(preds, axis=(0, 1))
-        #             else:
-        #                 apreds = preds
-        #
-        #             threshold = 0.995
-        #
-        #             truepred = apreds > threshold
-        #             if cdir not in truepred_dict:
-        #                 truepred_dict[cdir] = {}
-        #             if t not in truepred_dict[cdir]:
-        #                 truepred_dict[cdir][t] = {}
-        #             truepred_dict[cdir][t]['truepass'] = truepred
-        #
-        #             # compute the average dssim over the entire time slice
-        #             truedssim = adssims > threshold
-        #             if cdir not in truedssim_dict:
-        #                 truedssim_dict[cdir] = {}
-        #             if t not in truedssim_dict[cdir]:
-        #                 truedssim_dict[cdir][t] = {}
-        #             truedssim_dict[cdir][t]['truepass'] = truedssim
 
         if only_data:
             exit()
