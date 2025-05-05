@@ -203,6 +203,7 @@ def main_plots():
         # ------------------------------------------------------------------
 
         predresult_cnn, predresult_rf, dssimresult = {}, {}, {}
+        flat_vlist = [item for sub in vlist for item in (sub if isinstance(sub, (list, tuple)) else [sub])]
 
         for i in time:
 
@@ -329,7 +330,6 @@ def main_plots():
             # Add labels, title, and legend
             ax.set_xlabel('True Labels')
             ax.set_ylabel('Count')
-            flat_vlist = [item for sub in vlist for item in (sub if isinstance(sub, (list, tuple)) else [sub])]
             ax.set_title(f'Counts of Correct and Incorrect Predictions by True Label for {", ".join(flat_vlist)}')
             ax.set_xticks(x)
             ax.set_xticklabels(unique_labels, rotation=45)
@@ -462,7 +462,7 @@ def main_plots():
                 writer.writerow(["vnames", "algorithms"])
 
             # Write the data
-            writer.writerow([", ".join(vlist), ", ".join(classifyd)])
+            writer.writerow([", ".join(flat_vlist), ", ".join(classifyd)])
 
         print("MLData written to", file_name)
 
