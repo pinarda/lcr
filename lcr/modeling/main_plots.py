@@ -198,44 +198,84 @@ def main_plots():
         if only_data:
             exit()
 
-        predresult_cnn = {}
-        predresult_rf = {}
-        dssimresult = {}
+        # ------------------------------------------------------------------
+        # Evaluate CNN & RF on the *full* DSSIM test set (no train/test split)
+        # ------------------------------------------------------------------
+
+        predresult_cnn, predresult_rf, dssimresult = {}, {}, {}
+
         for i in time:
 
-            # steps = int((i * len(subdirs)) * 0.75)
-            steps = int((i * len(subdirs)) * 0.2)
-            if not labelsonly:
-                # predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
-                # dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
-                # classifyd = [element if element is not None else "None" for element in dssimresult[i]]
-                # classifyp = [element if element is not None else "None" for element in predresult[i]]
-                classify_train = dssims[i][:steps]
-                classifyd = dssims[i][steps:]
-                classifyp_cnn = preds_cnn[i]
-                classifyp_rf = preds_rf[i]
+            # # ── 1.  Pull the true labels and predictions ───────────────────
+            # classify_train = []  # no training data available
+            classifyd = np.ravel(dssims[i])  # true DSSIM-based labels
+            classifyp_cnn = np.ravel(preds_cnn[i])  # CNN predictions
+            classifyp_rf = np.ravel(preds_rf[i])  # RF  predictions
 
-                cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
-                cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
-                # can we add x and y labels to the confusion matrix? row is true label, column is predicted label
-                # also compute percentages of each row and include them in a separate matrix
+            # Length check --------------------------------------------------
+            if not (len(classifyd) == len(classifyp_cnn) == len(classifyp_rf)):
+                raise ValueError(
+                    f"Length mismatch (time={i}): "
+                    f"true={len(classifyd)}, cnn={len(classifyp_cnn)}, rf={len(classifyp_rf)}"
+                )
 
-                # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
-                # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
-                report_cnn = classification_report(classifyd, classifyp_cnn, labels=cdirs)
-                report_rf = classification_report(classifyd, classifyp_rf, labels=cdirs)
-            else:
-                print(dssims)
-                classify_train = dssims[i][:steps]
-                classifyd = dssims[i][steps:]
-                classifyp_cnn = preds_cnn[i]
-                classifyp_rf = preds_rf[i]
-                cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
-                # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
-                report_cnn = classification_report(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
-                # report = classification_report(classifyd, classifyp, labels=cdirs)
-                cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
-                report_rf = classification_report(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
+            # ── 2.  Confusion matrices & reports ───────────────────────────
+            all_labels_cnn = sorted(set(np.append(classifyd, classifyp_cnn)))
+            all_labels_rf = sorted(set(np.append(classifyd, classifyp_rf)))
+
+            cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=all_labels_cnn)
+            cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=all_labels_rf)
+
+            report_cnn = classification_report(
+                classifyd, classifyp_cnn, labels=all_labels_cnn, zero_division=0
+            )
+            report_rf = classification_report(
+                classifyd, classifyp_rf, labels=all_labels_rf, zero_division=0
+            )
+
+            # ── 3.  Store for later plots / summaries  ─────────────────────
+            predresult_cnn[i] = classifyp_cnn
+            predresult_rf[i] = classifyp_rf
+            dssimresult[i] = classifyd
+
+            # predresult_cnn = {}
+        # predresult_rf = {}
+        # dssimresult = {}
+        # for i in time:
+        #
+        #     # steps = int((i * len(subdirs)) * 0.75)
+        #     steps = int((i * len(subdirs)) * 0.2)
+        #     if not labelsonly:
+        #         # predresult[i] = find_first_true_cdir(truepred_dict, cdirs, i)
+        #         # dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
+        #         # classifyd = [element if element is not None else "None" for element in dssimresult[i]]
+        #         # classifyp = [element if element is not None else "None" for element in predresult[i]]
+        #         classify_train = dssims[i][:steps]
+        #         classifyd = dssims[i][steps:]
+        #         classifyp_cnn = preds_cnn[i]
+        #         classifyp_rf = preds_rf[i]
+        #
+        #         cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
+        #         cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
+        #         # can we add x and y labels to the confusion matrix? row is true label, column is predicted label
+        #         # also compute percentages of each row and include them in a separate matrix
+        #
+        #         # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+        #         # report = classification_report(classifyd, classifyp, labels=list(set(np.append(classifyp, classifyd))))
+        #         report_cnn = classification_report(classifyd, classifyp_cnn, labels=cdirs)
+        #         report_rf = classification_report(classifyd, classifyp_rf, labels=cdirs)
+        #     else:
+        #         print(dssims)
+        #         classify_train = dssims[i][:steps]
+        #         classifyd = dssims[i][steps:]
+        #         classifyp_cnn = preds_cnn[i]
+        #         classifyp_rf = preds_rf[i]
+        #         cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
+        #         # cm = confusion_matrix(classifyd, classifyp, labels=cdirs)
+        #         report_cnn = classification_report(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
+        #         # report = classification_report(classifyd, classifyp, labels=cdirs)
+        #         cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
+        #         report_rf = classification_report(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
 
 
             # save the confusion matrix
@@ -671,14 +711,14 @@ def main_plots():
             incorrect_counts_rf = cm_rf.sum(axis=0) - correct_counts_rf  # Incorrect predictions (off-diagonal elements)
 
             true_counts = np.array([list(classifyd).count(label) for label in unique_labels])
-            train_counts = np.array([list(classify_train).count(label) for label in unique_labels])
+            # train_counts = np.array([list(classify_train).count(label) for label in unique_labels])
 
-            df_train = pd.DataFrame({
-                'Compression Level': unique_labels,
-                'Count': train_counts,
-                'Type': 'Train',
-                'Model': 'Train'
-            })
+            # df_train = pd.DataFrame({
+            #     'Compression Level': unique_labels,
+            #     'Count': train_counts,
+            #     'Type': 'Train',
+            #     'Model': 'Train'
+            # })
 
             df_true = pd.DataFrame({
                 'Compression Level': unique_labels,
@@ -702,7 +742,7 @@ def main_plots():
                 'Model': ['CNN'] * len(unique_labels) + ['RF'] * len(unique_labels)
             })
 
-            df = pd.concat([df_train, df_true, df_correct, df_incorrect])
+            df = pd.concat([df_true, df_correct, df_incorrect])
 
             palette = sns.color_palette(
                 ['#FF6347', '#4682B4', '#32CD32', '#FFD700', '#8A2BE2', '#FF4500', '#2E8B57', '#ADFF2F'])
@@ -716,8 +756,8 @@ def main_plots():
             bar_positions = np.arange(len(unique_labels))
 
             # Plot train counts
-            train_bars = ax.bar(bar_positions - 2 * bar_width, df_train['Count'], bar_width, label='Train Counts',
-                                 color='black')
+            # train_bars = ax.bar(bar_positions - 2 * bar_width, df_train['Count'], bar_width, label='Train Counts',
+            #                      color='black')
 
             # Plot true counts
             true_bars = ax.bar(bar_positions - bar_width, df_true['Count'], bar_width, label='True Counts',
