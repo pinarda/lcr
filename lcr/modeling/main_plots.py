@@ -145,17 +145,17 @@ def main_plots():
             for t in time:
                 # fname_cnn = fname.replace("RF", "CNN")
                 fname_cnn = fname.replace("RF", "RF")
-                # dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
+                dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                 fname = j.split(".")[0]
-                # preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
+                preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                 # replace CNN in the fname with RF before continuing
                 fname_rf = fname.replace("CNN", "RF")
-                # preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
+                preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
 
                 #FOR LOCAL TESTING ONLY
-                dssims[t] = np.load(f"/Users/alex/Casper/DataCopy/819/labels_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
-                preds_cnn[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
-                preds_rf[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_RF_1000_10_90_wholeslice2000rf133_classify.npy", allow_pickle=True)
+                # dssims[t] = np.load(f"/Users/alex/Casper/DataCopy/819/labels_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
+                # preds_cnn[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
+                # preds_rf[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_RF_1000_10_90_wholeslice2000rf133_classify.npy", allow_pickle=True)
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
