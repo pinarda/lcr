@@ -149,21 +149,15 @@ def main_plots():
                 fname_cnn = fname.replace("RF", "RF")
                 dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                 fname = j.split(".")[0]
-
-
-                # preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
-                # load the preds for the cnn and rf models, and give the
-
                 preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
                 # replace CNN in the fname with RF before continuing
                 fname_rf = fname.replace("CNN", "RF")
-
-
-# SWITCH ME
-
                 preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
-                # preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
 
+                #FOR LOCAL TESTING ONLY
+                # dssims[t] = np.load(f"/Users/alex/Casper/DataCopy/819/labels_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
+                # preds_cnn[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_CNN_1000_10_90_wholeslice2000cnn132_classify.npy", allow_pickle=True)
+                # preds_rf[t] = np.load(f"/Users/alex/Casper/DataCopy/819/predictions_['dssim', 'pcc', 'spre']_run_casper_TS_RF_1000_10_90_wholeslice2000rf133_classify.npy", allow_pickle=True)
 
             # for each time slice, compute whether the prediction is equal to or higher than the actual dssim
             # first, strip the top and bottom 5 rows from the dssims
@@ -259,6 +253,7 @@ def main_plots():
                 # dssimresult[i] = find_first_true_cdir(truedssim_dict, cdirs, i)
                 # classifyd = [element if element is not None else "None" for element in dssimresult[i]]
                 # classifyp = [element if element is not None else "None" for element in predresult[i]]
+                classify_train = dssims[i][:steps]
                 classifyd = dssims[i][steps:]
                 classifyp_cnn = preds_cnn[i]
                 classifyp_rf = preds_rf[i]
@@ -274,6 +269,7 @@ def main_plots():
                 report_rf = classification_report(classifyd, classifyp_rf, labels=cdirs)
             else:
                 print(dssims)
+                classify_train = dssims[i][:steps]
                 classifyd = dssims[i][steps:]
                 classifyp_cnn = preds_cnn[i]
                 classifyp_rf = preds_rf[i]
@@ -470,7 +466,7 @@ def main_plots():
             # Write the data
             writer.writerow([", ".join(vlist), ", ".join(classifyd)])
 
-        print("Data written to", file_name)
+        print("MLData written to", file_name)
 
         # Count the frequency of each element in classifyd
         frequency_dict = Counter(classifyd)
@@ -494,7 +490,7 @@ def main_plots():
         csv_file_path = 'compression_frequencies.csv'  # Specify your desired file path
         df.to_csv(csv_file_path, index=False)
 
-        print(f"Data written to '{csv_file_path}' successfully.")
+        print(f"MLData written to '{csv_file_path}' successfully.")
 
         # convert the strings to integers based on their index in cdirs
         # predints = {}
@@ -699,11 +695,14 @@ def main_plots():
             # # Confusion matrices for CNN and RF
             # labels = np.unique(np.concatenate([classifyd, classifyp_cnn, classifyp_rf]))
 
-            cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=list(set(np.append(classifyp_cnn, classifyd))))
-            cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=list(set(np.append(classifyp_rf, classifyd))))
+            cm_cnn = confusion_matrix(classifyd, classifyp_cnn, labels=sorted(list(set(np.append(classifyp_cnn, classifyd)))))
+            cm_rf = confusion_matrix(classifyd, classifyp_rf, labels=sorted(list(set(np.append(classifyp_rf, classifyd)))))
+
+            # reorder the matrix
 
             # Get the unique labels
-            unique_labels = np.unique(np.concatenate([classifyd, classifyp_cnn, classifyp_rf])).tolist()
+            unique_labels = sorted(np.unique(np.concatenate([classifyd, classifyp_cnn, classifyp_rf])).tolist())
+
 
             # Calculate correct and incorrect counts for CNN
             correct_counts_cnn = np.diag(cm_cnn)  # Correct predictions (diagonal elements)
@@ -715,6 +714,14 @@ def main_plots():
             incorrect_counts_rf = cm_rf.sum(axis=0) - correct_counts_rf  # Incorrect predictions (off-diagonal elements)
 
             true_counts = np.array([list(classifyd).count(label) for label in unique_labels])
+            train_counts = np.array([list(classify_train).count(label) for label in unique_labels])
+
+            df_train = pd.DataFrame({
+                'Compression Level': unique_labels,
+                'Count': train_counts,
+                'Type': 'Train',
+                'Model': 'Train'
+            })
 
             df_true = pd.DataFrame({
                 'Compression Level': unique_labels,
@@ -738,7 +745,7 @@ def main_plots():
                 'Model': ['CNN'] * len(unique_labels) + ['RF'] * len(unique_labels)
             })
 
-            df = pd.concat([df_true, df_correct, df_incorrect])
+            df = pd.concat([df_train, df_true, df_correct, df_incorrect])
 
             palette = sns.color_palette(
                 ['#FF6347', '#4682B4', '#32CD32', '#FFD700', '#8A2BE2', '#FF4500', '#2E8B57', '#ADFF2F'])
@@ -750,6 +757,10 @@ def main_plots():
             # Calculate bar positions
             bar_width = 0.2
             bar_positions = np.arange(len(unique_labels))
+
+            # Plot train counts
+            train_bars = ax.bar(bar_positions - 2 * bar_width, df_train['Count'], bar_width, label='Train Counts',
+                                 color='black')
 
             # Plot true counts
             true_bars = ax.bar(bar_positions - bar_width, df_true['Count'], bar_width, label='True Counts',
@@ -774,7 +785,7 @@ def main_plots():
                                        label='Incorrect RF', color=palette[1], alpha=0.5, hatch='//')
 
             # Set the y-limit
-            nslices = int(np.max([true_counts, correct_counts_cnn + incorrect_counts_cnn,
+            nslices = int(np.max([train_counts, true_counts, correct_counts_cnn + incorrect_counts_cnn,
                                   correct_counts_rf + incorrect_counts_rf])) * 1.2
             ax.set_ylim(0, nslices)
 
