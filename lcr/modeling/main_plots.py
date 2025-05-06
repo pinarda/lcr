@@ -15,6 +15,7 @@ import seaborn as sns
 import pandas as pd
 import glob
 from collections import Counter
+from pathlib import Path
 # matplotlib.use('Agg')
 
 import pickle, glob, os
@@ -568,7 +569,7 @@ def main_plots():
         # ------------------------------------------------------------------
         # 3.  Persistent CSV output
         # ------------------------------------------------------------------
-        csv_path = ("./data/compression_frequencies_all.csv")
+        csv_path = Path("./data/compression_frequencies_all.csv")
 
         # same header for every run: 'name' + sorted compression levels
         header = ['name'] + sorted(cdirs)
