@@ -171,9 +171,9 @@ def main_plots():
                     print(f"{'='*50}")
 
                     if model == "cnn":
-                        dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid-1}_classify.npy", allow_pickle=True)
+                        dssims[t] = np.load(f"{storageloc}/labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid-1}_classify.npy", allow_pickle=True)
                     else:
-                        dssims[t] = np.load(f"{storageloc}labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
+                        dssims[t] = np.load(f"{storageloc}/labels_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                     fname = j.split(".")[0]
                     # preds[t] = np.load(f"{storageloc}predictions_{metric}_{fname}{t*len(subdirs)}{model}{jobid}_classify.npy", allow_pickle=True)
                     # load the preds for the cnn and rf models, and give the
@@ -182,16 +182,16 @@ def main_plots():
 
 
                     if model == "cnn":
-                        preds_cnn[t] = np.load(f"{storageloc}predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
+                        preds_cnn[t] = np.load(f"{storageloc}/predictions_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
         # SWITCH
-                        preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
+                        preds_rf[t] = np.load(f"{storageloc}/predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid+1}_classify.npy", allow_pickle=True)
                         # preds_rf[t] = np.load(f"{storageloc}predictions_{metric}_{fname_rf}{t*len(subdirs)}rf{jobid}_classify.npy", allow_pickle=True)
                     else:
                         preds_cnn[t] = np.load(
-                            f"{storageloc}predictions_{metric}_{fname_cnn}{t * len(subdirs)}cnn{jobid - 1}_classify.npy",
+                            f"{storageloc}/predictions_{metric}_{fname_cnn}{t * len(subdirs)}cnn{jobid - 1}_classify.npy",
                             allow_pickle=True)
                         preds_rf[t] = np.load(
-                            f"{storageloc}predictions_{metric}_{fname_rf}{t * len(subdirs)}rf{jobid}_classify.npy",
+                            f"{storageloc}/predictions_{metric}_{fname_rf}{t * len(subdirs)}rf{jobid}_classify.npy",
                             allow_pickle=True)
 
 
@@ -400,7 +400,7 @@ def main_plots():
             results_df = results_df.reindex(columns=column_order, fill_value=0)
 
             # Save the DataFrame to a CSV file
-            output_file = f"{storageloc}summary_counts_{date_string}.csv"
+            output_file = f"{storageloc}/summary_counts_{date_string}_{flat_vlist}.csv"
             results_df.to_csv(output_file, index=False)
 
             print(f"Summary counts saved to {output_file}")
@@ -413,7 +413,7 @@ def main_plots():
 
 
 
-            np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}cnn_{date_string}.npy", cm_cnn)
+            np.save(f"{storageloc}/confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}cnn_{date_string}.npy", cm_cnn)
 
             # let's also save the confusion matrix as a text file
             # but first, let's convert the numpy array to something that has labeled rows and columns
@@ -423,19 +423,19 @@ def main_plots():
             ind_cnn = list(set(np.append(classifyp_cnn, classifyd)))
             cm_cnn = pd.DataFrame(cm_cnn, index=ind_cnn, columns=ind_cnn)
 
-            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
+            with open(f"{storageloc}/confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
                 f.write(str(cm_cnn))
 
-            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
+            with open(f"{storageloc}/classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_CONVOLUTIONAL.txt", 'w') as f:
                 f.write(report_cnn)
 
-            np.save(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}rf_{date_string}.npy", cm_rf)
+            np.save(f"{storageloc}/confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}rf_{date_string}.npy", cm_rf)
             ind_rf = list(set(np.append(classifyp_rf, classifyd)))
             cm_rf = pd.DataFrame(cm_rf, index=ind_rf, columns=ind_rf)
-            with open(f"{storageloc}confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
+            with open(f"{storageloc}/confusion_matrix_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
                 f.write(str(cm_rf))
 
-            with open(f"{storageloc}classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
+            with open(f"{storageloc}/classification_report_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}_RANDOMFOREST.txt", 'w') as f:
                 f.write(report_rf)
 
 
@@ -448,7 +448,7 @@ def main_plots():
             # fig.savefig('confusion_matrix' + str(learning_values.pop()) + '.jpg')
 
         # Check if the file exists
-        file_name = f"{storageloc}result_table_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.csv"
+        file_name = f"{storageloc}/result_table_{metric}_{i}_{j.split('.')[0]}{jobid}{model}_{date_string}.csv"
         file_exists = os.path.isfile(file_name)
 
 
@@ -488,7 +488,7 @@ def main_plots():
         df.insert(0, 'name', vlist[0])
 
         # Write the DataFrame to a CSV file
-        csv_file_path = 'compression_frequencies.csv'  # Specify your desired file path
+        csv_file_path = f'compression_frequencies_{flat_vlist}.csv'  # Specify your desired file path
         df.to_csv(csv_file_path, index=False)
 
         print(f"MLData written to '{csv_file_path}' successfully.")
@@ -605,7 +605,7 @@ def main_plots():
 
             plt.show()
 
-            plt.savefig(f"{storageloc}histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
 
             plt.bar(bins_rf[:-1], frequencies_rf, color=colors_rf, align='center', width=np.diff(bins_rf))
@@ -630,7 +630,7 @@ def main_plots():
 
             plt.show()
 
-            plt.savefig(f"{storageloc}histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/histogram_preds_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
 
 
@@ -686,7 +686,7 @@ def main_plots():
             plt.xticks(rotation=45)
             plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
             plt.tight_layout()
-            plt.savefig(f"{storageloc}double_histogram_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/double_histogram_{metric}_{i}_{j.split('.')[0]}{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
 
             # Sample data for demonstration
@@ -804,7 +804,7 @@ def main_plots():
             plt.show()
 
             # Save the plot
-            plt.savefig(f"{storageloc}stacked_bar_{metric}_{jobid}_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/stacked_bar_{metric}_{jobid}_{date_string}.png", bbox_inches='tight')
             plt.clf()
 
 
@@ -837,23 +837,23 @@ def main_plots():
                         if labelsonly:
                             fname = j.split(".")[0]
                             dssims = np.load(
-                                f"{storageloc}labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                f"{storageloc}/labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
                                 allow_pickle=True)
                             preds = np.load(
-                                f"{storageloc}predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                f"{storageloc}/predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
                                 allow_pickle=True)
                         else:
                             if labelsonly:
                                 fname = j.split(".")[0]
                                 dssims = np.load(
-                                    f"{storageloc}labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                    f"{storageloc}/labels_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
                                     allow_pickle=True)
                                 preds = np.load(
-                                    f"{storageloc}predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
+                                    f"{storageloc}/predictions_{metric}_{fname}{t * len(subdirs)}{model}{jobid}_classify.npy",
                                     allow_pickle=True)
                             else:
-                                dssims = np.load(f"{storageloc}labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
-                                preds = np.load(f"{storageloc}predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                                dssims = np.load(f"{storageloc}/labels_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
+                                preds = np.load(f"{storageloc}/predictions_{metric}_{fname}{cdir}{t*len(subdirs)}{model}{jobid}.npy")
 
                         # flips dssims and preds upside down
                         # dssims = np.flipud(dssims)
@@ -898,7 +898,7 @@ def main_plots():
                                              "Model Predictions"],
                                        weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                        color="plasma", cmin=0, cmax=1)
-                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr.png",
+                            plt.savefig(f"{storageloc}/{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr.png",
                                         bbox_inches='tight')
                             plt.clf()
 
@@ -907,7 +907,7 @@ def main_plots():
                             ldcpy.plot(allthings, "dssims", calc="mean", sets=[f"Error ({fname} {cdir} {t} {model})"],
                                        weighted=False, start=0, end=0, short_title=True, vert_plot=True,
                                        color="PiYG")
-                            plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_erroronly.png",
+                            plt.savefig(f"{storageloc}/{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_erroronly.png",
                                         bbox_inches='tight')
                             plt.clf()
 
@@ -920,7 +920,7 @@ def main_plots():
                                                  "Model Predictions"],
                                            weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                            color="plasma", cmin=0, cmax=100)
-                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr_nomax.png",
+                                plt.savefig(f"{storageloc}/{vliststring}{cdir}_allthings{metric}_{t}_{name}_{date_string}_{model}_noerr_nomax.png",
                                             bbox_inches='tight')
                                 plt.clf()
 
@@ -933,7 +933,7 @@ def main_plots():
                                     "Model Predictions"],
                                            weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                            color="plasma", cmin=-10, cmax=0)
-                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
+                                plt.savefig(f"{storageloc}/{vliststring}{cdir}_allthings{metric}_zoomed_{t}_{name}_{date_string}_{model}_noerr.png",
                                             bbox_inches='tight')
                                 plt.clf()
 
@@ -946,7 +946,7 @@ def main_plots():
                                     "Model Predictions"],
                                            weighted=False, start=0, end=0, short_title=False, vert_plot=True,
                                            color="plasma", cmin=allthings_min.dssims[:, 6:-6, :, :].min().values.min(), cmax=1)
-                                plt.savefig(f"{storageloc}{vliststring}{cdir}_allthings{metric}_min_{t}_{name}_{date_string}_{model}_noerr.png",
+                                plt.savefig(f"{storageloc}/{vliststring}{cdir}_allthings{metric}_min_{t}_{name}_{date_string}_{model}_noerr.png",
                                             bbox_inches='tight')
                                 plt.clf()
                             except:
