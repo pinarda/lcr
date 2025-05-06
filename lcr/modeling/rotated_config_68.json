@@ -37,10 +37,9 @@
   "Metric": [
     "ks",
     "dssim",
-    "pcc",
-    "spre"
+    "pcc"
   ],
-  "ModelType": "cnn",
+  "ModelType": "rf",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
