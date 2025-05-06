@@ -816,8 +816,8 @@ def train_cnn(
         model.summary()
 
         # Train the model
-        num_epochs = 5  # Adjust as needed
-        batch_size = 5  # Adjust as needed
+        num_epochs = 10  # Adjust as needed
+        batch_size = 32  # Adjust as needed
 
         model.fit(
             train_data_np,
