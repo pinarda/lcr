@@ -58,6 +58,18 @@ def find_first_true_cdir(truepass_dict, cdirs, i):
 
     return first_true_cdirs
 
+def load_first_existing(paths, **np_load_kwargs):
+    """
+    Try each path in *paths* (a list/tuple of strings) and return
+    np.load(path, **np_load_kwargs) for the first one that exists.
+    Raises FileNotFoundError if none exist.
+    """
+    for p in paths:
+        if os.path.exists(p):
+            return np.load(p, **np_load_kwargs)
+    raise FileNotFoundError("None of the candidate files exist:\n  " +
+                            "\n  ".join(paths))
+
 def convert_np_to_dssims(np_arrays, titles):
     das = []
     set_values = [f'set{i+1}' for i in range(len(np_arrays))]
@@ -160,12 +172,40 @@ def main_plots():
                 fname_cnn = fname.replace("RF", "RF")
 
 
-                dssims[t] = np.load(f"{storageloc}/test_labels_0{t*len(subdirs)}cnn0_{vlist[0]}.npy", allow_pickle=True)
+                # dssims[t] = np.load(f"{storageloc}/test_labels_0{t*len(subdirs)}cnn0_{vlist[0]}.npy", allow_pickle=True)
                 fname = j.split(".")[0]
-                preds_cnn[t] = np.load(f"{storageloc}/test_predictions_0{t*len(subdirs)}cnn0_{vlist[0]}.npy", allow_pickle=True)
+                # preds_cnn[t] = np.load(f"{storageloc}/test_predictions_0{t*len(subdirs)}cnn0_{vlist[0]}.npy", allow_pickle=True)
                 # replace CNN in the fname with RF before continuing
+                # preds_rf[t] = np.load(f"{storageloc}/test_predictions_dt_0{t*len(subdirs)}rf0_{vlist[0]}.npy", allow_pickle=True)
+
+                preds_cnn[t] = load_first_existing(
+                    [
+                        f"{storageloc}/test_predictions_0{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_1{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                    ],
+                    allow_pickle=True
+                )
+
+                # -------- DSSIM (ground-truth) labels -------------------------------------
+                dssims[t] = load_first_existing(
+                    [
+                        f"{storageloc}/test_labels_0{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_labels_1{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                    ],
+                    allow_pickle=True
+                )
+
                 fname_rf = fname.replace("CNN", "RF")
-                preds_rf[t] = np.load(f"{storageloc}/test_predictions_dt_0{t*len(subdirs)}rf0_{vlist[0]}.npy", allow_pickle=True)
+
+                preds_rf[t] = load_first_existing(
+                    [
+                        f"{storageloc}/test_predictions_dt_0{t*len(subdirs)}rf0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_dt_1{t*len(subdirs)}rf0_{vlist[0]}.npy",
+                    ],
+                    allow_pickle=True
+                )
+
+
 
 
                 # dssims[t] = np.load(f"{storageloc}/labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
