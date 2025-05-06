@@ -358,64 +358,121 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
 
     elif testset == "10_90_wholeslice":
-        logging.info(f"getting 10% train, 90% test")
-        # Calculate the number of time slices in the last 90% of the data (rounding down)
-        num_time_slices_last_90pct = (total_data_points - index_10pct) // num_windows
+        if modeltype == 'rf':
+            logging.info(f"getting 10% train, 90% test")
+            # Calculate the number of time slices in the last 90% of the data (rounding down)
+            num_time_slices_last_90pct = (total_data_points - index_10pct) // num_windows
 
-        # Calculate the number of time slices for test and validation (rounding down)
+            # Calculate the number of time slices for test and validation (rounding down)
 
 
-        num_time_slices_val = num_time_slices_last_90pct // 9
-        num_time_slices_test = num_time_slices_last_90pct - num_time_slices_val
-        num_time_slices_train = time*nvar - num_time_slices_last_90pct
+            num_time_slices_val = num_time_slices_last_90pct // 9
+            num_time_slices_test = num_time_slices_last_90pct - num_time_slices_val
+            num_time_slices_train = time*nvar - num_time_slices_last_90pct
 
-        # Calculate the number of windows for test and validation
-        num_windows_test = num_time_slices_test * num_windows
-        num_windows_val = num_time_slices_val * num_windows
+            # Calculate the number of windows for test and validation
+            num_windows_test = num_time_slices_test * num_windows
+            num_windows_val = num_time_slices_val * num_windows
 
-        # Calculate the start index for the remaining time slice (if any)
-        remaining_start_index = index_10pct + num_windows_test + num_windows_val
+            # Calculate the start index for the remaining time slice (if any)
+            remaining_start_index = index_10pct + num_windows_test + num_windows_val
 
-        # Use the first 10% of the data for training
-        train_data = dataset[0:index_10pct]
-        if label is not None:
-            train_labels = label[0:index_10pct]
-
-        # Use the calculated number of windows for test and validation
-        test_data = dataset[index_10pct:int(index_10pct + num_windows_test)]
-        if label is not None:
-            test_labels = label[index_10pct:int(index_10pct + num_windows_test)]
-        val_data = dataset[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
-        if label is not None:
-            val_labels = label[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
-
-        # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
-        if remaining_start_index < total_data_points:
-            remaining_windows = total_data_points - remaining_start_index
-            split_index = remaining_windows * 90 // 100
-            test_data = np.concatenate(
-                (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
+            # Use the first 10% of the data for training
+            train_data = dataset[0:index_10pct]
             if label is not None:
-                test_labels = np.concatenate(
-                    (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
-            val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
-            if label is not None:
-                val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
+                train_labels = label[0:index_10pct]
 
-        if not cut_windows:
-            train_data = dataset[0:int(index_10pct/num_windows)]
+            # Use the calculated number of windows for test and validation
+            test_data = dataset[index_10pct:int(index_10pct + num_windows_test)]
             if label is not None:
-                train_labels = label[0:int(index_10pct/num_windows)]
-            val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+                test_labels = label[index_10pct:int(index_10pct + num_windows_test)]
+            val_data = dataset[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
             if label is not None:
-                val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
-            test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
-            if label is not None:
-                test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+                val_labels = label[int(index_10pct + num_windows_test):int(index_10pct + num_windows_test + num_windows_val)]
 
-        len_train = len(train_labels)
-        len_test = len(test_labels)
-        logging.info(f"length of train and test data: {len_train} train, {len_test} test")
+            # If there is a remaining time slice, split it between test and validation to preserve the 60-40 split
+            if remaining_start_index < total_data_points:
+                remaining_windows = total_data_points - remaining_start_index
+                split_index = remaining_windows * 90 // 100
+                test_data = np.concatenate(
+                    (test_data, dataset[int(remaining_start_index):int(remaining_start_index + split_index)]))
+                if label is not None:
+                    test_labels = np.concatenate(
+                        (test_labels, label[int(remaining_start_index):int(remaining_start_index + split_index)]))
+                val_data = np.concatenate((val_data, dataset[int(remaining_start_index + split_index):]))
+                if label is not None:
+                    val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
+
+            if not cut_windows:
+                train_data = dataset[0:int(index_10pct/num_windows)]
+                if label is not None:
+                    train_labels = label[0:int(index_10pct/num_windows)]
+                val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+                if label is not None:
+                    val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+                test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+                if label is not None:
+                    test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+
+            len_train = len(train_labels)
+            len_test = len(test_labels)
+            logging.info(f"length of train and test data: {len_train} train, {len_test} test")
+        else:
+            # ------------------------------------------------------------------
+            # 10 % / 90 % split  (CNN branch)
+            # ------------------------------------------------------------------
+            logging.info("getting 10% train, 90% test, CNN")
+
+            ntime = dataset.dims["time"]  # total number of windows
+            index_10pct = int(0.10 * ntime)  # first 10 % for training
+
+            # --- last 90 %: split 1 : 9  →  val : test ------------------------
+            remaining = ntime - index_10pct  # 90 %
+            n_val = remaining // 9  # 10 % of the 90 %
+            n_test = remaining - n_val  # 90 % of the 90 %
+
+            # ------------------------------------------------------------------
+            # slices (xarray-friendly)
+            # ------------------------------------------------------------------
+            train_data = dataset.isel(time=slice(0, index_10pct))
+            val_data = dataset.isel(time=slice(index_10pct,
+                                                  index_10pct + n_val))
+            test_data = dataset.isel(time=slice(index_10pct + n_val, None))
+
+            if label is not None:
+                train_labels = label[0:index_10pct]
+                val_labels = label[index_10pct:index_10pct + n_val]
+                test_labels = label[index_10pct + n_val:]
+
+            # ------------------------------------------------------------------
+            # optional: collapse windows → treat each **time slice** as one sample
+            # ------------------------------------------------------------------
+            if not cut_windows:
+                # number of *time slices* (not windows)
+                ntime_slices = ntime // num_windows
+
+                # convert window indices → slice indices
+                idx10 = index_10pct // num_windows
+                n_val_slices = n_val // num_windows
+                n_test_slices = n_test // num_windows
+
+                train_data = dataset.isel(time=slice(0, idx10))
+                val_data = dataset.isel(time=slice(idx10, idx10 + n_val_slices))
+                test_data = dataset.isel(time=slice(idx10 + n_val_slices,
+                                                       idx10 + n_val_slices + n_test_slices))
+
+                if label is not None:
+                    train_labels = label[0:idx10]
+                    val_labels = label[idx10:idx10 + n_val_slices]
+                    test_labels = label[idx10 + n_val_slices:
+                                        idx10 + n_val_slices + n_test_slices]
+
+            # ------------------------------------------------------------------
+            # log sizes
+            # ------------------------------------------------------------------
+            len_train = len(train_labels) if label is not None else train_data.dims["time"]
+            len_test = len(test_labels) if label is not None else test_data.dims["time"]
+            logging.info(f"length of train and test data: {len_train} train, {len_test} test")
 
     elif testset == "50_50_wholeslice":
 
