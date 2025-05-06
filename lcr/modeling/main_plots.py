@@ -574,10 +574,11 @@ def main_plots():
             print(bins_cnn[:-1], unique_labels_cnn)
             plt.xticks(bins_cnn[:-1], unique_labels_cnn, rotation=45)
             # for each item in vlist, append to a string separated by a comma and space
-            vliststring = ""
-            for v in vlist:
-                vliststring += v + ", "
-            vliststring = vliststring[:-2]
+            # vliststring = ""
+            # for v in vlist:
+            #     vliststring += v + ", "
+            # vliststring = vliststring[:-2]
+            vliststring = ", ".join(flat_vlist)  # e.g. "LHFLX, T200"
             # for each cdir in cdirs, append to a string separated by a comma and space
             nlevels = len(cdirs)
             if cut_dataset:
