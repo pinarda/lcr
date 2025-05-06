@@ -233,7 +233,7 @@ def split_data(
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11, encoder=None, storageloc=None, metric=None, modeltype=None, jobid=None, j=None) -> tuple:
+def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, testset: str, lats:int, lons:int, cut_windows:bool = True, window_size: int = 11, encoder=None, storageloc=None, metric=None, modeltype=None, jobid=None, j=None, vars=None) -> tuple:
     """
     Splits the dataset into training, validation, and testing sets based on the specified testset parameter.
 
@@ -358,6 +358,7 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
 
     elif testset == "10_90_wholeslice":
+        logging.info(f"getting 10% train, 90% test")
         # Calculate the number of time slices in the last 90% of the data (rounding down)
         num_time_slices_last_90pct = (total_data_points - index_10pct) // num_windows
 
@@ -411,6 +412,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
             if label is not None:
                 test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+
+        len_train = len(train_labels)
+        len_test = len(test_labels)
+        logging.info(f"length of train and test data: {len_train} train, {len_test} test")
 
     elif testset == "50_50_wholeslice":
 
@@ -579,7 +584,7 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
         # newlabels = np.array(newlabels)
     if not only_data:
         newlabels = np.array(integer_encoded_labels)
-        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data(dataset, newlabels,
+        train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_old(dataset, newlabels,
                                                                                             time, nvar, testset,
                                                                                                 LATS, LONS, cut_windows,
                                                                                                 encoder=label_encoder,
@@ -588,7 +593,7 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
                                                                                                 modeltype=modeltype,
                                                                                                 jobid=jobid, j=j, vars=vars)
     else:
-        train_data, val_data, test_data = split_data(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j, vars=vars)
+        train_data, val_data, test_data = split_data_old(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j, vars=vars)
 
 
 
