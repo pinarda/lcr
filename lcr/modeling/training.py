@@ -422,6 +422,8 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             # 10 % / 90 % split  (CNN branch)
             # ------------------------------------------------------------------
             logging.info("getting 10% train, 90% test, CNN")
+            dsdims = dataset.dims
+            print(f"{dsdims}")
 
             ntime = dataset.dims["time"]  # total number of windows
             index_10pct = int(0.10 * ntime)  # first 10 % for training
