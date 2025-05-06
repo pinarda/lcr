@@ -804,7 +804,7 @@ def main_plots():
             plt.show()
 
             # Save the plot
-            plt.savefig(f"{storageloc}/stacked_bar_{metric}_{jobid}_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/stacked_bar_{metric}_{jobid}_{date_string}_{flat_vlist}.png", bbox_inches='tight')
             plt.clf()
 
 
