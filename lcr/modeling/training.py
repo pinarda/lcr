@@ -425,7 +425,7 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             dsdims = dataset.dims
             print(f"{dsdims}")
 
-            ntime = dataset.dims["time"]  # total number of windows
+            ntime = dataset.dims["sample"]  # total number of windows
             index_10pct = int(0.10 * ntime)  # first 10 % for training
 
             # --- last 90 %: split 1 : 9  →  val : test ------------------------
@@ -436,10 +436,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             # ------------------------------------------------------------------
             # slices (xarray-friendly)
             # ------------------------------------------------------------------
-            train_data = dataset.isel(time=slice(0, index_10pct))
-            val_data = dataset.isel(time=slice(index_10pct,
+            train_data = dataset.isel(sample=slice(0, index_10pct))
+            val_data = dataset.isel(sample=slice(index_10pct,
                                                   index_10pct + n_val))
-            test_data = dataset.isel(time=slice(index_10pct + n_val, None))
+            test_data = dataset.isel(sample=slice(index_10pct + n_val, None))
 
             if label is not None:
                 train_labels = label[0:index_10pct]
@@ -458,9 +458,9 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
                 n_val_slices = n_val // num_windows
                 n_test_slices = n_test // num_windows
 
-                train_data = dataset.isel(time=slice(0, idx10))
-                val_data = dataset.isel(time=slice(idx10, idx10 + n_val_slices))
-                test_data = dataset.isel(time=slice(idx10 + n_val_slices,
+                train_data = dataset.isel(sample=slice(0, idx10))
+                val_data = dataset.isel(sample=slice(idx10, idx10 + n_val_slices))
+                test_data = dataset.isel(sample=slice(idx10 + n_val_slices,
                                                        idx10 + n_val_slices + n_test_slices))
 
                 if label is not None:
