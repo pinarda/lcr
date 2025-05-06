@@ -17,6 +17,36 @@ import glob
 from collections import Counter
 # matplotlib.use('Agg')
 
+import pickle, glob, os
+import numpy as np
+
+def load_label_encoder(model, var, encoder_dir="data"):
+    """Return an sklearn LabelEncoder for the given (time, var, model, jobid)."""
+    pattern = os.path.join(
+        encoder_dir,
+        f"label_encoder_02000{model}0_[\'{var}\']*.pkl"
+    )
+    matches = glob.glob(pattern)
+    if not matches:
+        raise FileNotFoundError(f"No label-encoder found for pattern: {pattern}")
+    if len(matches) > 1:
+        print("⚠️  Multiple encoders matched; using the first one:", matches[0])
+
+    with open(matches[0], "rb") as f:
+        return pickle.load(f)
+
+def decode(arr, le, none_token="Lossless"):
+    """Convert integer array to string labels, treating -1 as `none_token`."""
+    arr = np.asarray(arr).astype(int)
+    if (arr == -1).any():
+        mask = (arr == -1)
+        arr2 = arr.copy()
+        arr2[mask] = 0           # any valid index to satisfy inverse_transform
+        out = le.inverse_transform(arr2)
+        out[mask] = none_token
+        return out
+    return le.inverse_transform(arr)
+
 def find_first_true_cdir(truepass_dict, cdirs, i):
     first_true_cdirs = [None] * len(truepass_dict[cdirs[0]][i]['truepass']) # assuming 32 elements in the truepass array
 
@@ -209,9 +239,17 @@ def main_plots():
 
             # # ── 1.  Pull the true labels and predictions ───────────────────
             # classify_train = []  # no training data available
+
             classifyd = np.ravel(dssims[i])  # true DSSIM-based labels
             classifyp_cnn = np.ravel(preds_cnn[i])  # CNN predictions
             classifyp_rf = np.ravel(preds_rf[i])  # RF  predictions
+
+            print(f"{flat_vlist}")
+            le = load_label_encoder(model,  flat_vlist)
+
+            classifyd = decode(classifyd, le)  # -> array of strings
+            classifyp_cnn = decode(classifyp_cnn, le)
+            classifyp_rf = decode(classifyp_rf, le)
 
             # Length check --------------------------------------------------
             if not (len(classifyd) == len(classifyp_cnn) == len(classifyp_rf)):
@@ -348,7 +386,7 @@ def main_plots():
             plt.tight_layout()
 
             # Save the figure
-            plt.savefig(f"{storageloc}stacked_bar_chart_{date_string}.png", bbox_inches='tight')
+            plt.savefig(f"{storageloc}/stacked_bar_chart_{date_string}_{flat_vlist}.png", bbox_inches='tight')
 
 
 
