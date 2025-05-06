@@ -849,9 +849,9 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     sample_features = []
     for feature in featurelist:
         # check if the file already exists
-        if os.path.exists(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc"):
+        if os.path.exists(f"{storage_loc}/{varname}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time{times[0]}_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time{times[0]}_second.nc")
 
             # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
             # Remove '_combined' from the end of the varname string and split by '_'
