@@ -787,7 +787,8 @@ def main_plots():
                                        label='Incorrect RF', color=palette[1], alpha=0.5, hatch='//')
 
             # Set the y-limit
-            nslices = int(np.max([train_counts, true_counts, correct_counts_cnn + incorrect_counts_cnn,
+            # nslices = int(np.max([train_counts, true_counts, correct_counts_cnn + incorrect_counts_cnn,
+            nslices = int(np.max([true_counts, correct_counts_cnn + incorrect_counts_cnn,
                                   correct_counts_rf + incorrect_counts_rf])) * 1.2
             ax.set_ylim(0, nslices)
 
