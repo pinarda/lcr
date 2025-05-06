@@ -24,7 +24,7 @@ def load_label_encoder(model, var, encoder_dir="data"):
     """Return an sklearn LabelEncoder for the given (time, var, model, jobid)."""
     pattern = os.path.join(
         encoder_dir,
-        f"label_encoder_02000{model}0_[\'{var}\']*.pkl"
+        f"label_encoder_02000{model}0_*{var}*.pkl"
     )
     matches = glob.glob(pattern)
     if not matches:
