@@ -550,6 +550,46 @@ def main_plots():
         # Count the frequency of each element in classifyd
         frequency_dict = Counter(classifyd)
 
+        # ------------------------------------------------------------------
+        # 1.  Count how many times each compression level appears
+        # ------------------------------------------------------------------
+        frequency_dict = Counter(classifyd)
+
+        # guarantee every cdir appears (even if zero)
+        for lvl in cdirs:
+            frequency_dict.setdefault(lvl, 0)
+
+        # ------------------------------------------------------------------
+        # 2.  Prepare a row → {'name': ..., 'zfp_p_10': 123, ...}
+        # ------------------------------------------------------------------
+        row = {'name': ", ".join(flat_vlist)}  # or any identifier you like
+        row.update(frequency_dict)
+
+        # ------------------------------------------------------------------
+        # 3.  Persistent CSV output
+        # ------------------------------------------------------------------
+        csv_path = ("./data/compression_frequencies_all.csv")
+
+        # same header for every run: 'name' + sorted compression levels
+        header = ['name'] + sorted(cdirs)
+
+        with csv_path.open('a', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=header)
+
+            # write header only if file is new / empty
+            if f.tell() == 0:
+                writer.writeheader()
+
+            # fill in any missing keys (e.g., if new cdirs were added later)
+            full_row = {key: row.get(key, 0) for key in header}
+            writer.writerow(full_row)
+
+        print(f"Wrote compression frequencies to {csv_path}")
+
+
+
+
+
         # Ensure each compression level in cdirs is a key in the frequency_dict
         for compression_level in cdirs:
             if compression_level not in frequency_dict:
