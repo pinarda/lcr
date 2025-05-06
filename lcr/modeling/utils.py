@@ -20,7 +20,7 @@ def read_parameters_from_json(metajson):
     navg = 0
     stride=1
     metric = "dssim"
-    cutdataset = True
+    cutdataset = False
     subdirs = []
 
     print("Reading jsonfile", metajson, " ...")
@@ -84,6 +84,7 @@ def read_parameters_from_json(metajson):
 
     return save, vlist, pre, post, opath, cpath, cdirs, ldcpypath, times, storage, navg, stride, metric, cutdataset, subdirs
 
+
 def list_of_strings(arg):
     return arg.split(',')
 
@@ -96,7 +97,7 @@ def parse_command_line_arguments():
     parser.add_argument("-f", "--feature", help="select a feature to save", type=str, default="n_s_first_differences")
     parser.add_argument("-l", "--listfeatures", help="list of features to save", type=list_of_strings, default="n_s_first_differences")
     parser.add_argument("-x", "--transform", help="data transform", type=str, default="quantile")
-    parser.add_argument("-d", "--jobid", help="jobid", type=int, default=1)
+    parser.add_argument("-d", "--jobid", help="jobid", type=int, default=0)
     parser.add_argument("-r", "--metric", help="metric (default dssim)", type=list_of_strings, default=["dssim", "spre", "pcc"])
     parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=0)
     parser.add_argument("-a", '--runonlydata', help='Run only data?', type=ast.literal_eval, default=True)

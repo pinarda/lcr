@@ -165,7 +165,7 @@ def main_plots():
                 preds_cnn[t] = np.load(f"{storageloc}/test_predictions_0{t*len(subdirs)}cnn0_{vlist[0]}.npy", allow_pickle=True)
                 # replace CNN in the fname with RF before continuing
                 fname_rf = fname.replace("CNN", "RF")
-                preds_rf[t] = np.load(f"{storageloc}/test_predictions_rf_0{t*len(subdirs)}rf0_{vlist[0]}.npy", allow_pickle=True)
+                preds_rf[t] = np.load(f"{storageloc}/test_predictions_dt_0{t*len(subdirs)}rf0_{vlist[0]}.npy", allow_pickle=True)
 
 
                 # dssims[t] = np.load(f"{storageloc}/labels_{metric}_{fname_cnn}{t*len(subdirs)}cnn{jobid}_classify.npy", allow_pickle=True)
