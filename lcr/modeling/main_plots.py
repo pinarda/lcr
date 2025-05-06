@@ -284,8 +284,8 @@ def main_plots():
             classifyp_cnn = np.ravel(preds_cnn[i])  # CNN predictions
             classifyp_rf = np.ravel(preds_rf[i])  # RF  predictions
 
-            print(f"{flat_vlist}")
-            le = load_label_encoder(model,  flat_vlist)
+            print(f"{flat_vlist[0]}")
+            le = load_label_encoder(model,  flat_vlist[0])
 
             classifyd = decode(classifyd, le)  # -> array of strings
             classifyp_cnn = decode(classifyp_cnn, le)
