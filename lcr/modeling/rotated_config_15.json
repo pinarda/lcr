@@ -18,6 +18,7 @@
     "lens1_ens25_1920"
   ],
   "CompDirs": [
+    "zfp_p_6",
     "zfp_p_8",
     "zfp_p_10",
     "zfp_p_12",
@@ -41,7 +42,7 @@
     "dssim",
     "pcc"
   ],
-  "ModelType": "rf",
+  "ModelType": "cnn",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
