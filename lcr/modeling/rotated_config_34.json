@@ -38,7 +38,6 @@
   "Stride": 1,
   "CutDataset": 0,
   "Metric": [
-    "ks",
     "dssim",
     "pcc"
   ],
