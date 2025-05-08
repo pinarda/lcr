@@ -17,9 +17,7 @@ for config_file in "$config_dir"/rotated_config_*.json; do
 ### Charging account
 #PBS -A NTDD0005
 ### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1:mem=768GB
-### Specify that the GPUs will be V100s
-#PBS -l gpu_type=a100
+#PBS -l select=1:mem=384GB
 ### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
 ### Route the job to the casper queue
