@@ -20,6 +20,7 @@
   "CompDirs": [
     "zfp_p_8",
     "zfp_p_10",
+    "zfp_p_6",
     "zfp_p_12",
     "zfp_p_14",
     "zfp_p_16",
@@ -38,7 +39,8 @@
   "CutDataset": 0,
   "Metric": [
     "dssim",
-    "pcc"
+    "pcc",
+    "ks"
   ],
   "ModelType": "cnn",
   "RFFeatureList": [

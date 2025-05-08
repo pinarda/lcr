@@ -38,7 +38,8 @@
   "CutDataset": 0,
   "Metric": [
     "dssim",
-    "pcc"
+    "pcc",
+    "ks"
   ],
   "ModelType": "rf",
   "RFFeatureList": [
