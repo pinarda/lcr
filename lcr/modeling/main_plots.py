@@ -181,8 +181,8 @@ def main_plots():
 
                 preds_cnn[t] = load_first_existing(
                     [
-                        f"{storageloc}/test_predictions_0{t*len(subdirs)}cnn0_{vlist[0]}.npy",
-                        f"{storageloc}/test_predictions_1{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_dt_02000cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_dt_12000cnn0_{vlist[0]}.npy",
                     ],
                     allow_pickle=True
                 )
