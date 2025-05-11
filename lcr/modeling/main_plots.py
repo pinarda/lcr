@@ -200,8 +200,8 @@ def main_plots():
 
                 preds_rf[t] = load_first_existing(
                     [
-                        f"{storageloc}/test_predictions_dt_0{t*len(subdirs)}rf0_{vlist[0]}.npy",
-                        f"{storageloc}/test_predictions_dt_1{t*len(subdirs)}rf0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_dt_02000rf0_{vlist[0]}.npy",
+                        f"{storageloc}/test_predictions_dt_12000rf0_{vlist[0]}.npy",
                     ],
                     allow_pickle=True
                 )
