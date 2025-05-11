@@ -190,8 +190,8 @@ def main_plots():
                 # -------- DSSIM (ground-truth) labels -------------------------------------
                 dssims[t] = load_first_existing(
                     [
-                        f"{storageloc}/test_labels_0{t*len(subdirs)}cnn0_{vlist[0]}.npy",
-                        f"{storageloc}/test_labels_1{t*len(subdirs)}cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_labels_02000cnn0_{vlist[0]}.npy",
+                        f"{storageloc}/test_labels_12000cnn0_{vlist[0]}.npy",
                     ],
                     allow_pickle=True
                 )
