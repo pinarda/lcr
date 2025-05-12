@@ -106,9 +106,7 @@ def load_and_label_data(metric_info, storageloc, ds=None):
 
 def compare_across_metrics(final_labels_dict):
     compression_levels = [
-        "zfp_1e-3", "zfp_1e-1", "zfp_1.0",
-        "zfp_p_24", "zfp_p_22", "zfp_p_20", "zfp_p_18", "zfp_p_16", "zfp_p_14", "zfp_p_12", "zfp_p_10", "zfp_p_8",
-        "zfp_p_6"  # Add more as needed
+        "zfp_p_24", "zfp_p_22", "zfp_p_20", "zfp_p_18", "zfp_p_16", "zfp_p_14", "zfp_p_12", "zfp_p_10", "zfp_p_8"
     ]
     # Create a ranking dictionary for the compression levels
     level_rank = {level: rank for rank, level in enumerate(compression_levels)}
