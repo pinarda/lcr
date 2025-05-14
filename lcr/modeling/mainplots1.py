@@ -97,14 +97,15 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     """Create a bar plot for F1 scores."""
     x = np.arange(len(var_list))  # X-axis positions
     bar_width = 0.35  # Width of each bar
+    ones = np.ones(len(var_list))
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
-    ax.bar(x - bar_width / 2, cnn_scores, bar_width, label="CNN F1 Score", color="#e18683", edgecolor="black")
+    ax.bar(x - bar_width / 2, ones, bar_width, label="CNN F1 Score", color="#e18683", edgecolor="black")
 
     # RF F1 scores
-    ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="#B6D7E4", edgecolor="black")
+    ax.bar(x + bar_width / 2, ones, bar_width, label="RF F1 Score", color="#B6D7E4", edgecolor="black")
 
     # Adding labels and legend
     ax.set_xlabel("Variables")
