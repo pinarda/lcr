@@ -191,7 +191,8 @@ def main():
         config_file = f"{args.config_prefix}{i}{args.suffix}"
         if os.path.exists(config_file):
             # if i not in [23, 24, 36, 37, 40, 41, 43, 44]:
-            if i not in [1, 2, 4, 5, 12, 13, 16, 19, 20, 21, 22, 24, 26, 27, 37, 43, 44, 45, 46, 47]:
+            # if i not in [1, 2, 4, 5, 12, 13, 16, 19, 20, 21, 22, 24, 26, 27, 37, 43, 44, 45, 46, 47]:
+            if i not in [50]:
                 print(f"Processing {config_file}...")
                 (variable, weighted_cnn, macro_cnn,
                  weighted_rf, macro_rf, feature_importances, rf_feature_list, df_counts) = process_config(config_file)
