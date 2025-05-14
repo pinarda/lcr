@@ -44,7 +44,15 @@ def process_config(config_file):
     test_predictions_cnn = np.load(f"{storageloc}/test_predictions_02000cnn0_{variable_file}.npy")
 
     # Load data for RF
-    test_labels_np_rf = np.load(f"{storageloc}/test_labels_02000cnn0_{variable_file}.npy")
+    test_labels_np_rf = load_first_existing(
+        [
+            f"{storageloc}/test_labels_rf_02000rf0_{variable_file}.npy",
+            f"{storageloc}/test_labels_rf_12000rf0_{variable_file}.npy",
+        ],
+        allow_pickle=True
+    )
+
+        # np.load(f"{storageloc}/test_labels_02000rf0_{variable_file}.npy"))
     # test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file}.npy")
     test_predictions_rf = load_first_existing(
         [
