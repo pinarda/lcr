@@ -46,8 +46,8 @@ def process_config(config_file):
     # Load data for RF
     test_labels_np_rf = load_first_existing(
         [
-            f"{storageloc}/test_labels_rf_02000rf0_{variable_file}.npy",
-            f"{storageloc}/test_labels_rf_12000rf0_{variable_file}.npy",
+            f"{storageloc}/test_labels_02000rf0_{variable_file}.npy",
+            f"{storageloc}/test_labels_12000rf0_{variable_file}.npy",
         ],
         allow_pickle=True
     )
