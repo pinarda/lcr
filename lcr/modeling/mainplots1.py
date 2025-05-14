@@ -76,7 +76,7 @@ def process_config(config_file):
         feature_importances = None
 
     # Create a table with counts
-    compression_labels = {0: "zfp_p_8", 1: "zfp_p_10", 2: "zfp_p_16", 3: "zfp_p_22"}
+    compression_labels = {0: "zfp_p_8", 1: "zfp_p_10", 2: "zfp_p_12", 3: "zfp_p_14", 4: "zfp_p_16", 5: "zfp_p_18", 6: "zfp_p_20", 7: "zfp_p_22", 8: "zfp_p_24"}
     table_data = []
 
     for label, prediction in zip(test_labels_np_rf, test_predictions_rf):
