@@ -112,7 +112,7 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     ax.set_ylabel(f"{metric_name} F1 Score")
     ax.set_title(f"{metric_name} F1 Score Comparison for CNN and RF Models")
     ax.set_xticks(x)
-    ax.set_xticklabels(var_list, rotation=45, ha='right')  # Rotate for better readability
+    ax.set_xticklabels(var_list, rotation=45, ha='right', fontsize=10)  # Rotate for better readability
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 
     # Display and save the plot
