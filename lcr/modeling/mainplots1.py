@@ -97,8 +97,8 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     """Create a bar plot for F1 scores."""
     x = np.arange(len(var_list))  # X-axis positions
     bar_width = 0.35  # Width of each bar
-    ones = np.ones(len(var_list))
 
+    ones = np.ones(len(var_list))
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # CNN F1 scores
@@ -113,7 +113,7 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     ax.set_title(f"{metric_name} F1 Score Comparison for CNN and RF Models")
     ax.set_xticks(x)
     ax.set_xticklabels(var_list, rotation=45, ha='right')  # Rotate for better readability
-    ax.legend()
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 
     # Display and save the plot
     plt.tight_layout()
