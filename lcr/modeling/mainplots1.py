@@ -246,7 +246,7 @@ def main():
     # Add rows with alternating gray background
     for i, (variable, row) in enumerate(df_pivot.iterrows()):
         row_color = r"\rowcolor{gray!20} " if i % 2 else ""
-        latex_table += f"{row_color}{variable} & {row['zfp_p_16']} & {row['zfp_p_22']} \\\\ \\hline\n"
+        latex_table += f"{row_color}{variable} & {row['zfp_p_10']} & {row['zfp_p_22']} \\\\ \\hline\n"
 
     latex_table += r"\end{tabular}" + "\n"
     latex_table += r"\caption{Counts of labels only (predictions removed).}" + "\n"
