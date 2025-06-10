@@ -756,7 +756,7 @@ def main():
 
         start = tm.perf_counter()
         accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
-        elapsed = tm.perf_counter()
+        elapsed = tm.perf_counter() - start
         with open("timings.txt", "a") as f:
             f.write(f"Test cnn {flat_var_list} time: {elapsed:.3f} s\n")
 
