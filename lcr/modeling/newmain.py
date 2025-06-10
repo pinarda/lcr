@@ -20,6 +20,7 @@ from sklearn.tree import plot_tree
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import time as tm
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -329,6 +330,7 @@ def main():
                 # log the number of time steps
                 logging.info(f"Number of time steps: {num_time_steps}")
 
+                start = tm.perf_counter()
                 # Iterate over each time step
                 for t in range(num_time_steps):
                     # log the time step
@@ -365,6 +367,9 @@ def main():
                 metrics_data[varname][m][comp_label] = metric_values
 
                 logging.info(f"Saved metric data to {metric_filename}")
+                elapsed = tm.perf_counter() - start
+                with open("timings.txt", "a") as f:
+                    f.write(f"Compute metric {m} for {comp_label} time: {elapsed:.3f} s\n")
 
 
 
@@ -669,6 +674,7 @@ def main():
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for data preparation: {end_time - start_time}")
 
+
         get_data_labels(
             dataset=dataset_xr,
             labels=combined_labels,
@@ -730,6 +736,7 @@ def main():
 
 
         # Call the function to train the model
+        start = tm.perf_counter()
         model = train_cnn(
             train_data_np,
             train_labels_np,
@@ -740,11 +747,18 @@ def main():
             modeltype="cnn",
             transform=None,
         )
+        elapsed = tm.perf_counter() - start
+        with open("timings.txt", "a") as f:
+            f.write(f"Train cnn {flat_var_list} time: {elapsed:.3f} s\n")
 
         # log time and start the process
         end_time = pd.Timestamp.now()
 
+        start = tm.perf_counter()
         accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
+        elapsed = tm.perf_counter()
+        with open("timings.txt", "a") as f:
+            f.write(f"Test cnn {flat_var_list} time: {elapsed:.3f} s\n")
 
         # save the test predictions
         np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)
@@ -928,8 +942,11 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             logging.info(f"No extant file {storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
 
             logging.info(f"Computing feature {feature}")
-
+            start = tm.perf_counter()
             feat_da = dc.get_calc(feature)
+            elapsed = tm.perf_counter() - start
+            with open("timings.txt", "a") as f:
+                f.write(f"Compute feature {feature} time: {elapsed:.3f} s\n")
         else:
             # also log here the feature and value of i if i is a multiple of 10
             # if i % 10 == 0:
@@ -946,6 +963,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
 
 
             # Loop over each sample in sample_da, apply get_single_calc, and collect results
+            start = tm.perf_counter()
             results = []
             for i in range(len(sample_da['sample'])):
                 single_sample = sample_da.isel(sample=i)
@@ -961,6 +979,9 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
                     # result is already a scalar, so no further processing is needed
                     pass
                 results.append(result)
+            elapsed = tm.perf_counter() - start
+            with open("timings.txt", "a") as f:
+                f.write(f"Compute feature {feature} time: {elapsed:.3f} s\n")
 
             # Convert the list of results to a numpy array, then to a DataArray
             feat_da = xr.DataArray(
