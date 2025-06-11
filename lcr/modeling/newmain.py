@@ -369,7 +369,7 @@ def main():
                 logging.info(f"Saved metric data to {metric_filename}")
                 elapsed = tm.perf_counter() - start
                 with open("timings.txt", "a") as f:
-                    f.write(f"Compute metric {m} for {comp_label} time: {elapsed:.3f} s\n")
+                    f.write(f"Compute metric {m} for {comp_label} {flat_var_list} time: {elapsed:.3f} s\n")
 
 
 
@@ -948,7 +948,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             feat_da = dc.get_calc(feature)
             elapsed = tm.perf_counter() - start
             with open("timings.txt", "a") as f:
-                f.write(f"Compute feature {feature} time: {elapsed:.3f} s\n")
+                f.write(f"Compute feature {feature} time {flat_var_list}: {elapsed:.3f} s\n")
         else:
             # also log here the feature and value of i if i is a multiple of 10
             # if i % 10 == 0:
@@ -983,7 +983,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
                 results.append(result)
             elapsed = tm.perf_counter() - start
             with open("timings.txt", "a") as f:
-                f.write(f"Compute feature {feature} time: {elapsed:.3f} s\n")
+                f.write(f"Compute feature {feature} time {flat_var_list}: {elapsed:.3f} s\n")
 
             # Convert the list of results to a numpy array, then to a DataArray
             feat_da = xr.DataArray(
