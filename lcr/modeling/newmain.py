@@ -524,7 +524,7 @@ def main():
             nvar=nvars,
             storageloc=storage_loc,
             # testset='10_90_wholeslice',
-            testset='oneout',
+            testset='1var',
             j=0,
             plotdir=save_dir,
             window_size=11,
@@ -684,7 +684,7 @@ def main():
             nvar=nvars,
             storageloc=storage_loc,
             # testset='10_90_wholeslice',
-            testset='oneout',
+            testset='1var',
             j=0,
             plotdir=save_dir,
             window_size=11,  # As per WINDOWSIZE
