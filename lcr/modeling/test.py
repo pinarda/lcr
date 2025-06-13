@@ -7,13 +7,15 @@ def test():
 
     # List of features to process
     features = [
-        "w_e_first_differences_max",
+        "ns_con_var",
+        "ew_con_var",
+        "n_s_first_differences",
         "w_e_first_differences",
         "n_s_first_differences_max",
-        "n_s_first_differences",
-        "mean",
-        "ew_con_var",
-        "ns_con_var"
+        "w_e_first_differences_max",
+        "real_information_cutoff",
+        "entropy",
+        "magnitude_range"
     ]
 
     # Regex pattern to extract varname from the filename
@@ -22,7 +24,7 @@ def test():
     # Loop over each feature and combine files
     for feature in features:
         # Define the filename pattern for the current feature, with directory prefix
-        file_pattern = f"{data_dir}*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
+        file_pattern = f"{data_dir}*_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time2000_second.nc"
 
         # Find all files in the specified directory matching this pattern
         file_list = glob.glob(file_pattern)
@@ -54,7 +56,7 @@ def test():
 
         # Create a filename based on the sorted varnames in order
         varname_str = "_".join(sorted_varnames)
-        output_filename = f"{data_dir}{varname_str}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time100_second.nc"
+        output_filename = f"{data_dir}{varname_str}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time2000_second.nc"
 
         # Save the combined dataset
         combined_data.to_netcdf(output_filename)
