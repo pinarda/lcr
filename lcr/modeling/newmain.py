@@ -868,39 +868,40 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
 
 
 
-        # if os.path.exists(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc"):
-        #     logging.info(f"Loading cached feature: {feature}")
-        #     feat_da = xr.open_dataarray(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc")
-        #
-        #     # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
-        #     # Remove '_combined' from the end of the varname string and split by '_'
-        #     desired_order = varname.replace("_combined", "").split(",")
-        #
-        #     # Get the current 'sample' coordinate, which contains the variable labels
-        #     # filename_order_string = f"{varname}"
-        #
-        #     filename_order_string = "FLNS,FLNSC,FSNS,FSNSC,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF,soa_a2_SRF"
-        #     current_order = filename_order_string.split(",")
-        #
-        #     # Repeat each variable name in `current_order` 100 times to match the data structure
-        #     expanded_current_order = np.repeat(current_order, 1600)
-        #
-        #     # Create an index array to reorder the data according to `desired_order`
-        #     reorder_index = np.concatenate([
-        #         np.where(expanded_current_order == var)[0] for var in desired_order if var in expanded_current_order
-        #     ])
-        #
-        #     # Reorder the DataArray along the 'sample' dimension
-        #     reordered_data = feat_da.isel(sample=reorder_index)
-        #
-        #     print("Data has been reordered according to the specified varname order, continuing.")
-        #
-        #     features_list.append(reordered_data.values.flatten())
-        #     continue
-
-        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc"):
+        if os.path.exists(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time1600_second.nc"):
             logging.info(f"Loading cached feature: {feature}")
-            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time{times[0]}_second.nc")
+            feat_da = xr.open_dataarray(f"{storage_loc}/all_big_combined_{orig_label}_FEATURE_{feature}_all_time2000_second.nc")
+
+            # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
+            # Remove '_combined' from the end of the varname string and split by '_'
+            desired_order = varname.replace("_combined", "").split(",")
+
+            # Get the current 'sample' coordinate, which contains the variable labels
+            # filename_order_string = f"{varname}"
+
+            filename_order_string = "FLNS,FLNSC,FSNS,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF"
+
+            current_order = filename_order_string.split(",")
+
+            # Repeat each variable name in `current_order` 100 times to match the data structure
+            expanded_current_order = np.repeat(current_order, 1600)
+
+            # Create an index array to reorder the data according to `desired_order`
+            reorder_index = np.concatenate([
+                np.where(expanded_current_order == var)[0] for var in desired_order if var in expanded_current_order
+            ])
+
+            # Reorder the DataArray along the 'sample' dimension
+            reordered_data = feat_da.isel(sample=reorder_index)
+
+            print("Data has been reordered according to the specified varname order, continuing.")
+
+            features_list.append(reordered_data.values.flatten())
+            continue
+
+        if os.path.exists(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time2000_second.nc"):
+            logging.info(f"Loading cached feature: {feature}")
+            feat_da = xr.open_dataarray(f"{storage_loc}/{varname}_{orig_label}_FEATURE_{feature}_{m}_time2000_second.nc")
 
             # varname = "TS_PRECT_T850_SHFLX_FLNS_LHFLX_PRECSL_PSL_Q200_Q500_Q850_T200_T500_TAUX_TAUY_TREFHTMX_U010_combined"
             # Remove '_combined' from the end of the varname string and split by '_'
@@ -909,7 +910,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             # # Get the current 'sample' coordinate, which contains the variable labels
             # # filename_order_string = f"{varname}"
             #
-            # filename_order_string = "FLNS,FLNSC,FSNS,FSNSC,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF,soa_a2_SRF"
+            # filename_order_string = "FLNS,FLNSC,FSNS,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF,soa_a2_SRF"
             # current_order = filename_order_string.split(",")
             #
             # # Repeat each variable name in `current_order` 100 times to match the data structure
