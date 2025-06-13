@@ -56,7 +56,8 @@ def test():
 
         # Create a filename based on the sorted varnames in order
         varname_str = "_".join(sorted_varnames)
-        output_filename = f"{data_dir}{varname_str}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time2000_second.nc"
+        # output_filename = f"{data_dir}{varname_str}_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time2000_second.nc"
+        output_filename = f"{data_dir}all_big_combined_lens1_ens25_1920_orig_FEATURE_{feature}_all_time2000_second.nc"
 
         # Save the combined dataset
         combined_data.to_netcdf(output_filename)
