@@ -505,7 +505,7 @@ def main():
 
     if modeltype == 'rf':
         # Feature computation and data loading
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, "all_big_combined",
                                        orig_label, "all", times)
         labels_np = np.array(combined_labels)
         features_np = features_np.T  # Transpose features
