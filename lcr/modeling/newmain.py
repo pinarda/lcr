@@ -505,7 +505,9 @@ def main():
 
     if modeltype == 'rf':
         # Feature computation and data loading
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, "all_big_combined",
+        # features_np = compute_features(dataset_xr, featurelist, storage_loc, "all_big_combined",
+        #                                orig_label, "all", times)
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
                                        orig_label, "all", times)
         labels_np = np.array(combined_labels)
         features_np = features_np.T  # Transpose features
@@ -520,8 +522,8 @@ def main():
             dataset=features_np,
             labels=labels_np,
             time=times[0],
-            # varname=','.join(flat_var_list) + '_combined',
-            varname='all_big_combined',
+            varname=','.join(flat_var_list) + '_combined',
+            # varname='all_big_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='10_90_wholeslice',
@@ -681,8 +683,8 @@ def main():
             dataset=dataset_xr,
             labels=combined_labels,
             time=times[0],  # Adjust based on train_cnn requirements
-            # varname=','.join(flat_var_list) + '_combined',
-            varname='all_big_combined',
+            varname=','.join(flat_var_list) + '_combined',
+            # varname='all_big_combined',
             nvar=nvars,
             storageloc=storage_loc,
             testset='10_90_wholeslice',
