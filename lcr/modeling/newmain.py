@@ -491,9 +491,6 @@ def main():
     # Number of variables
     nvars = len(flat_var_list)  # Should be equal to len(var_list)
 
-    # Call train_cnn
-    logging.info("Calling train_cnn for training...")
-
     jobid = 0
     j=0
     storageloc = storage_loc
@@ -677,6 +674,9 @@ def main():
         # log time and start the process
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for data preparation: {end_time - start_time}")
+
+        logging.info(f"dataset length: {len(dataset_xr)}")
+        logging.info(f"labels length: {len(combined_labels)}")
 
 
         get_data_labels(
