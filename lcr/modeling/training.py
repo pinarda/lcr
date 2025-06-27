@@ -297,10 +297,27 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
         # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
         if label is not None:
-            train_data, val_data, train_labels, val_labels = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
-                                                                              label[
-                                                                              (num_windows * time):(num_windows * time * nvar)],
-                                                                              test_size=0.1)
+            # train_data, val_data, train_labels, val_labels = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
+            #                                                                   label[
+            #                                                                   (num_windows * time):(num_windows * time * nvar)],
+            #                                                                   test_size=0.1)
+            # assume your sample dimension is called "window"
+            start = num_windows * time
+            stop = num_windows * time * nvar  # check if you really mean this!
+
+            subset = dataset.isel(sample=slice(start, stop))
+
+            # turn every variable into one big stack: (window, variable, …)
+            da = subset.to_array()  # now DataArray with new dim 'variable'
+            flat = da.stack(feature=('variable', 'lat', 'lon', ...))  # collapse spatial dims
+            X = flat.transpose('window', 'feature').values  # --> ndarray (N, F)
+
+            y = label[start:stop]  # labels as 1-D array
+
+            train_X, val_X, train_y, val_y = train_test_split(
+                X, y, test_size=0.2, random_state=42
+            )
+
         else:
             train_data, val_data = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
                                                                               test_size=0.1)
