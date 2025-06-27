@@ -288,7 +288,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
     elif testset == "1var":
         # leave out a single variable for testing, and use the rest for training and validation
-        test_data = dataset[0:(num_windows * time)]
+        # test_data = dataset[0:(num_windows * time)]
+        stop = num_windows * time
+        test_data = dataset.isel(time=slice(0, stop))
+
         if label is not None:
             test_labels = label[0:(num_windows * time)]
 
