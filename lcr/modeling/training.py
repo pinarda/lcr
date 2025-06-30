@@ -310,11 +310,11 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             # turn every variable into one big stack: (window, variable, …)
             da = subset.to_array()  # now DataArray with new dim 'variable'
             flat = da.stack(feature=('variable', 'lat', 'lon', ...))  # collapse spatial dims
-            X = flat.transpose('window', 'feature').values  # --> ndarray (N, F)
+            X = flat.transpose('sample', 'feature').values  # --> ndarray (N, F)
 
             y = label[start:stop]  # labels as 1-D array
 
-            train_X, val_X, train_y, val_y = train_test_split(
+            train_data, val_data, train_labels, val_labels = train_test_split(
                 X, y, test_size=0.2, random_state=42
             )
 
