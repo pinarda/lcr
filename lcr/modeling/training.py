@@ -297,30 +297,40 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
         # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
         if label is not None:
-            # train_data, val_data, train_labels, val_labels = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
-            #                                                                   label[
-            #                                                                   (num_windows * time):(num_windows * time * nvar)],
-            #                                                                   test_size=0.1)
-            # assume your sample dimension is called "window"
+            # -------------------------------------------------------------------
+            # 1.  Choose the rows (samples) you want
+            # -------------------------------------------------------------------
             start = num_windows * time
-            stop = num_windows * time * nvar  # check if you really mean this!
-
+            stop = num_windows * time * nvar  # ← sanity-check that this is correct!
             subset = dataset.isel(sample=slice(start, stop))
+            y_full = label[start:stop]  # 1-D target vector, len == subset.sizes['sample']
 
-            # turn every variable into one big stack: (window, variable, …)
-            da = subset.to_array()  # now DataArray with new dim 'variable'
+            # -------------------------------------------------------------------
+            # 2.  Build the feature array X_full
+            # -------------------------------------------------------------------
+            if modeltype == "cnn":
+                # keep the 2-D spatial structure for the CNN
+                # result shape: (N_samples, lat, lon)
+                X_full = subset['combined'] \
+                    .transpose('sample', 'lat', 'lon') \
+                    .values  # -> ndarray (N, H, W)
+            else:
+                # classic ML: flatten every variable & spatial pixel into one long vector
+                da = subset.to_array()  # dims: ('variable', 'sample', 'lat', 'lon', …)
+                stack_dims = [d for d in da.dims if d != 'sample']
+                flat = da.stack(feature=stack_dims)  # dims: ('feature', 'sample')
+                X_full = flat.transpose('sample', 'feature').values  # ndarray (N, F)
 
-            # build the list of dims to stack, skipping 'sample'
-            stack_dims = [d for d in da.dims if d != 'sample']
-
-            flat = da.stack(feature=stack_dims)  # dims → ('feature', 'sample')
-            X = flat.transpose('sample', 'feature').values  # ndarray (N, F)
-
-            y = label[start:stop]  # labels as 1-D array
-
+            # -------------------------------------------------------------------
+            # 3.  Split once, get NumPy arrays ready for scikit-learn / PyTorch
+            # -------------------------------------------------------------------
             train_data, val_data, train_labels, val_labels = train_test_split(
-                X, y, test_size=0.2, random_state=42
+                X_full, y_full,
+                test_size=0.2,
+                random_state=42,
+                stratify=y_full if y_full.ndim == 1 else None  # keep class balance if classification
             )
+
 
         else:
             train_data, val_data = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
@@ -703,9 +713,9 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     # else:
         # First, convert the train_data to a NumPy array with shape (samples, lat, lon, variables)
     if modeltype == "cnn":
-        train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon').values
-        val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon').values
-        test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon').values
+        train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon')
+        val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon')
+        test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
     else:
         train_data_np = train_data
         val_data_np = val_data
