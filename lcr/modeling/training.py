@@ -716,7 +716,9 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
         # train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon')
         # val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon')
         # test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
-        pass
+        train_data_np = train_data
+        val_data_np = val_data
+        test_data_np = test_data
     else:
         train_data_np = train_data
         val_data_np = val_data
