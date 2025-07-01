@@ -331,6 +331,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
                 stratify=y_full if y_full.ndim == 1 else None  # keep class balance if classification
             )
 
+            test_data = dataset.isel(sample=slice(start, stop))
+            test_labels = label[start:stop]
+
+
 
         else:
             train_data, val_data = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
@@ -718,7 +722,9 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
         # test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
         train_data_np = train_data
         val_data_np = val_data
-        test_data_np = test_data
+        test_data_np = test_data['combined'] \
+                .transpose('sample', 'lat', 'lon') \
+                .values  # ndarray (N_test, H, W)
     else:
         train_data_np = train_data
         val_data_np = val_data
