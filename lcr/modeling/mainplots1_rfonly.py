@@ -6,6 +6,18 @@ import json
 import os
 import pandas as pd
 
+def load_first_existing(paths, **np_load_kwargs):
+    """
+    Try each path in *paths* (a list/tuple of strings) and return
+    np.load(path, **np_load_kwargs) for the first one that exists.
+    Raises FileNotFoundError if none exist.
+    """
+    for p in paths:
+        if os.path.exists(p):
+            return np.load(p, **np_load_kwargs)
+    raise FileNotFoundError("None of the candidate files exist:\n  " +
+                            "\n  ".join(paths))
+
 def process_config(config_file):
     """Process a single configuration file and calculate F1 scores."""
     with open(config_file, 'r') as f:
@@ -31,8 +43,14 @@ def process_config(config_file):
 
     # Load data for RF
     test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
-    test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
-
+    # test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
+    test_predictions_rf = load_first_existing(
+        [
+            f"{storageloc}/test_predictions_rf_02000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_12000rf0_{variable_file}.npy",
+        ],
+        allow_pickle=True
+    )
 
 
     # Compute F1 scores
@@ -44,7 +62,7 @@ def process_config(config_file):
 
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file[0]}.npy"
+    feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
     else:
