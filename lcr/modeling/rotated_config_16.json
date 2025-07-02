@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "U010"
-    ],
-    [
       "FLNS"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "TAUY"
+    ],
+    [
+      "U010"
     ]
   ],
   "FilenamePre": [

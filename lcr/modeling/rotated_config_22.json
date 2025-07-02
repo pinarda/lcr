@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "QBOT"
-    ],
-    [
       "T010"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "PRECSC"
+    ],
+    [
+      "QBOT"
     ]
   ],
   "FilenamePre": [

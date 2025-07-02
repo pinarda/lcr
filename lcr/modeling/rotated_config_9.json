@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "Q850"
-    ],
-    [
       "SHFLX"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "Q500"
+    ],
+    [
+      "Q850"
     ]
   ],
   "FilenamePre": [

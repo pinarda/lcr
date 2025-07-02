@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "WSPDSRFAV"
-    ],
-    [
       "Z050"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "VBOT"
+    ],
+    [
+      "WSPDSRFAV"
     ]
   ],
   "FilenamePre": [

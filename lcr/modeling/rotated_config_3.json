@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "LHFLX"
-    ],
-    [
       "PRECSL"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "TS"
+    ],
+    [
+      "LHFLX"
     ]
   ],
   "FilenamePre": [

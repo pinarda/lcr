@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "dst_a3_SRF"
-    ],
-    [
       "pom_a1_SRF"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "dst_a1_SRF"
+    ],
+    [
+      "dst_a3_SRF"
     ]
   ],
   "FilenamePre": [

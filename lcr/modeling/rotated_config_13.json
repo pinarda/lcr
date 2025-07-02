@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "T850"
-    ],
-    [
       "TAUX"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "T500"
+    ],
+    [
+      "T850"
     ]
   ],
   "FilenamePre": [

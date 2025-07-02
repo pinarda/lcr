@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "TREFHTMX"
-    ],
-    [
       "TS"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "soa_a2_SRF"
+    ],
+    [
+      "TREFHTMX"
     ]
   ],
   "FilenamePre": [

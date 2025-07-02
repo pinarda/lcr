@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "Z500"
-    ],
-    [
       "bc_a1_SRF"
     ],
     [
@@ -139,6 +136,9 @@
     ],
     [
       "Z050"
+    ],
+    [
+      "Z500"
     ]
   ],
   "FilenamePre": [
