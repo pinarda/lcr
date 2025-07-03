@@ -85,6 +85,7 @@ def process_config(config_file):
     )
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
+        print("loading importances...")
     else:
         feature_importances = None
 
