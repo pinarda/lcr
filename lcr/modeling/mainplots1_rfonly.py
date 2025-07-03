@@ -90,7 +90,7 @@ def process_config(config_file):
     # dupes = df[df.duplicated(subset=["Variable", "Compression Label"], keep=False)]
     # print(dupes.sort_values(["Variable", "Compression Label"]).head())
     df_unique = df.drop_duplicates(subset=["Variable", "Compression Label"], keep="first")
-    df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
+    df_pivot = df_unique.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
 
     # Print the pivot table
     print("Pivot Table:")
