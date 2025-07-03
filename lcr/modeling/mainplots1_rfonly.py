@@ -84,8 +84,12 @@ def process_config(config_file):
         prediction_name = compression_labels.get(prediction, "Unknown")
         table_data.append((variable_file[0], label_name, f"{label_name}, {prediction_name}"))
 
+
     # Convert to DataFrame
     df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Labels and Predictions"])
+    dupes = df[df.duplicated(subset=["Variable", "Compression Label"], keep=False)]
+    print(dupes.sort_values(["Variable", "Compression Label"]).head())
+
     df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
 
     # Print the pivot table
