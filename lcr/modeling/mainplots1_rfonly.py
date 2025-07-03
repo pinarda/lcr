@@ -73,7 +73,7 @@ def process_config(config_file):
 
     # Load feature importances for RF
     # feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
-    test_predictions_rf = load_first_existing(
+    feature_importance_file = load_first_existing(
         [
             f"{storageloc}/feature_importances_rf_42000rf0_{variable_file}.npy",
             f"{storageloc}/feature_importances_rf_32000rf0_{variable_file}.npy",
