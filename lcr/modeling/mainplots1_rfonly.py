@@ -53,8 +53,11 @@ def process_config(config_file):
     # test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
     test_predictions_rf = load_first_existing(
         [
-            f"{storageloc}/test_predictions_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_42000rf0_{variable_file}.npy",
             f"{storageloc}/test_predictions_rf_32000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_12000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_02000rf0_{variable_file}.npy",
         ],
         allow_pickle=True
     )
