@@ -6,6 +6,17 @@ import json
 import os
 import pandas as pd
 
+def return_first_existing(paths):
+    """
+    Try each path in *paths* (a list/tuple of strings) and return
+    np.load(path, **np_load_kwargs) for the first one that exists.
+    Raises FileNotFoundError if none exist.
+    """
+    for p in paths:
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError("None of the candidate files exist:\n  " +
+                            "\n  ".join(paths))
 def load_first_existing(paths, **np_load_kwargs):
     """
     Try each path in *paths* (a list/tuple of strings) and return
@@ -73,7 +84,7 @@ def process_config(config_file):
 
     # Load feature importances for RF
     # feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
-    feature_importance_file = load_first_existing(
+    feature_importance_file = return_first_existing(
         [
             f"{storageloc}/feature_importances_rf_42000rf0_{variable_file}.npy",
             f"{storageloc}/feature_importances_rf_32000rf0_{variable_file}.npy",
