@@ -83,6 +83,7 @@ def process_config(config_file):
         ],
         allow_pickle=True
     )
+    print(f"feature_importance_file: {feature_importance_file}")
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
         print("loading importances...")
