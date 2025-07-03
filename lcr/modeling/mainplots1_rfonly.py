@@ -72,7 +72,17 @@ def process_config(config_file):
 
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
+    # feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
+    test_predictions_rf = load_first_existing(
+        [
+            f"{storageloc}/feature_importances_rf_42000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_32000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_12000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_02000rf0_{variable_file}.npy",
+        ],
+        allow_pickle=True
+    )
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
     else:
