@@ -91,8 +91,7 @@ def process_config(config_file):
             f"{storageloc}/feature_importances_rf_22000rf0_{variable_file}.npy",
             f"{storageloc}/feature_importances_rf_12000rf0_{variable_file}.npy",
             f"{storageloc}/feature_importances_rf_02000rf0_{variable_file}.npy",
-        ],
-        allow_pickle=True
+        ]
     )
     print(f"feature_importance_file: {feature_importance_file}")
     if os.path.exists(feature_importance_file):
