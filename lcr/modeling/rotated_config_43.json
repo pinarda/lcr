@@ -3,6 +3,12 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "so4_a1_SRF"
+    ],
+    [
+      "so4_a2_SRF"
+    ],
+    [
       "so4_a3_SRF"
     ],
     [
@@ -69,6 +75,9 @@
       "FSNS"
     ],
     [
+      "FSNSC"
+    ],
+    [
       "PRECL"
     ],
     [
@@ -133,12 +142,6 @@
     ],
     [
       "pom_a1_SRF"
-    ],
-    [
-      "so4_a1_SRF"
-    ],
-    [
-      "so4_a2_SRF"
     ]
   ],
   "FilenamePre": [
@@ -153,19 +156,12 @@
     "lens1_ens25_1920"
   ],
   "CompDirs": [
-    "zfp_p_8",
-    "zfp_p_10",
-    "zfp_p_12",
-    "zfp_p_14",
     "zfp_p_16",
-    "zfp_p_18",
-    "zfp_p_20",
-    "zfp_p_22",
-    "zfp_p_24"
+    "zfp_p_26"
   ],
   "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
   "Times": [
-    2000
+    1600
   ],
   "Navg": 1,
   "StorageLoc": "./data",
@@ -174,7 +170,7 @@
   "Metric": [
     "dssim",
     "pcc",
-    "ks"
+    "spre"
   ],
   "ModelType": "rf",
   "RFFeatureList": [
