@@ -3,6 +3,9 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
+      "soa_a2_SRF"
+    ],
+    [
       "TREFHTMX"
     ],
     [
@@ -58,6 +61,9 @@
     ],
     [
       "FSNS"
+    ],
+    [
+      "FSNSC"
     ],
     [
       "PRECL"
@@ -136,9 +142,6 @@
     ],
     [
       "soa_a1_SRF"
-    ],
-    [
-      "soa_a2_SRF"
     ]
   ],
   "FilenamePre": [
@@ -153,15 +156,8 @@
     "lens1_ens25_1920"
   ],
   "CompDirs": [
-    "zfp_p_8",
-    "zfp_p_10",
-    "zfp_p_12",
-    "zfp_p_14",
     "zfp_p_16",
-    "zfp_p_18",
-    "zfp_p_20",
-    "zfp_p_22",
-    "zfp_p_24"
+    "zfp_p_26"
   ],
   "OptLdcpyDevPath": "/glade/u/home/apinard/newldcpy/ldcpy",
   "Times": [
@@ -176,7 +172,7 @@
     "pcc",
     "ks"
   ],
-  "ModelType": "cnn",
+  "ModelType": "rf",
   "RFFeatureList": [
     "ns_con_var",
     "ew_con_var",
