@@ -6,6 +6,29 @@ import json
 import os
 import pandas as pd
 
+def return_first_existing(paths):
+    """
+    Try each path in *paths* (a list/tuple of strings) and return
+    np.load(path, **np_load_kwargs) for the first one that exists.
+    Raises FileNotFoundError if none exist.
+    """
+    for p in paths:
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError("None of the candidate files exist:\n  " +
+                            "\n  ".join(paths))
+def load_first_existing(paths, **np_load_kwargs):
+    """
+    Try each path in *paths* (a list/tuple of strings) and return
+    np.load(path, **np_load_kwargs) for the first one that exists.
+    Raises FileNotFoundError if none exist.
+    """
+    for p in paths:
+        if os.path.exists(p):
+            return np.load(p, **np_load_kwargs)
+    raise FileNotFoundError("None of the candidate files exist:\n  " +
+                            "\n  ".join(paths))
+
 def process_config(config_file):
     """Process a single configuration file and calculate F1 scores."""
     with open(config_file, 'r') as f:
@@ -30,9 +53,25 @@ def process_config(config_file):
     # test_predictions_cnn = np.load(f"{storageloc}/test_predictions_{j}{time}cnn{jobid}_{variable_file}.npy")
 
     # Load data for RF
-    test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
-    test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
-
+    # test_labels_np_rf = np.load(f"{storageloc}/test_labels_{j}{time}rf{jobid}_{variable_file}.npy")
+    test_labels_np_rf = load_first_existing(
+        [
+            f"{storageloc}/test_labels_02000rf0_{variable_file}.npy",
+            f"{storageloc}/test_labels_12000rf0_{variable_file}.npy",
+        ],
+        allow_pickle=True
+    )
+    # test_predictions_rf = np.load(f"{storageloc}/test_predictions_rf_{j}{time}rf{jobid}_{variable_file[0]}.npy")
+    test_predictions_rf = load_first_existing(
+        [
+            f"{storageloc}/test_predictions_rf_42000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_32000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_12000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_02000rf0_{variable_file}.npy",
+        ],
+        allow_pickle=True
+    )
 
 
     # Compute F1 scores
@@ -44,9 +83,20 @@ def process_config(config_file):
 
 
     # Load feature importances for RF
-    feature_importance_file = f"{storageloc}/feature_importances_rf_01600rf0_{variable_file[0]}.npy"
+    # feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file[0]}.npy"
+    feature_importance_file = return_first_existing(
+        [
+            f"{storageloc}/feature_importances_rf_42000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_32000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_12000rf0_{variable_file}.npy",
+            f"{storageloc}/feature_importances_rf_02000rf0_{variable_file}.npy",
+        ]
+    )
+    print(f"feature_importance_file: {feature_importance_file}")
     if os.path.exists(feature_importance_file):
         feature_importances = np.load(feature_importance_file)
+        print("loading importances...")
     else:
         feature_importances = None
 
@@ -59,9 +109,13 @@ def process_config(config_file):
         prediction_name = compression_labels.get(prediction, "Unknown")
         table_data.append((variable_file[0], label_name, f"{label_name}, {prediction_name}"))
 
+
     # Convert to DataFrame
     df = pd.DataFrame(table_data, columns=["Variable", "Compression Label", "Labels and Predictions"])
-    df_pivot = df.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
+    # dupes = df[df.duplicated(subset=["Variable", "Compression Label"], keep=False)]
+    # print(dupes.sort_values(["Variable", "Compression Label"]).head())
+    df_unique = df.drop_duplicates(subset=["Variable", "Compression Label"], keep="first")
+    df_pivot = df_unique.pivot(index="Variable", columns="Compression Label", values="Labels and Predictions").fillna("")
 
     # Print the pivot table
     print("Pivot Table:")
@@ -193,7 +247,7 @@ def main():
     for i in range(1, args.num_configs + 1):
         config_file = f"{args.config_prefix}{i}{args.suffix}"
         if os.path.exists(config_file):
-            if i not in [23, 24, 36, 37, 40, 41, 43, 44]:
+            if i not in [38, 39]:
                 print(f"Processing {config_file}...")
                 (variable,
                  weighted_rf, macro_rf, feature_importances, rf_feature_list) = process_config(config_file)
