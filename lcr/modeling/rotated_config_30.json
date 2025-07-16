@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "U850"
-    ],
-    [
       "UBOT"
     ],
     [
@@ -114,9 +111,6 @@
       "FSNS"
     ],
     [
-      "FSNSC"
-    ],
-    [
       "PRECL"
     ],
     [
@@ -142,6 +136,9 @@
     ],
     [
       "U500"
+    ],
+    [
+      "U850"
     ]
   ],
   "FilenamePre": [

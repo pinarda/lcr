@@ -883,7 +883,7 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
             # Get the current 'sample' coordinate, which contains the variable labels
             # filename_order_string = f"{varname}"
 
-            filename_order_string = "FLNS,FLNSC,FSNS,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF"
+            filename_order_string = "FLNS,FLNSC,FSNS,LHFLX,PRECL,PRECSC,PRECSL,PRECT,PSL,Q200,Q500,Q850,QBOT,SHFLX,T010,T200,T500,T850,TAUX,TAUY,TMQ,TREFHT,TREFHTMN,TREFHTMX,TS,U010,U200,U500,U850,UBOT,V200,V500,V850,VBOT,WSPDSRFAV,Z050,Z500,bc_a1_SRF,dst_a1_SRF,dst_a3_SRF,pom_a1_SRF,so4_a1_SRF,so4_a2_SRF,so4_a3_SRF,soa_a1_SRF,soa_a2_SRF"
 
             current_order = filename_order_string.split(",")
 

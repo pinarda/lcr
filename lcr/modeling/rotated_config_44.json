@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "so4_a2_SRF"
-    ],
-    [
       "so4_a3_SRF"
     ],
     [
@@ -70,9 +67,6 @@
     ],
     [
       "FSNS"
-    ],
-    [
-      "FSNSC"
     ],
     [
       "PRECL"
@@ -142,6 +136,9 @@
     ],
     [
       "so4_a1_SRF"
+    ],
+    [
+      "so4_a2_SRF"
     ]
   ],
   "FilenamePre": [

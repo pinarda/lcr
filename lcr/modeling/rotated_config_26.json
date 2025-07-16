@@ -3,9 +3,6 @@
   "SaveDir": "/glade/derecho/scratch/apinard/RF_store_classify/",
   "VarList": [
     [
-      "TREFHT"
-    ],
-    [
       "TREFHTMN"
     ],
     [
@@ -126,9 +123,6 @@
       "FSNS"
     ],
     [
-      "FSNSC"
-    ],
-    [
       "PRECL"
     ],
     [
@@ -142,6 +136,9 @@
     ],
     [
       "TMQ"
+    ],
+    [
+      "TREFHT"
     ]
   ],
   "FilenamePre": [
