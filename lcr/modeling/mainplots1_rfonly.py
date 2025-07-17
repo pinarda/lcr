@@ -222,9 +222,9 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     # full variable labels (unsorted, plotting order)
     colors = [bc.patches[0].get_facecolor() for bc in bar_containers]
 
-    # --- sort alphabetically (case‑insensitive) ---
+    # --- alphabetical legend prep (unchanged except `colors` already defined earlier) ---
     sorted_pairs = sorted(zip(variable_names, colors), key=lambda t: t[0].lower())
-    variables_s, colors_s = zip(*sorted_pairs)  # tuples
+    variables_s, colors_s = zip(*sorted_pairs)
 
     # escape underscores if usetex
     if mpl.rcParams.get("text.usetex", False):
@@ -232,20 +232,34 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     else:
         legend_labels = list(variables_s)
 
-    # build handles in sorted order
     legend_handles = [mpatches.Patch(color=c, label=lbl)
                       for c, lbl in zip(colors_s, legend_labels)]
 
-    # multi‑column figure‑level legend
     max_rows = 4
     ncol = int(np.ceil(len(legend_handles) / max_rows))
 
     fig = ax.figure
+
+    # --- SPACING KNOBS ------------------------------------------------------
+    XTICK_PAD = 2  # pixels between axis line and tick labels (smaller brings ticks up)
+    XLABEL_PAD = 18  # points between tick labels and axis label (bigger pushes label down)
+    LEGEND_PAD = 0.10  # figure fraction *below* axes: 0.10 ~= 10% of fig height
+    BOTTOM_PAD = 0.32 + LEGEND_PAD  # final space reserved at bottom
+    # ------------------------------------------------------------------------
+
+    # 1) tighten tick labels up toward plot (so they don't collide with legend)
+    ax.tick_params(axis='x', which='major', pad=XTICK_PAD)
+
+    # 2) push the axis label a bit further below tick labels
+    ax.set_xlabel("Features", labelpad=XLABEL_PAD)
+
+    # 3) put legend farther below the axes using a negative y anchor
+    #    y = -LEGEND_PAD means "LEGEND_PAD * axes height below the axes box"
     fig.legend(legend_handles,
                [h.get_label() for h in legend_handles],
                title="Variables",
-               loc="lower center",
-               bbox_to_anchor=(0.5, 0.0),
+               loc="upper center",
+               bbox_to_anchor=(0.5, -LEGEND_PAD),  # << move down
                ncol=ncol,
                fontsize=7,
                title_fontsize=8,
@@ -254,12 +268,11 @@ def plot_feature_importances(features, all_importances, variable_names, filename
                handlelength=1.0,
                handletextpad=0.4)
 
-    # adjust bottom margin (tweak as needed for x‑tick labels + legend)
-    fig.subplots_adjust(bottom=0.32)
+    # 4) reserve enough bottom margin so the legend & ticks fit
+    fig.subplots_adjust(bottom=BOTTOM_PAD)
 
-    # Save the plot
-    plt.tight_layout()
-    plt.savefig(filename)
+    # Save
+    plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
     plt.close()
     print(f"Feature importance comparison plot saved to {filename}")
 
