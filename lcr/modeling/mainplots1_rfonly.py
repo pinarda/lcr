@@ -277,8 +277,8 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ncol = int(np.ceil(len(legend_handles) / max_rows))
 
     fig = ax.figure
-    LEGEND_PAD = 0.10  # move legend below axes
-    BOTTOM_PAD = 0.32 + LEGEND_PAD
+    LEGEND_PAD = 0.04  # move legend below axes
+    BOTTOM_PAD = 0.12 + LEGEND_PAD
 
     fig.legend(legend_handles,
                [h.get_label() for h in legend_handles],
