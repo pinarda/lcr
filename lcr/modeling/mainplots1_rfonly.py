@@ -214,24 +214,36 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
     ax.set_xticklabels(features, rotation=45, ha='right')
 
-    # --- NEW legend code (bottom, multi‑column) ---
     import math
+    import matplotlib as mpl
+
+    # --- collect existing legend entries ---
     handles, labels = ax.get_legend_handles_labels()
 
-    max_rows = 4  # change if you want fewer/taller rows
+    # If TeX is enabled, escape underscores so full label renders
+    if mpl.rcParams.get("text.usetex", False):
+        labels = [lbl.replace("_", r"\_") for lbl in labels]
+
+    # How many columns? Aim for <=4 rows.
+    max_rows = 4
     ncol = math.ceil(len(labels) / max_rows)
 
-    ax.legend(handles, labels,
-              title="Variables",
-              loc='upper center',
-              bbox_to_anchor=(0.5, -0.20),  # push below axes; tweak -0.20 as needed
-              ncol=ncol,
-              fontsize=8,
-              frameon=False)
-
-    # make room for the legend below
+    # Use FIGURE legend (not axes) so it can extend across the full width
     fig = ax.figure
-    fig.subplots_adjust(bottom=0.25)  # increase if labels clip
+    leg = fig.legend(handles, labels,
+                     title="Variables",
+                     loc="lower center",
+                     bbox_to_anchor=(0.5, 0.0),  # bottom center *of figure*
+                     ncol=ncol,
+                     fontsize=8,
+                     title_fontsize=9,
+                     frameon=False,
+                     handlelength=1.5,
+                     columnspacing=0.8,
+                     handletextpad=0.4)
+
+    # Make room for the legend & long x‑tick labels
+    fig.subplots_adjust(bottom=0.28)  # increase if still cramped
 
     # Save the plot
     plt.tight_layout()
