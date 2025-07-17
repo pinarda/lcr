@@ -219,6 +219,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
 
     # --- collect existing legend entries ---
     handles, labels = ax.get_legend_handles_labels()
+    print("Legend labels:", labels)  # check what's actually there
 
     # If TeX is enabled, escape underscores so full label renders
     if mpl.rcParams.get("text.usetex", False):
