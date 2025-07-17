@@ -199,67 +199,92 @@ def plot_feature_importances(features, all_importances, variable_names, filename
 
     fig, ax = plt.subplots(figsize=(15, 8))
 
-    bar_containers = []  # collect per-variable bar groups
+    # ------------------------------------------
+    # PREP: sort variables & colors together
+    # ------------------------------------------
+    # variable_names: list[str]  (unsorted)
+    # importances: dict[var] -> 1D array-like of len == n_features
+    # colors: list of colors same length as variable_names (if you generated them; else None)
 
-    # Plot each variable's importances
-    for i, importances in enumerate(all_importances):
+    order = sorted(range(len(variable_names)),
+                   key=lambda i: variable_names[i].lower())
+
+    variables_plot = [variable_names[i] for i in order]
+
+    if colors is not None:
+        colors_plot = [colors[i] for i in order]
+    else:
+        colors_plot = None  # we'll let Matplotlib cycle
+
+    # optionally: build a 2D matrix in sorted order if that’s easier
+    # (n_vars, n_features)
+    # importances_mat = np.vstack([np.asarray(importances[v]) for v in variables_plot])
+
+    # ------------------------------------------
+    # PLOT grouped bars in sorted order
+    # ------------------------------------------
+    n_variables = len(variables_plot)
+    bar_containers = []
+
+    for i, var in enumerate(variables_plot):
+        yvals = importances[var]
+
+        kwargs = {}
+        if colors_plot is not None:
+            kwargs["color"] = colors_plot[i]
+
         bc = ax.bar(
-            x + i * bar_width,  # Shift each group by `i * bar_width`
-            importances,
+            x + i * bar_width,
+            yvals,
             bar_width,
-            label=variable_names[i]
+            label="_nolegend_",  # suppress auto legend
+            **kwargs
         )
         bar_containers.append(bc)
 
-    # Add labels and legend
-    # Existing code (keep)
-    ax.set_xlabel("Features")
+    # ------------------------------------------
+    # X axis
+    # ------------------------------------------
+    ax.set_xlabel("Features", labelpad=18)
     ax.set_ylabel("Importance")
     ax.set_title("Feature Importances Across Variables")
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
-    ax.set_xticklabels(features, rotation=25, ha='right', fontsize=10)
+    ax.set_xticklabels(features, rotation=45, ha='right', fontsize=8)
+    ax.tick_params(axis='x', which='major', pad=2)
 
-    # full variable labels (unsorted, plotting order)
-    colors = [bc.patches[0].get_facecolor() for bc in bar_containers]
+    # ------------------------------------------
+    # EXTRACT colors if we let MPL pick them
+    # ------------------------------------------
+    if colors_plot is None:
+        colors_plot = [bc.patches[0].get_facecolor() for bc in bar_containers]
 
-    # --- alphabetical legend prep (unchanged except `colors` already defined earlier) ---
-    sorted_pairs = sorted(zip(variable_names, colors), key=lambda t: t[0].lower())
-    variables_s, colors_s = zip(*sorted_pairs)
+    # ------------------------------------------
+    # Legend (variables_plot already alphabetical)
+    # ------------------------------------------
+    import matplotlib as mpl
+    import matplotlib.patches as mpatches
+    import numpy as np
 
-    # escape underscores if usetex
     if mpl.rcParams.get("text.usetex", False):
-        legend_labels = [v.replace('_', r'\_') for v in variables_s]
+        legend_labels = [v.replace("_", r"\_") for v in variables_plot]
     else:
-        legend_labels = list(variables_s)
+        legend_labels = variables_plot
 
-    legend_handles = [mpatches.Patch(color=c, label=lbl)
-                      for c, lbl in zip(colors_s, legend_labels)]
+    legend_handles = [mpatches.Patch(color=c, label=l)
+                      for c, l in zip(colors_plot, legend_labels)]
 
     max_rows = 4
     ncol = int(np.ceil(len(legend_handles) / max_rows))
 
     fig = ax.figure
+    LEGEND_PAD = 0.10  # move legend below axes
+    BOTTOM_PAD = 0.32 + LEGEND_PAD
 
-    # --- SPACING KNOBS ------------------------------------------------------
-    XTICK_PAD = 2  # pixels between axis line and tick labels (smaller brings ticks up)
-    XLABEL_PAD = 18  # points between tick labels and axis label (bigger pushes label down)
-    LEGEND_PAD = 0.02  # figure fraction *below* axes: 0.10 ~= 10% of fig height
-    BOTTOM_PAD = 0.12 + LEGEND_PAD  # final space reserved at bottom
-    # ------------------------------------------------------------------------
-
-    # 1) tighten tick labels up toward plot (so they don't collide with legend)
-    ax.tick_params(axis='x', which='major', pad=XTICK_PAD)
-
-    # 2) push the axis label a bit further below tick labels
-    ax.set_xlabel("Features", labelpad=XLABEL_PAD)
-
-    # 3) put legend farther below the axes using a negative y anchor
-    #    y = -LEGEND_PAD means "LEGEND_PAD * axes height below the axes box"
     fig.legend(legend_handles,
                [h.get_label() for h in legend_handles],
                title="Variables",
                loc="upper center",
-               bbox_to_anchor=(0.5, -LEGEND_PAD),  # << move down
+               bbox_to_anchor=(0.5, -LEGEND_PAD),
                ncol=ncol,
                fontsize=7,
                title_fontsize=8,
@@ -268,10 +293,8 @@ def plot_feature_importances(features, all_importances, variable_names, filename
                handlelength=1.0,
                handletextpad=0.4)
 
-    # 4) reserve enough bottom margin so the legend & ticks fit
     fig.subplots_adjust(bottom=BOTTOM_PAD)
 
-    # Save
     plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
     plt.close()
     print(f"Feature importance comparison plot saved to {filename}")
