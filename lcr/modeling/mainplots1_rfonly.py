@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import pandas as pd
+import math
 
 def return_first_existing(paths):
     """
@@ -148,12 +149,31 @@ def plot_f1_scores(var_list, rf_scores, metric_name, filename):
     ax.bar(x + bar_width / 2, rf_scores, bar_width, label="RF F1 Score", color="red", edgecolor="black")
 
     # Adding labels and legend
-    ax.set_xlabel("Variables")
-    ax.set_ylabel(f"{metric_name} F1 Score")
-    ax.set_title(f"{metric_name} F1 Score Comparison for RF Models")
-    ax.set_xticks(x)
-    ax.set_xticklabels(var_list, rotation=45, ha='right')  # Rotate for better readability
-    ax.legend()
+    # Existing code (keep)
+    ax.set_xlabel("Features")
+    ax.set_ylabel("Importance")
+    ax.set_title("Feature Importances Across Variables")
+    ax.set_xticks(x + bar_width * (len(var_list) - 1) / 2)
+    ax.set_xticklabels(var_list, rotation=45, ha='right')
+
+    # --- NEW legend code (bottom, multi‑column) ---
+    import math
+    handles, labels = ax.get_legend_handles_labels()
+
+    max_rows = 4  # change if you want fewer/taller rows
+    ncol = math.ceil(len(labels) / max_rows)
+
+    ax.legend(handles, labels,
+              title="Variables",
+              loc='upper center',
+              bbox_to_anchor=(0.5, -0.20),  # push below axes; tweak -0.20 as needed
+              ncol=ncol,
+              fontsize=8,
+              frameon=False)
+
+    # make room for the legend below
+    fig = ax.figure
+    fig.subplots_adjust(bottom=0.25)  # increase if labels clip
 
     # Display and save the plot
     plt.tight_layout()
