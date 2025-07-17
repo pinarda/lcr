@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import pandas as pd
+import numpy as np
 import math
 import matplotlib as mpl
 import matplotlib.patches as mpatches
