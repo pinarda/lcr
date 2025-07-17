@@ -212,39 +212,46 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_ylabel("Importance")
     ax.set_title("Feature Importances Across Variables")
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
-    ax.set_xticklabels(features, rotation=15, ha='right', fontsize=10)
+    ax.set_xticklabels(features, rotation=25, ha='right', fontsize=10)
 
-    import math
-    import matplotlib as mpl
+    # full variable labels (unsorted, plotting order)
+    variables = [...]  # e.g., ['T200','T500','T850',...]
+    colors = [...]  # same length; color[i] corresponds to variables[i]
 
-    # --- collect existing legend entries ---
-    handles, labels = ax.get_legend_handles_labels()
-    print("Legend labels:", labels)  # check what's actually there
+    # --- sort alphabetically (case‑insensitive) ---
+    sorted_pairs = sorted(zip(variables, colors), key=lambda t: t[0].lower())
+    variables_s, colors_s = zip(*sorted_pairs)  # tuples
 
-    # If TeX is enabled, escape underscores so full label renders
+    # escape underscores if usetex
     if mpl.rcParams.get("text.usetex", False):
-        labels = [lbl.replace("_", r"\_") for lbl in labels]
+        legend_labels = [v.replace('_', r'\_') for v in variables_s]
+    else:
+        legend_labels = list(variables_s)
 
-    # How many columns? Aim for <=4 rows.
+    # build handles in sorted order
+    legend_handles = [mpatches.Patch(color=c, label=lbl)
+                      for c, lbl in zip(colors_s, legend_labels)]
+
+    # multi‑column figure‑level legend
     max_rows = 4
-    ncol = math.ceil(len(labels) / max_rows)
+    ncol = int(np.ceil(len(legend_handles) / max_rows))
 
-    # Use FIGURE legend (not axes) so it can extend across the full width
     fig = ax.figure
-    leg = fig.legend(handles, labels,
-                     title="Variables",
-                     loc="lower center",
-                     bbox_to_anchor=(0.5, 0.0),  # bottom center *of figure*
-                     ncol=ncol,
-                     fontsize=8,
-                     title_fontsize=9,
-                     frameon=False,
-                     handlelength=1.5,
-                     columnspacing=0.8,
-                     handletextpad=0.4)
+    fig.legend(legend_handles,
+               [h.get_label() for h in legend_handles],
+               title="Variables",
+               loc="lower center",
+               bbox_to_anchor=(0.5, 0.0),
+               ncol=ncol,
+               fontsize=7,
+               title_fontsize=8,
+               frameon=False,
+               columnspacing=0.8,
+               handlelength=1.0,
+               handletextpad=0.4)
 
-    # Make room for the legend & long x‑tick labels
-    fig.subplots_adjust(bottom=0.28)  # increase if still cramped
+    # adjust bottom margin (tweak as needed for x‑tick labels + legend)
+    fig.subplots_adjust(bottom=0.32)
 
     # Save the plot
     plt.tight_layout()
