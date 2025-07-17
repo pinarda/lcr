@@ -6,6 +6,8 @@ import json
 import os
 import pandas as pd
 import math
+import matplotlib as mpl
+import matplotlib.patches as mpatches
 
 def return_first_existing(paths):
     """
@@ -197,14 +199,17 @@ def plot_feature_importances(features, all_importances, variable_names, filename
 
     fig, ax = plt.subplots(figsize=(15, 8))
 
+    bar_containers = []  # collect per-variable bar groups
+
     # Plot each variable's importances
     for i, importances in enumerate(all_importances):
-        ax.bar(
+        bc = ax.bar(
             x + i * bar_width,  # Shift each group by `i * bar_width`
             importances,
             bar_width,
             label=variable_names[i]
         )
+        bar_containers.append(bc)
 
     # Add labels and legend
     # Existing code (keep)
@@ -215,11 +220,10 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_xticklabels(features, rotation=25, ha='right', fontsize=10)
 
     # full variable labels (unsorted, plotting order)
-    variables = [...]  # e.g., ['T200','T500','T850',...]
-    colors = [...]  # same length; color[i] corresponds to variables[i]
+    colors = [bc.patches[0].get_facecolor() for bc in bar_containers]
 
     # --- sort alphabetically (case‑insensitive) ---
-    sorted_pairs = sorted(zip(variables, colors), key=lambda t: t[0].lower())
+    sorted_pairs = sorted(zip(variable_names, colors), key=lambda t: t[0].lower())
     variables_s, colors_s = zip(*sorted_pairs)  # tuples
 
     # escape underscores if usetex
