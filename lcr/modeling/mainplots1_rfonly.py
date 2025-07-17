@@ -5,7 +5,6 @@ import argparse
 import json
 import os
 import pandas as pd
-import numpy as np
 import math
 import matplotlib as mpl
 import matplotlib.patches as mpatches
@@ -170,135 +169,160 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     """
     Create a grouped bar plot for feature importances across all variables.
 
-    Parameters:
-        features (list): List of feature names.
-        all_importances (list of lists): 2D list where each inner list contains feature importances for a variable.
-        variable_names (list): List of variable names corresponding to all_importances.
-        filename (str): Path to save the plot.
+    Parameters
+    ----------
+    features : list[str]
+        Feature (x-axis) names (length = n_features).
+    all_importances : list[list[float] or 2D array-like]
+        Outer length = n_variables; each inner seq length must equal len(features).
+    variable_names : list[str]
+        Names of the variables corresponding to rows in all_importances.
+    filename : str
+        Path to save the plot (extension dictates format, e.g., .png, .pdf).
     """
+    import math
+    import numpy as np
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+
+    # ------------------------------------------------------------------
+    # Basic validation
+    # ------------------------------------------------------------------
     if not all_importances or not features:
         print("No data for feature importance plot.")
         return
 
-    #print features
-    print(features)
-    print(variable_names)
-    print(all_importances)
-
-
-    # Number of features and variables
     n_features = len(features)
     n_variables = len(all_importances)
 
-    # X-axis positions
-    x = np.arange(n_features)  # Positions for features
-    bar_width = 0.8 / n_variables  # Width of each bar, distributed evenly
+    if len(variable_names) != n_variables:
+        raise ValueError(
+            f"variable_names length ({len(variable_names)}) "
+            f"!= all_importances length ({n_variables})"
+        )
 
+    # ensure each importance row matches feature count
+    for i, imp in enumerate(all_importances):
+        if len(imp) != n_features:
+            raise ValueError(
+                f"Row {i} ('{variable_names[i]}') len={len(imp)} "
+                f"!= n_features ({n_features})"
+            )
 
-    # Create the plot
+    # ------------------------------------------------------------------
+    # Sort variables alphabetically (case-insensitive) BEFORE plotting
+    # ------------------------------------------------------------------
+    order = sorted(range(n_variables), key=lambda i: variable_names[i].lower())
+    variables_plot = [variable_names[i] for i in order]
+    importances_plot = [all_importances[i] for i in order]
+
+    # ------------------------------------------------------------------
+    # X positions
+    # ------------------------------------------------------------------
+    x = np.arange(n_features)
+    bar_width = 0.8 / n_variables  # 80% of unit width shared across groups
+
+    # ------------------------------------------------------------------
+    # Figure / axes
+    # widen figure slightly for many features
+    fig_width = max(8, min(24, 0.35 * n_features))  # heuristic
+    fig, ax = plt.subplots(figsize=(fig_width, 8))
     plt.rcParams.update({'font.size': 16})
 
-    fig, ax = plt.subplots(figsize=(15, 8))
+    # ------------------------------------------------------------------
+    # Colors (qualitative colormap; repeat if > colormap capacity)
+    # ------------------------------------------------------------------
+    cmap = plt.get_cmap('tab20')
+    colors_plot = [cmap(i % cmap.N) for i in range(n_variables)]
 
-    # ------------------------------------------
-    # PREP: sort variables & colors together
-    # ------------------------------------------
-    # variable_names: list[str]  (unsorted)
-    # importances: dict[var] -> 1D array-like of len == n_features
-    # colors: list of colors same length as variable_names (if you generated them; else None)
-
-    order = sorted(range(len(variable_names)),
-                   key=lambda i: variable_names[i].lower())
-
-    variables_plot = [variable_names[i] for i in order]
-
-    if colors is not None:
-        colors_plot = [colors[i] for i in order]
-    else:
-        colors_plot = None  # we'll let Matplotlib cycle
-
-    # optionally: build a 2D matrix in sorted order if that’s easier
-    # (n_vars, n_features)
-    # importances_mat = np.vstack([np.asarray(importances[v]) for v in variables_plot])
-
-    # ------------------------------------------
-    # PLOT grouped bars in sorted order
-    # ------------------------------------------
-    n_variables = len(variables_plot)
+    # ------------------------------------------------------------------
+    # Plot grouped bars (sorted order)
+    # ------------------------------------------------------------------
     bar_containers = []
-
-    for i, var in enumerate(variables_plot):
-        yvals = importances[var]
-
-        kwargs = {}
-        if colors_plot is not None:
-            kwargs["color"] = colors_plot[i]
-
+    for i, (var, imp) in enumerate(zip(variables_plot, importances_plot)):
         bc = ax.bar(
             x + i * bar_width,
-            yvals,
+            imp,
             bar_width,
-            label="_nolegend_",  # suppress auto legend
-            **kwargs
+            color=colors_plot[i],
+            label="_nolegend_"  # suppress auto legend
         )
         bar_containers.append(bc)
 
-    # ------------------------------------------
-    # X axis
-    # ------------------------------------------
-    ax.set_xlabel("Features", labelpad=18)
+    # ------------------------------------------------------------------
+    # Axis labels & ticks
+    # ------------------------------------------------------------------
     ax.set_ylabel("Importance")
     ax.set_title("Feature Importances Across Variables")
+
+    # x ticks centered on each feature group
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
-    ax.set_xticklabels(features, rotation=45, ha='right', fontsize=8)
-    ax.tick_params(axis='x', which='major', pad=2)
 
-    # ------------------------------------------
-    # EXTRACT colors if we let MPL pick them
-    # ------------------------------------------
-    if colors_plot is None:
-        colors_plot = [bc.patches[0].get_facecolor() for bc in bar_containers]
+    # smaller font; rotate for space
+    ax.set_xticklabels(features, rotation=25, ha='right', fontsize=10)
 
-    # ------------------------------------------
-    # Legend (variables_plot already alphabetical)
-    # ------------------------------------------
-    import matplotlib as mpl
-    import matplotlib.patches as mpatches
-    import numpy as np
+    # push x-axis label away from ticks (adjust below in spacing knobs)
+    # we'll set label after spacing knobs so we can change labelpad
+    # (Matplotlib doesn't overwrite labelpad if unchanged, but order is clear)
 
+    # ------------------------------------------------------------------
+    # Legend (variables_plot already sorted)
+    # ------------------------------------------------------------------
+    # escape underscores when usetex is on
     if mpl.rcParams.get("text.usetex", False):
-        legend_labels = [v.replace("_", r"\_") for v in variables_plot]
+        legend_labels = [v.replace('_', r'\_') for v in variables_plot]
     else:
         legend_labels = variables_plot
 
-    legend_handles = [mpatches.Patch(color=c, label=l)
-                      for c, l in zip(colors_plot, legend_labels)]
+    legend_handles = [
+        mpatches.Patch(color=c, label=lbl)
+        for c, lbl in zip(colors_plot, legend_labels)
+    ]
 
+    # wrap legend across multiple columns (aim ≤ 4 rows)
     max_rows = 4
-    ncol = int(np.ceil(len(legend_handles) / max_rows))
+    ncol = int(math.ceil(len(legend_handles) / max_rows))
 
-    fig = ax.figure
-    LEGEND_PAD = 0.04  # move legend below axes
-    BOTTOM_PAD = 0.12 + LEGEND_PAD
+    # ------------------------------------------------------------------
+    # Spacing knobs
+    # ------------------------------------------------------------------
+    XTICK_PAD   = 2     # px from axis spine to tick labels
+    XLABEL_PAD  = 25    # pts from tick labels to axis label
+    LEGEND_PAD  = 0.04  # fraction of axes height below axes
+    # bottom margin: base for xticks + legend footprint
+    BOTTOM_PAD  = 0.12 + LEGEND_PAD
 
-    fig.legend(legend_handles,
-               [h.get_label() for h in legend_handles],
-               title="Variables",
-               loc="upper center",
-               bbox_to_anchor=(0.5, -LEGEND_PAD),
-               ncol=ncol,
-               fontsize=7,
-               title_fontsize=8,
-               frameon=False,
-               columnspacing=0.8,
-               handlelength=1.0,
-               handletextpad=0.4)
+    # Apply spacing tweaks
+    ax.tick_params(axis='x', which='major', pad=XTICK_PAD)
+    ax.set_xlabel("Features", labelpad=XLABEL_PAD)
 
+    # Figure-level legend so it spans full width
+    fig.legend(
+        legend_handles,
+        [h.get_label() for h in legend_handles],
+        title="Variables",
+        loc="upper center",
+        bbox_to_anchor=(0.5, -LEGEND_PAD),  # move below axes
+        ncol=ncol,
+        fontsize=7,
+        title_fontsize=8,
+        frameon=False,
+        columnspacing=0.8,
+        handlelength=1.0,
+        handletextpad=0.4,
+    )
+
+    # Reserve space at bottom for ticks + legend
     fig.subplots_adjust(bottom=BOTTOM_PAD)
 
+    # ------------------------------------------------------------------
+    # Save
+    # ------------------------------------------------------------------
     plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
-    plt.close()
+    plt.close(fig)
     print(f"Feature importance comparison plot saved to {filename}")
+
 
 
 def main():
