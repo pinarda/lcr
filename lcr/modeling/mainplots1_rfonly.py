@@ -227,7 +227,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     # Figure / axes
     # widen figure slightly for many features
     fig_width = max(8, min(24, 0.35 * n_features))  # heuristic
-    fig, ax = plt.subplots(figsize=(fig_width, 8))
+    fig, ax = plt.subplots(figsize=(15, 8))
     plt.rcParams.update({'font.size': 16})
 
     # ------------------------------------------------------------------
@@ -260,7 +260,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
 
     # smaller font; rotate for space
-    ax.set_xticklabels(features, rotation=25, ha='right', fontsize=10)
+    ax.set_xticklabels(features, rotation=25, ha='right', fontsize=14)
 
     # push x-axis label away from ticks (adjust below in spacing knobs)
     # we'll set label after spacing knobs so we can change labelpad
@@ -305,8 +305,8 @@ def plot_feature_importances(features, all_importances, variable_names, filename
         loc="upper center",
         bbox_to_anchor=(0.5, -LEGEND_PAD),  # move below axes
         ncol=ncol,
-        fontsize=7,
-        title_fontsize=8,
+        fontsize=10,
+        title_fontsize=12,
         frameon=False,
         columnspacing=0.8,
         handlelength=1.0,
@@ -336,7 +336,7 @@ def main():
     parser.add_argument('-s', '--suffix', type=str, default='.json',
                         help="Suffix for the configuration files (default: .json)")
 
-    # Parse the arguments
+    # Parse the argument
     args = parser.parse_args()
 
     # Store results for plotting
