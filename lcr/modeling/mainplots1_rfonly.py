@@ -243,8 +243,8 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     # --- SPACING KNOBS ------------------------------------------------------
     XTICK_PAD = 2  # pixels between axis line and tick labels (smaller brings ticks up)
     XLABEL_PAD = 18  # points between tick labels and axis label (bigger pushes label down)
-    LEGEND_PAD = 0.10  # figure fraction *below* axes: 0.10 ~= 10% of fig height
-    BOTTOM_PAD = 0.32 + LEGEND_PAD  # final space reserved at bottom
+    LEGEND_PAD = 0.02  # figure fraction *below* axes: 0.10 ~= 10% of fig height
+    BOTTOM_PAD = 0.12 + LEGEND_PAD  # final space reserved at bottom
     # ------------------------------------------------------------------------
 
     # 1) tighten tick labels up toward plot (so they don't collide with legend)
