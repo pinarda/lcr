@@ -288,7 +288,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     # Spacing knobs
     # ------------------------------------------------------------------
     XTICK_PAD   = 2     # px from axis spine to tick labels
-    XLABEL_PAD  = 25    # pts from tick labels to axis label
+    XLABEL_PAD  = 10    # pts from tick labels to axis label
     LEGEND_PAD  = 0.06  # fraction of axes height below axes
     # bottom margin: base for xticks + legend footprint
     BOTTOM_PAD  = 0.12 + LEGEND_PAD
