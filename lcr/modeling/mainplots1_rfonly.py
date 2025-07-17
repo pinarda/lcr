@@ -212,7 +212,7 @@ def plot_feature_importances(features, all_importances, variable_names, filename
     ax.set_ylabel("Importance")
     ax.set_title("Feature Importances Across Variables")
     ax.set_xticks(x + bar_width * (n_variables - 1) / 2)
-    ax.set_xticklabels(features, rotation=45, ha='right')
+    ax.set_xticklabels(features, rotation=45, ha='right', fontsize=10)
 
     import math
     import matplotlib as mpl
