@@ -161,7 +161,7 @@ def plot_f1_scores(var_list, rf_scores, metric_name, filename):
     handles, labels = ax.get_legend_handles_labels()
 
     max_rows = 4  # change if you want fewer/taller rows
-    ncol = math.ceil(len(labels) / max_rows)
+    ncol = 4
 
     ax.legend(handles, labels,
               title="Variables",
