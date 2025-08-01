@@ -551,9 +551,13 @@ def main():
         # --- Random Forest ---
         print("Training Random Forest...")
         rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
-        rf_model.fit(train_data_np, train_labels_np)
 
-        # Directory to save tree plots
+        start_time_t = pd.Timestamp.now()
+        rf_model.fit(train_data_np, train_labels_np)
+        end_time_t = pd.Timestamp.now()
+        logging.info(f"Time taken for Random Forest training: {end_time_t - start_time_t}")
+
+    # Directory to save tree plots
         # output_dir = "decision_tree_plots"
         # os.makedirs(output_dir, exist_ok=True)
 
@@ -578,7 +582,13 @@ def main():
         print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
 
         # Evaluate on test data
+
+        start_time_f = pd.Timestamp.now()
         test_predictions_rf = rf_model.predict(test_data_np)
+
+        end_time_f = pd.Timestamp.now()
+        logging.info(f"Time taken for Random Forest training: {end_time_f - start_time_f}")
+
         test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
         print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
         #h
@@ -602,7 +612,7 @@ def main():
         np.save(f"{storageloc}/feature_importances_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy",
                 rf_feature_importances)
 
-        # Save Random Forest predictions and metrics
+        # Save Raxndom Forest predictions and metrics
         np.save(f"{storageloc}/test_predictions_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions_rf)
         np.save(f"{storageloc}/classification_report_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", cr_rf)
 
