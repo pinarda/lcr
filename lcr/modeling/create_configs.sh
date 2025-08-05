@@ -57,7 +57,6 @@ var_list=(
   '["FLNS"]'
   '["FLNSC"]'
   '["FSNS"]'
-  '["FSNSC"]'
   '["PRECL"]'
   '["PRECSC"]'
   '["QBOT"]'
@@ -114,7 +113,7 @@ for ((i=0; i<${#var_list[@]}; i++)); do
     rotated_var_list_json="[$rotated_var_list_json]"
 
     # Generate a new filename for this rotation
-    output_file="$output_dir/rotated_config_$((i+48)).json"
+    output_file="$output_dir/rotated_config_$((i+1)).json"
 
     # Replace VarList in the JSON file
     jq --argjson new_var_list "$rotated_var_list_json" '.VarList = $new_var_list' "$original_file" > "$output_file"
