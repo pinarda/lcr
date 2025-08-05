@@ -587,7 +587,7 @@ def main():
         test_predictions_rf = rf_model.predict(test_data_np)
 
         end_time_f = pd.Timestamp.now()
-        logging.info(f"Time taken for Random Forest training: {end_time_f - start_time_f}")
+        logging.info(f"Time taken for Random Forest testing: {end_time_f - start_time_f}")
 
         test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
         print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
