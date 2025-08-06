@@ -124,6 +124,43 @@ def plot_f1_scores(var_list, cnn_scores, rf_scores, metric_name, filename):
     print(f"{metric_name} F1 score plot saved to {filename}")
 
 
+def plot_f1_scores_alpha(var_list, cnn_scores, rf_scores, metric_name, filename):
+    """Create a bar plot for F1 scores, with variables shown alphabetically."""
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # ── sort everything by variable name ──────────────────────────────
+    # zip → sort by the variable string (case-insensitive) → unzip
+    sorted_rows = sorted(zip(var_list, cnn_scores, rf_scores),
+                         key=lambda t: t[0].lower())
+    var_sorted, cnn_sorted, rf_sorted = map(list, zip(*sorted_rows))
+
+    # ── plotting ─────────────────────────────────────────────────────
+    x         = np.arange(len(var_sorted))
+    bar_width = 0.35
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    ax.bar(x - bar_width/2, cnn_sorted, bar_width,
+           label="CNN F1 Score", color="#e18683", edgecolor="black")
+    ax.bar(x + bar_width/2, rf_sorted,  bar_width,
+           label="RF F1 Score",  color="#B6D7E4", edgecolor="black")
+
+    ax.set_xlabel("Variables")
+    ax.set_ylabel(f"{metric_name} F1 Score")
+    ax.set_title(f"{metric_name} F1 Score Comparison for CNN and RF Models")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(var_sorted, rotation=45, ha='right', fontsize=8)
+
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+    print(f"{metric_name} F1 score plot saved to {filename}")
+
+
+
 def plot_feature_importances(features, all_importances, variable_names, filename):
     """
     Create a grouped bar plot for feature importances across all variables.
@@ -265,10 +302,10 @@ def main():
     print(f"LaTeX table saved to {latex_file_path}")
 
     # Plot Weighted F1 Scores
-    plot_f1_scores(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
+    plot_f1_scores_alpha(var_list, f1_weighted_cnn, f1_weighted_rf, "Weighted", "data/f1_score_comparison_weighted.png")
 
     # Plot Macro F1 Scores
-    plot_f1_scores(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
+    plot_f1_scores_alpha(var_list, f1_macro_cnn, f1_macro_rf, "Macro", "data/f1_score_comparison_macro.png")
 
     # Plot Feature Importances for all variables
     if all_importances and feature_names:
