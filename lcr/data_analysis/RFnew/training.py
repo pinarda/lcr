@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 import sklearn
 from math import floor
 from classification_labels import classify
-os.environ["HDF5_PLUGIN_PATH"]
+# os.environ["HDF5_PLUGIN_PATH"]
 #
 
 import dask
@@ -77,13 +77,18 @@ def split_data(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int, tes
     elif testset == "1var":
         # leave out a single variable for testing, and use the rest for training and validation
         test_data = dataset[0:(num_windows * time)]
-        test_labels = label[0:(num_windows * time)]
+        if label is not None:
+            test_labels = label[0:(num_windows * time)]
 
         # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
-        train_data, val_data, train_labels, val_labels = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
-                                                                          label[
-                                                                          (num_windows * time):(num_windows * time * nvar)],
-                                                                          test_size=0.1)
+        if label is not None:
+            train_data, val_data, train_labels, val_labels = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
+                                                                              label[
+                                                                              (num_windows * time):(num_windows * time * nvar)],
+                                                                              test_size=0.1)
+        else:
+            train_data, val_data = train_test_split(dataset[(num_windows * time):(num_windows * time * nvar)],
+                                                                              test_size=0.1)
 
         # Alternatively, use the last variable(s) for validation
         # val_data = dataset[(50596*time*(nvar-1)):(50596*time*nvar)]
@@ -478,13 +483,18 @@ def train_cnn(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar, stor
             for type in ["train", "test"]:
                 if type == "test":
                     test_data_xr = convert_np_to_xr(test_data)
+                    # squeeze the data
+                    test_data_xr = test_data_xr.squeeze()
                     dc = ldcpy.Datasetcalcs(test_data_xr.to_array(), test_data_xr.data_type, ["latitude", "longitude"], weighted=False)
                 elif type == "train":
                     train_data_xr = convert_np_to_xr(train_data)
+                    # squeeze the data
+                    train_data_xr = train_data_xr.squeeze()
                     dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, ["latitude", "longitude"], weighted=False)
                 if feature in ["ns_con_var", "ew_con_var", "w_e_first_differences", "n_s_first_differences", "fftratio", "fftmax", 'w_e_first_differences_max', 'n_s_first_differences_max', 'mean']:
                     ns = dc.get_calc(feature)
                 else:
+
                     dc = ldcpy.Datasetcalcs(train_data_xr.to_array(), train_data_xr.data_type, [], weighted=False)
                     ns = dc.get_single_calc(feature)
                 npns = ns.to_numpy()
