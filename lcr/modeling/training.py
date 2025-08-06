@@ -717,14 +717,14 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     # else:
         # First, convert the train_data to a NumPy array with shape (samples, lat, lon, variables)
     if modeltype == "cnn":
-        # train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon')
-        # val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon')
-        # test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
-        train_data_np = train_data
-        val_data_np = val_data
-        test_data_np = test_data['combined'] \
-                .transpose('sample', 'lat', 'lon') \
-                .values  # ndarray (N_test, H, W)
+        train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon')
+        val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon')
+        test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
+        # train_data_np = train_data
+        # val_data_np = val_data
+        # test_data_np = test_data['combined'] \
+        #         .transpose('sample', 'lat', 'lon') \
+        #         .values  # ndarray (N_test, H, W)
     else:
         train_data_np = train_data
         val_data_np = val_data
