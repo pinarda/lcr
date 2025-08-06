@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time as tm
+import csv
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -264,6 +265,7 @@ def main():
 
     metrics_data = {varname: {m: {} for m in metric} for varname in flat_var_list}  # Separate metrics_data for each variable
 
+    start_time = pd.Timestamp.now()
     for varname in flat_var_list:
         logging.info(f"Computing metrics for variable: {varname}")
 
@@ -370,7 +372,22 @@ def main():
                 elapsed = tm.perf_counter() - start
                 with open("timings.txt", "a") as f:
                     f.write(f"Compute metric {m} for {comp_label} {flat_var_list} time: {elapsed:.3f} s\n")
+    end_time = pd.Timestamp.now()
+    logging.info(f"Time taken for metric computation: {end_time - start_time}")
 
+    activity = "Metric computation"
+    elapsed = end_time - start_time  # seconds (float)
+
+    row = [var_list[0], elapsed, activity]
+    fname = "timings_single.csv"
+
+    # append the row, writing a header the first time the file is created
+    write_header = not os.path.isfile(fname)
+    with open(fname, "a", newline="") as f:
+        writer = csv.writer(f)
+        if write_header:
+            writer.writerow(["var", "time", "activity"])
+        writer.writerow(row)
 
 
     # Combine metrics data from 'ens1' and 'ens2' under each compression level
@@ -410,6 +427,7 @@ def main():
     final_comparison_labels_dict = {}
     final_labels_dict = {}
 
+    start_time = pd.Timestamp.now()
     for varname in flat_var_list:
         metrics_data_var = metrics_data_combined[varname]
         # here
@@ -424,6 +442,22 @@ def main():
         final_comparison_labels, final_labels = generate_classification_labels(metrics_info, metrics_data_var, comparison_list)
         final_comparison_labels_dict[varname] = final_comparison_labels
         final_labels_dict[varname] = final_labels
+    end_time = pd.Timestamp.now()
+    logging.info(f"Time taken for label generation: {end_time - start_time}")
+
+    activity = "Label generation"
+    elapsed = end_time - start_time  # seconds (float)
+
+    row = [var_list[0], elapsed, activity]
+    fname = "timings_single.csv"
+
+    # append the row, writing a header the first time the file is created
+    write_header = not os.path.isfile(fname)
+    with open(fname, "a", newline="") as f:
+        writer = csv.writer(f)
+        if write_header:
+            writer.writerow(["var", "time", "activity"])
+        writer.writerow(row)
 
     logging.info("Classification labels generated successfully for all variables.")
 
@@ -496,12 +530,10 @@ def main():
     storageloc = storage_loc
     time = times[0]
 
-    # get time here and log it with a description
-    end_time = pd.Timestamp.now()
-    logging.info(f"Time taken for data preparation: {end_time - start_time}")
 
     if modeltype == 'rf':
         # Feature computation and data loading
+        start_time = pd.Timestamp.now()
         features_np = compute_features(dataset_xr, featurelist, storage_loc, "all_big_combined",
                                        orig_label, "all", times)
         # features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
@@ -512,6 +544,20 @@ def main():
         # also get time here and log it with a description
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for feature computation: {end_time - start_time}")
+
+        activity = "feature computation"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
 
 
         # Prepare data
@@ -550,8 +596,27 @@ def main():
 
         # --- Random Forest ---
         print("Training Random Forest...")
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
+        start_time=pd.Timestamp.now()
+
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=100)
         rf_model.fit(train_data_np, train_labels_np)
+
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for RF Training: {end_time - start_time}")
+
+        activity = "RF Training"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
 
         # Directory to save tree plots
         # output_dir = "decision_tree_plots"
@@ -573,9 +638,27 @@ def main():
         print("All decision tree plots have been saved.")
 
         # Evaluate on validation data
+        start_time = pd.Timestamp.now()
         val_predictions_rf = rf_model.predict(val_data_np)
         val_accuracy_rf = accuracy_score(val_labels_np, val_predictions_rf)
         print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
+
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for RF Prediction: {end_time - start_time}")
+
+        activity = "RF Prediction"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
 
         # Evaluate on test data
         test_predictions_rf = rf_model.predict(test_data_np)
@@ -670,10 +753,26 @@ def main():
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for Random Forest and Decision Tree training: {end_time - start_time}")
 
+        activity = "Random Forest and Decision Tree training"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
+
     else:
         # log time and start the process
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for data preparation: {end_time - start_time}")
+
+
 
         logging.info(f"dataset length: {len(dataset_xr)}")
         logging.info(f"labels length: {len(combined_labels)}")
@@ -798,6 +897,20 @@ def main():
         # save the label encoder classes
         np.save(f"{storageloc}/label_encoder_{j}{time}{modeltype}{jobid}_{var_list[0]}.pkl", label_encoder.classes_)
         logging.info(f"Time taken for CNN training: {end_time - start_time}")
+
+        activity = "CNN training"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
 
 
     # make a plot of the confusion matrix where the height is the sum of the row, and the diagonal element in the row is shaded in a different color
