@@ -827,6 +827,9 @@ def train_cnn(
     np.random.seed(42)
     tf.random.set_seed(42)
 
+    all_labels = np.concatenate([train_labels_np, test_labels_np])
+    num_classes = len(np.unique(all_labels))
+
 
     if modeltype == "cnn":
         # Update input_shape
@@ -846,7 +849,7 @@ def train_cnn(
         x = tf.keras.layers.Dropout(dropout)(x)
         x = tf.keras.layers.Dense(64, activation="relu")(x)
         # softmax for multi-class classification, (number of classes will be the number of unique training validation labels)
-        outputs = tf.keras.layers.Dense(len(np.unique(train_labels_np)), activation="softmax")(x)
+        outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
 
         model = tf.keras.Model(inputs=i, outputs=outputs)
         # Compile the model for classification
