@@ -843,6 +843,7 @@ def main():
 
 
         # Call the function to train the model
+        start_time = pd.Timestamp.now()
         start = tm.perf_counter()
         model = train_cnn(
             train_data_np,
@@ -860,12 +861,40 @@ def main():
 
         # log time and start the process
         end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for CNN Training: {end_time - start_time}")
 
-        start = tm.perf_counter()
+        activity = "CNN Training"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
+
+        start_time = pd.Timestamp.now()
         accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
-        elapsed = tm.perf_counter() - start
-        with open("timings.txt", "a") as f:
-            f.write(f"Test cnn {flat_var_list} time: {elapsed:.3f} s\n")
+        end_time = pd.Timestamp.now()
+        logging.info(f"Time taken for CNN Prediction: {end_time - start_time}")
+
+        activity = "CNN Prediction"
+        elapsed = end_time - start_time  # seconds (float)
+
+        row = [var_list[0], elapsed, activity]
+        fname = "timings_single.csv"
+
+        # append the row, writing a header the first time the file is created
+        write_header = not os.path.isfile(fname)
+        with open(fname, "a", newline="") as f:
+            writer = csv.writer(f)
+            if write_header:
+                writer.writerow(["var", "time", "activity"])
+            writer.writerow(row)
 
         # save the test predictions
         np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)
