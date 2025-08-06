@@ -20,12 +20,12 @@ def labeling():
     ]
 
     variables_order = [
-        "TREFHTMX", "TS", "LHFLX", "PRECSL", "PRECT", "PSL", "Q200", "Q500", "Q850",
-        "SHFLX", "T200", "T500", "T850", "TAUX", "TAUY", "U010", "FLNS", "FLNSC",
-        "FSNS", "FSNSC", "PRECL", "PRECSC", "QBOT", "T010", "TMQ", "TREFHT",
-        "TREFHTMN", "U200", "U500", "U850", "UBOT", "V200", "V500", "V850", "VBOT",
-        "WSPDSRFAV", "Z050", "Z500", "bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF",
-        "pom_a1_SRF", "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF"
+        "FLNS", "FLNSC", "FSNS", "FSNSC", "LHFLX", "PRECL", "PRECSC", "PRECSL", "PRECT",
+        "PSL", "Q200", "Q500", "Q850", "QBOT", "SHFLX", "T010", "T200", "T500", "T850",
+        "TAUX", "TAUY", "TMQ", "TREFHT", "TREFHTMN", "TREFHTMX", "TS", "U010", "U200",
+        "U500", "U850", "UBOT", "V200", "V500", "V850", "VBOT", "WSPDSRFAV", "Z050",
+        "Z500", "bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "pom_a1_SRF", "so4_a1_SRF",
+        "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF"
     ]
 
     # Define the variable names in the desired order
@@ -33,7 +33,7 @@ def labeling():
     #                    'SHFLX', 'T200', 'T500', 'T850', 'TAUX', 'TAUY', 'TREFHTMX', 'TS', 'U010']
 
     # Assume there are 100 timesteps for each variable
-    timesteps_per_variable = 100
+    timesteps_per_variable = 1600
 
     # Repeat each variable name for each timestep
     new_sample_coord = np.repeat(variables_order, timesteps_per_variable)

@@ -38,7 +38,6 @@ original_file="config_casper_test.json" # Original JSON file
 #)
 
 var_list=(
-  '["TREFHTMX"]'
   '["TS"]'
   '["LHFLX"]'
   '["PRECSL"]'
@@ -57,7 +56,6 @@ var_list=(
   '["FLNS"]'
   '["FLNSC"]'
   '["FSNS"]'
-  '["FSNSC"]'
   '["PRECL"]'
   '["PRECSC"]'
   '["QBOT"]'
@@ -85,6 +83,7 @@ var_list=(
   '["so4_a3_SRF"]'
   '["soa_a1_SRF"]'
   '["soa_a2_SRF"]'
+  '["TREFHTMX"]'
 )
 
 #  var_list = [
