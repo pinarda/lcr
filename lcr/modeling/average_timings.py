@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 
-def average_time(csv_path: Path, activity_query: str) -> float | None:
+def average_time(csv_path: Path, activity_query: str):
     """Return mean of `time` where `activity` matches activity_query, ignoring case & whitespace."""
     times = []
     with csv_path.open(newline="") as f:
