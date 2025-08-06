@@ -4,7 +4,7 @@
 config_dir="." # Change this if your config files are in a different directory
 
 # Loop over each config file in the specified directory
-for config_file in "$config_dir"/multi_config_*.json; do
+for config_file in "$config_dir"/rotated_config_*.json; do
     # Extract the config file name without extension for the job script name
     config_name=$(basename "$config_file" .json)
     job_script="${config_name}.sh"
