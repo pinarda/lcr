@@ -822,7 +822,7 @@ def main():
         logging.info(f"Time taken for data preparation: {end_time - start_time}")
         train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
         val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy")
-        test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
+        test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
         test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy")
