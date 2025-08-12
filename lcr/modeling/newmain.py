@@ -22,6 +22,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time as tm
 import csv
+import random
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -598,6 +599,7 @@ def main():
         print("Training Random Forest...")
         start_time=pd.Timestamp.now()
 
+        random.seed(1)
         rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=100)
         rf_model.fit(train_data_np, train_labels_np)
 
@@ -694,6 +696,8 @@ def main():
         rf_confusion_df.to_csv(f"{storageloc}/confusion_matrix_rf_{j}{time}{modeltype}{jobid}_{var_list[0]}.csv")
 
         # --- Decision Tree ---
+
+        random.seed(1)
         print("Training Decision Tree...")
         dt_model = DecisionTreeClassifier(max_depth=10, random_state=11, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)

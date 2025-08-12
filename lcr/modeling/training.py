@@ -7,6 +7,7 @@ import tensorflow as tf
 from sklearn.preprocessing import quantile_transform, LabelEncoder
 from sklearn.model_selection import train_test_split
 import sklearn
+import random
 from math import floor
 from classification_labels import classify
 # os.environ["HDF5_PLUGIN_PATH"]
@@ -110,6 +111,8 @@ def split_data(
         total_samples = len(dataset)
 
     if testset == '1var':
+
+        random.seed(1)
         # Calculate the number of samples per variable
         samples_per_var = total_samples // nvar
 
@@ -154,6 +157,7 @@ def split_data(
             X_train = dataset[train_val_indices]
         y_train = label[train_val_indices]
 
+
         # Further split training and validation sets (e.g., 80% training, 20% validation)
         if modeltype == "cnn":
             X_test, X_val, y_test, y_val = xarray_train_test_split(
@@ -165,6 +169,8 @@ def split_data(
             )
 
     else:
+
+        random.seed(1)
         if modeltype == "cnn":
             # Default random split if testset is not '1var'
             X_train_val, X_test, y_train_val, y_test = xarray_train_test_split(
@@ -260,7 +266,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
     index_50pct = int(total_data_points * 0.5)
 
     # use 90% of the data for training, 9% for validation, and 1% for testing
+
+    random.seed(1)
     if testset == "random":
+
         train_data, test_data, train_labels, test_labels = train_test_split(dataset[0:(num_windows * time * nvar)],
                                                                             label, test_size=0.5)
         val_data, test_data, val_labels, test_labels = train_test_split(test_data, test_labels, test_size=0.5)
@@ -396,6 +405,8 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
 
 
     elif testset == "10_90_wholeslice":
+
+        random.seed(1)
         if modeltype == 'rf':
             logging.info(f"getting 10% train, 90% test")
             # Calculate the number of time slices in the last 90% of the data (rounding down)
@@ -681,6 +692,8 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
         # newlabels = np.array(newlabels)
     if not only_data:
         newlabels = np.array(integer_encoded_labels)
+
+        random.seed(1)
         train_data, train_labels, val_data, val_labels, test_data, test_labels = split_data_old(dataset, newlabels,
                                                                                             time, nvar, testset,
                                                                                                 LATS, LONS, cut_windows,
@@ -690,6 +703,8 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
                                                                                                 modeltype=modeltype,
                                                                                                 jobid=jobid, j=j, vars=vars)
     else:
+
+        random.seed(1)
         train_data, val_data, test_data = split_data_old(dataset, None, time, nvar, testset, LATS, LONS, cut_windows, encoder=None, storageloc=storageloc, metric=metric, modeltype=modeltype, jobid=jobid, j=j, vars=vars)
 
 
@@ -864,6 +879,9 @@ def train_cnn(
         # Train the model
         num_epochs = 5  # Adjust as needed
         batch_size = 32  # Adjust as needed
+
+
+        random.seed(1)
 
         model.fit(
             train_data_np,
