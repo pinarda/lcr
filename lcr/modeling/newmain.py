@@ -824,11 +824,18 @@ def main():
         #log time and start the process
         end_time = pd.Timestamp.now()
         logging.info(f"Time taken for data preparation: {end_time - start_time}")
-        # train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
-        train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy")
-        val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy")
-        # test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
-        test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy")
+        try:
+            train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=False)
+        except Exception as e:
+            train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+        try:
+            val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+        except Exception as e:
+            val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+        try:
+            test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+        except Exception as e:
+            test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
         val_labels_np = np.load(f"{storageloc}/val_labels_{j}{time}{modeltype}{jobid}.npy")
         test_labels_np = np.load(f"{storageloc}/test_labels_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy")
