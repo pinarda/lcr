@@ -70,6 +70,8 @@ def process_config(config_file):
     f1_weighted_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='weighted')
     f1_macro_rf = f1_score(test_labels_np_rf, test_predictions_rf, average='macro')
 
+    print(f"CNN: {f1_macro_cnn} RF: {f1_macro_rf},  F1 score plot for {var_list[0]}")
+
     # Load feature importances for RF
     feature_importance_file = f"{storageloc}/feature_importances_rf_02000rf0_{variable_file}.npy"
     if os.path.exists(feature_importance_file):
