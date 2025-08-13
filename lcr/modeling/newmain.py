@@ -600,7 +600,7 @@ def main():
         start_time=pd.Timestamp.now()
 
         random.seed(1)
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=100)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=11, min_samples_leaf=5)
         rf_model.fit(train_data_np, train_labels_np)
 
         end_time = pd.Timestamp.now()
