@@ -49,6 +49,7 @@ def process_config(config_file):
             f"{storageloc}/test_labels_02000rf0_{variable_file}.npy",
             f"{storageloc}/test_labels_12000rf0_{variable_file}.npy",
             f"{storageloc}/test_labels_22000rf0_{variable_file}.npy",
+            f"{storageloc}/test_labels_32000rf0_{variable_file}.npy",
         ],
         allow_pickle=True
     )
@@ -60,6 +61,7 @@ def process_config(config_file):
             f"{storageloc}/test_predictions_rf_02000rf0_{variable_file}.npy",
             f"{storageloc}/test_predictions_rf_12000rf0_{variable_file}.npy",
             f"{storageloc}/test_predictions_rf_22000rf0_{variable_file}.npy",
+            f"{storageloc}/test_predictions_rf_32000rf0_{variable_file}.npy",
         ],
         allow_pickle=True
     )
