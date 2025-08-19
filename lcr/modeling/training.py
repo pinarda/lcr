@@ -839,8 +839,8 @@ def train_cnn(
     dropout = 0.5
     conv_layers = 2
     # set the random seed
-    np.random.seed(42)
-    tf.random.set_seed(42)
+    np.random.seed(1)
+    tf.random.set_seed(1)
 
     all_labels = np.concatenate([train_labels_np, test_labels_np])
     num_classes = len(np.unique(all_labels))
