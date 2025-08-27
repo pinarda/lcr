@@ -829,11 +829,11 @@ def main():
         except Exception as e:
             train_data_np = np.load(f"{storageloc}/train_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
         try:
-            val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+            val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=False)
         except Exception as e:
             val_data_np = np.load(f"{storageloc}/val_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
         try:
-            test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
+            test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=False)
         except Exception as e:
             test_data_np = np.load(f"{storageloc}/test_data_{j}{time}{modeltype}{jobid}.npy", allow_pickle=True)
         train_labels_np = np.load(f"{storageloc}/train_labels_{j}{time}{modeltype}{jobid}.npy")
