@@ -4,7 +4,7 @@
 config_dir="." # Change this if your config files are in a different directory
 
 # Specify the single config file to process
-config_file="$config_dir/rotated_config_30.json"
+config_file="$config_dir/rotated_config_33.json"
 
 # Check if the specified config file exists
 if [ -f "$config_file" ]; then
