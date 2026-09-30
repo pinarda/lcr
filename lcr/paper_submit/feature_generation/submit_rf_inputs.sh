@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-cd /glade/derecho/scratch/apinard/lcr/lcr/modeling
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 
 for variable_index in $(seq 1 47); do
     previous_job=$(qsub \
