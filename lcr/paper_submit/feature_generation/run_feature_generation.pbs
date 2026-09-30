@@ -19,12 +19,14 @@ cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 
 mkdir -p data
 
+if (! $?TIMESTEPS) setenv TIMESTEPS 2000
+
 python feature_generation/generate_features.py \
     --config multi_config_48.json \
     --quality-config rotated_config_48.json \
     --quality-config multi_config_48.json \
     --mode features \
     --variable-index $VARIABLE_INDEX \
-    --timesteps 2000 \
+    --timesteps $TIMESTEPS \
     --workers 16 \
     --output-dir ./data

@@ -12,13 +12,15 @@ conda activate my-npl-2023a
 
 cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 
+if (! $?TIMESTEPS) setenv TIMESTEPS 2000
+
 python feature_generation/generate_features.py \
     --config multi_config_48.json \
     --quality-config rotated_config_48.json \
     --quality-config multi_config_48.json \
     --mode combine \
     --variable-index $VARIABLE_INDEX \
-    --timesteps 2000 \
+    --timesteps $TIMESTEPS \
     --output-dir ./data \
-    --combined-output-dir ./data/rf_inputs_time2000 \
+    --combined-output-dir ./data/rf_inputs_time${TIMESTEPS} \
     --overwrite
