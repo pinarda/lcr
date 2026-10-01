@@ -2,7 +2,7 @@
 #PBS -N rf_features_2000
 #PBS -A NTDD0005
 #PBS -l select=1:ncpus=128:mem=235GB
-#PBS -l walltime=12:00:00
+#PBS -l walltime=02:00:00
 #PBS -q main@desched1
 #PBS -j oe
 

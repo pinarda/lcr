@@ -796,19 +796,21 @@ def main():
                     compression,
                     args.workers,
                 )
-                run_metric_workers(
-                    original_path,
-                    compressed_path,
-                    variable,
-                    original_label,
-                    compressed_label,
-                    metrics,
-                    args.timesteps,
-                    args.workers,
-                    ldcpy_path,
-                    output_dir,
-                    args.overwrite,
-                )
+                for metric in metrics:
+                    logging.info("Metric checkpoint: %s", metric)
+                    run_metric_workers(
+                        original_path,
+                        compressed_path,
+                        variable,
+                        original_label,
+                        compressed_label,
+                        [metric],
+                        args.timesteps,
+                        args.workers,
+                        ldcpy_path,
+                        output_dir,
+                        args.overwrite,
+                    )
     logging.info("Completed in %.1f seconds", time.perf_counter() - started)
 
 
