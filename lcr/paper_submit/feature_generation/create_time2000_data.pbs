@@ -1,0 +1,32 @@
+#!/bin/bash -l
+#PBS -N create_time2000_data
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=128:mem=235GB
+#PBS -l walltime=02:00:00
+#PBS -q main@desched1
+#PBS -j oe
+
+set -euo pipefail
+
+module load conda
+module load nco
+conda activate my-npl-2023a
+
+export HDF5_PLUGIN_PATH=/glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+timesteps="${TIMESTEPS:-2000}"
+workers="${WORKERS:-4}"
+
+python feature_generation/create_time2000_data.py \
+    --config multi_config_48.json \
+    --quality-config rotated_config_48.json \
+    --quality-config multi_config_48.json \
+    --output-root ./data/source_data_time${timesteps} \
+    --timesteps "${timesteps}" \
+    --workers "${workers}"
