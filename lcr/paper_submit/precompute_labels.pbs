@@ -1,0 +1,18 @@
+#!/bin/tcsh
+#PBS -N precompute_labels
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=1:mem=8GB
+#PBS -l walltime=00:30:00
+#PBS -q develop@desched1
+#PBS -j oe
+
+source /etc/csh.cshrc
+module load conda
+conda activate my-npl-2023a
+
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+python precompute_labels.py \
+    --config-dir . \
+    --metrics-dir ./data/rf_inputs_time2000 \
+    --output-dir ./data/precomputed_labels

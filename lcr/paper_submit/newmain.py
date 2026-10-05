@@ -267,7 +267,26 @@ def main():
     metrics_data = {varname: {m: {} for m in metric} for varname in flat_var_list}  # Separate metrics_data for each variable
 
     start_time = pd.Timestamp.now()
-    for varname in flat_var_list:
+    use_precomputed_labels = os.environ.get('USE_PRECOMPUTED_LABELS', '1') != '0'
+    precomputed_comparison_labels = {}
+    precomputed_metric_labels = {}
+    if use_precomputed_labels:
+        from precomputed_labeling import load_precomputed_labels_for_variables
+
+        precomputed_comparison_labels, precomputed_metric_labels = load_precomputed_labels_for_variables(
+            variables=flat_var_list,
+            timesteps=times[0],
+            sub_dirs=sub_dirs,
+            comp_dirs=comp_dirs,
+            metrics=metric,
+            metrics_info=metrics_info,
+        )
+        # The original metric loop leaves this set to the last original collection.
+        orig_label = f"{sub_dirs[-1]}_orig"
+        logging.info("Loaded precomputed classification labels for all variables.")
+
+    label_variables_to_compute = [] if use_precomputed_labels else flat_var_list
+    for varname in label_variables_to_compute:
         logging.info(f"Computing metrics for variable: {varname}")
 
         dataset_col = opened_datasets[varname]
@@ -376,7 +395,7 @@ def main():
     end_time = pd.Timestamp.now()
     logging.info(f"Time taken for metric computation: {end_time - start_time}")
 
-    activity = "Metric computation"
+    activity = "Precomputed label loading" if use_precomputed_labels else "Metric computation"
     elapsed = end_time - start_time  # seconds (float)
 
     row = [var_list[0], elapsed, activity]
@@ -425,11 +444,11 @@ def main():
                 metrics_data_combined[varname][metric_name][comp_level] = combined_array
 
     # Now use metrics_data_combined[varname] in generate_classification_labels
-    final_comparison_labels_dict = {}
-    final_labels_dict = {}
+    final_comparison_labels_dict = precomputed_comparison_labels
+    final_labels_dict = precomputed_metric_labels
 
     start_time = pd.Timestamp.now()
-    for varname in flat_var_list:
+    for varname in label_variables_to_compute:
         metrics_data_var = metrics_data_combined[varname]
         # here
 
