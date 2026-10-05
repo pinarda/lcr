@@ -56,6 +56,12 @@ def parse_args():
         action="store_true",
         help="Regenerate valid existing caches",
     )
+    parser.add_argument(
+        "--skip-variable",
+        action="append",
+        default=[],
+        help="Variable to omit explicitly; may be repeated",
+    )
     return parser.parse_args()
 
 
@@ -103,10 +109,11 @@ def collect_profiles(paths):
     return list(profiles.values())
 
 
-def write_manifest(output_dir, metrics_dir, profiles):
+def write_manifest(output_dir, metrics_dir, profiles, skipped_variables):
     manifest = {
         "schema_version": 1,
         "metrics_dir": str(metrics_dir),
+        "skipped_variables": skipped_variables,
         "profiles": profiles,
     }
     destination = output_dir / "label_manifest.json"
@@ -133,6 +140,31 @@ def main():
             f"No rotated_config_*.json or multi_config_*.json files in {args.config_dir}"
         )
     profiles = collect_profiles(paths)
+    skipped_variables = list(dict.fromkeys(args.skip_variable))
+    available_variables = {
+        variable
+        for profile in profiles
+        for variable in profile["variables"]
+    }
+    unknown_skips = set(skipped_variables) - available_variables
+    if unknown_skips:
+        raise ValueError(
+            f"Skipped variables are not present in the configs: {sorted(unknown_skips)}"
+        )
+    for profile in profiles:
+        profile["skipped_variables"] = [
+            variable
+            for variable in profile["variables"]
+            if variable in skipped_variables
+        ]
+        profile["variables"] = [
+            variable
+            for variable in profile["variables"]
+            if variable not in skipped_variables
+        ]
+    if skipped_variables:
+        logging.warning("Explicitly skipping variables: %s", skipped_variables)
+
     metrics_dir = args.metrics_dir.resolve()
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -189,12 +221,18 @@ def main():
                 "name": name,
                 "spec": spec,
                 "variables": profile["variables"],
+                "skipped_variables": profile["skipped_variables"],
                 "configs": profile["configs"],
                 "caches": caches,
             }
         )
 
-    write_manifest(output_dir, metrics_dir, manifest_profiles)
+    write_manifest(
+        output_dir,
+        metrics_dir,
+        manifest_profiles,
+        skipped_variables,
+    )
     logging.info(
         "Finished %d label caches across %d unique profiles in %s",
         total,

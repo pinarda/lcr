@@ -15,4 +15,5 @@ cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 python precompute_labels.py \
     --config-dir . \
     --metrics-dir ./data/rf_inputs_time2000 \
-    --output-dir ./data/precomputed_labels
+    --output-dir ./data/precomputed_labels \
+    --skip-variable FSNSC
