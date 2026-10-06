@@ -10,7 +10,8 @@ import numpy as np
 import xarray as xr
 
 
-CACHE_SCHEMA_VERSION = 1
+CACHE_SCHEMA_VERSION = 2
+FALLBACK_LABEL = "uncompressed"
 DEFAULT_METRICS_INFO = {
     "dssim": {"comparison": "gt", "threshold": 0.995},
     "pcc": {"comparison": "gt", "threshold": 0.9995},
@@ -65,6 +66,8 @@ def label_profile_spec(
         "comp_dirs": list(comp_dirs),
         "metrics": list(metrics),
         "rules": rules,
+        "fallback_label": FALLBACK_LABEL,
+        "require_all_metrics_to_pass": True,
         "sample_order": "collection-major,timestep-minor",
     }
 
@@ -259,6 +262,7 @@ def generate_classification_labels(
         raise ValueError("No classification labels could be generated")
 
     combined_final_labels = xr.full_like(first_labels, "None", dtype="object")
+    missing_metric_label = xr.full_like(first_labels, False, dtype=bool)
     for comp_level in compression_level_order[::-1]:
         for label_da in final_labels_dict.values():
             if label_da is None:
@@ -268,9 +272,14 @@ def generate_classification_labels(
                 comp_level,
                 combined_final_labels,
             )
+    for label_da in final_labels_dict.values():
+        if label_da is None:
+            missing_metric_label = xr.full_like(first_labels, True, dtype=bool)
+        else:
+            missing_metric_label = missing_metric_label | (label_da == "None")
     combined_final_labels = xr.where(
-        combined_final_labels == "None",
-        compression_level_order[-1],
+        (combined_final_labels == "None") | missing_metric_label,
+        FALLBACK_LABEL,
         combined_final_labels,
     )
     return combined_final_labels, final_labels_dict
@@ -351,7 +360,8 @@ def load_label_cache(path, variable, spec, expected_source=None):
         raise ValueError(
             f"{path} has {final_array.size} final labels; expected {expected_length}"
         )
-    invalid_final = set(final_array) - set(spec["comp_dirs"])
+    allowed_final_labels = set(spec["comp_dirs"]) | {spec["fallback_label"]}
+    invalid_final = set(final_array) - allowed_final_labels
     if invalid_final:
         raise ValueError(f"Unexpected final labels in {path}: {sorted(invalid_final)}")
     allowed_metric_labels = set(spec["comp_dirs"]) | {"None"}

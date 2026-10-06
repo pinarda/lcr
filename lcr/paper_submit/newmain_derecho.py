@@ -146,6 +146,7 @@ def main():
 
         # Create an array to hold the final conservative label for each element
         combined_final_labels = xr.full_like(final_labels_dict[next(iter(final_labels_dict))], "None", dtype="object")
+        missing_metric_label = xr.full_like(combined_final_labels, False, dtype=bool)
 
         for comp_level in compression_level_order[::-1]:
             for metric, label_da in final_labels_dict.items():
@@ -158,10 +159,16 @@ def main():
                     combined_final_labels
                 )
 
-        # Ensure no elements remain labeled as "None", fill them with the most conservative option
+        for metric, label_da in final_labels_dict.items():
+            if label_da is None:
+                missing_metric_label = xr.full_like(combined_final_labels, True, dtype=bool)
+            else:
+                missing_metric_label = missing_metric_label | (label_da == "None")
+
+        # Use the original data when any quality metric has no passing compression.
         combined_final_labels = xr.where(
-            combined_final_labels == "None",
-            compression_level_order[-1],  # Fallback to the most conservative compression level
+            (combined_final_labels == "None") | missing_metric_label,
+            "uncompressed",
             combined_final_labels
         )
 

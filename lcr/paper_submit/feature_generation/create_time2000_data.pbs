@@ -6,11 +6,12 @@
 #PBS -q main@desched1
 #PBS -j oe
 
-set -euo pipefail
+set -eo pipefail
 
 module load conda
 module load nco
 conda activate my-npl-2023a
+set -u
 
 export HDF5_PLUGIN_PATH=/glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 export OMP_NUM_THREADS=1
