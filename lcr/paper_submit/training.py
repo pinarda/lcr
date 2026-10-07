@@ -299,7 +299,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
         # leave out a single variable for testing, and use the rest for training and validation
         # test_data = dataset[0:(num_windows * time)]
         stop = num_windows * time
-        test_data = dataset.isel(sample=slice(0, stop))
+        if modeltype == "cnn":
+            test_data = dataset.isel(sample=slice(0, stop))
+        else:
+            test_data = dataset[0:stop]
 
         if label is not None:
             test_labels = label[0:(num_windows * time)]
@@ -311,8 +314,7 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             # -------------------------------------------------------------------
             start = num_windows * time
             stop = num_windows * time * nvar  # ← sanity-check that this is correct!
-            subset = dataset.isel(sample=slice(start, stop))
-            y_full = label[start:stop]  # 1-D target vector, len == subset.sizes['sample']
+            y_full = label[start:stop]
 
             # -------------------------------------------------------------------
             # 2.  Build the feature array X_full
@@ -320,28 +322,20 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             if modeltype == "cnn":
                 # keep the 2-D spatial structure for the CNN
                 # result shape: (N_samples, lat, lon)
+                subset = dataset.isel(sample=slice(start, stop))
                 X_full = subset['combined'] \
                     .transpose('sample', 'lat', 'lon') \
                     .values  # -> ndarray (N, H, W)
             else:
-                # classic ML: flatten every variable & spatial pixel into one long vector
-                da = subset.to_array()  # dims: ('variable', 'sample', 'lat', 'lon', …)
-                stack_dims = [d for d in da.dims if d != 'sample']
-                flat = da.stack(feature=stack_dims)  # dims: ('feature', 'sample')
-                X_full = flat.transpose('sample', 'feature').values  # ndarray (N, F)
+                X_full = dataset[start:stop]
 
             # -------------------------------------------------------------------
             # 3.  Split once, get NumPy arrays ready for scikit-learn / PyTorch
             # -------------------------------------------------------------------
             train_data, val_data, train_labels, val_labels = train_test_split(
                 X_full, y_full,
-                test_size=0.2,
-                random_state=42,
-                stratify=y_full if y_full.ndim == 1 else None  # keep class balance if classification
+                test_size=0.1
             )
-
-            test_data = dataset.isel(sample=slice(start, stop))
-            test_labels = label[start:stop]
 
 
 
@@ -732,14 +726,11 @@ def get_data_labels(dataset: xr.Dataset, labels: np.ndarray, time, varname, nvar
     # else:
         # First, convert the train_data to a NumPy array with shape (samples, lat, lon, variables)
     if modeltype == "cnn":
-        train_data_np = train_data['combined'].transpose('sample', 'lat', 'lon')
-        val_data_np = val_data['combined'].transpose('sample', 'lat', 'lon')
-        test_data_np = test_data['combined'].transpose('sample', 'lat', 'lon')
-        # train_data_np = train_data
-        # val_data_np = val_data
-        # test_data_np = test_data['combined'] \
-        #         .transpose('sample', 'lat', 'lon') \
-        #         .values  # ndarray (N_test, H, W)
+        train_data_np = train_data
+        val_data_np = val_data
+        test_data_np = test_data['combined'] \
+                .transpose('sample', 'lat', 'lon') \
+                .values  # ndarray (N_test, H, W)
     else:
         train_data_np = train_data
         val_data_np = val_data

@@ -55,6 +55,10 @@ def main():
     times = config.get('Times')                      # [60]
     navg = config.get('Navg')                        # 1
     storage_loc = config.get('StorageLoc')           # "./data/"
+    config_name = os.path.splitext(os.path.basename(args.config))[0]
+    jobid = f"_{config_name}"
+    timings_csv = os.path.join(storage_loc, f"timings_{config_name}.csv")
+    timings_txt = os.path.join(storage_loc, f"timings_{config_name}.txt")
     stride = config.get('Stride')                    # 1
     cut_dataset = config.get('CutDataset')            # 0
     metric = config.get('Metric')                    # ["dssim", "pcc", "spre"]
@@ -397,7 +401,7 @@ def main():
 
                 logging.info(f"Saved metric data to {metric_filename}")
                 elapsed = tm.perf_counter() - start
-                with open("timings.txt", "a") as f:
+                with open(timings_txt, "a") as f:
                     f.write(f"Compute metric {m} for {comp_label} {flat_var_list} time: {elapsed:.3f} s\n")
     end_time = pd.Timestamp.now()
     logging.info(f"Time taken for metric computation: {end_time - start_time}")
@@ -406,7 +410,7 @@ def main():
     elapsed = end_time - start_time  # seconds (float)
 
     row = [var_list[0], elapsed, activity]
-    fname = "timings_single.csv"
+    fname = timings_csv
 
     # append the row, writing a header the first time the file is created
     write_header = not os.path.isfile(fname)
@@ -476,7 +480,7 @@ def main():
     elapsed = end_time - start_time  # seconds (float)
 
     row = [var_list[0], elapsed, activity]
-    fname = "timings_single.csv"
+    fname = timings_csv
 
     # append the row, writing a header the first time the file is created
     write_header = not os.path.isfile(fname)
@@ -552,7 +556,6 @@ def main():
     # Number of variables
     nvars = len(flat_var_list)  # Should be equal to len(var_list)
 
-    jobid = 0
     j=0
     storageloc = storage_loc
     time = times[0]
@@ -561,7 +564,7 @@ def main():
     if modeltype == 'rf':
         # Feature computation and data loading
         start_time = pd.Timestamp.now()
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, "all_big_combined",
+        features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
                                        orig_label, "all", times)
         # features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
         #                                orig_label, "all", times)
@@ -576,7 +579,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -606,7 +609,7 @@ def main():
             feature=None,
             featurelist=None,
             transform='quantile',
-            jobid=0,
+            jobid=jobid,
             cut_windows=False,
             metric=metric,
             vars=var_list
@@ -636,7 +639,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -678,7 +681,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -787,7 +790,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -828,7 +831,7 @@ def main():
             feature=None,
             featurelist=None,
             transform='quantile',
-            jobid=0,
+            jobid=jobid,
             cut_windows=False,
             metric=metric,
             vars = var_list
@@ -895,7 +898,7 @@ def main():
             transform=None,
         )
         elapsed = tm.perf_counter() - start
-        with open("timings.txt", "a") as f:
+        with open(timings_txt, "a") as f:
             f.write(f"Train cnn {flat_var_list} time: {elapsed:.3f} s\n")
 
         # log time and start the process
@@ -906,7 +909,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -925,7 +928,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -970,7 +973,7 @@ def main():
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
-        fname = "timings_single.csv"
+        fname = timings_csv
 
         # append the row, writing a header the first time the file is created
         write_header = not os.path.isfile(fname)
@@ -1034,6 +1037,44 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     import xarray as xr
     import ldcpy
     import numpy as np
+
+    variable_order = varname.replace("_combined", "").split(",")
+    combined_paths = [
+        os.path.join(
+            storage_loc,
+            "rf_inputs_time2000",
+            f"{variable}_features_time2000.nc",
+        )
+        for variable in variable_order
+    ]
+
+    missing_paths = [
+        path for path in combined_paths if not os.path.isfile(path)
+    ]
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing precomputed feature files:\n" + "\n".join(missing_paths)
+        )
+
+    if all(os.path.isfile(path) for path in combined_paths):
+        feature_blocks = []
+
+        for path in combined_paths:
+            with xr.open_dataset(path) as dataset:
+                block = (
+                    dataset["feature_values"]
+                    .sel(
+                        collection=orig_label,
+                        feature=featurelist,
+                    )
+                    .isel(timestep=slice(0, times[0]))
+                    .transpose("feature", "timestep")
+                    .load()
+                )
+
+            feature_blocks.append(block.values)
+
+        return np.concatenate(feature_blocks, axis=1)
 
     features_list = []
     n_samples = data_xr.dims['sample']

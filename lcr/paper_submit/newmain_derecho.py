@@ -52,6 +52,8 @@ def main():
     times = config.get('Times')                      # [60]
     navg = config.get('Navg')                        # 1
     storage_loc = config.get('StorageLoc')           # "./data/"
+    config_name = os.path.splitext(os.path.basename(args.config))[0]
+    jobid = f"_{config_name}"
     stride = config.get('Stride')                    # 1
     cut_dataset = config.get('CutDataset')            # 0
     metric = config.get('Metric')                    # ["dssim", "pcc", "spre"]
@@ -515,7 +517,6 @@ def main():
     # Call train_cnn
     logging.info("Calling train_cnn for training...")
 
-    jobid = 0
     j=0
     storageloc = storage_loc
     time = times[0]
@@ -553,7 +554,7 @@ def main():
             feature=None,
             featurelist=None,
             transform='quantile',
-            jobid=0,
+            jobid=jobid,
             cut_windows=False,
             metric=metric,
             vars=var_list
@@ -581,7 +582,7 @@ def main():
         for i, tree in enumerate(rf_model.estimators_):
             # Create a plot for each tree
             plt.figure(figsize=(20, 10))
-            plot_tree(tree, filled=True, feature_names=train_data_np.columns, class_names=True)
+            plot_tree(tree, filled=True, feature_names=featurelist, class_names=True)
 
             # Save the plot to a file
             file_name = f"{storageloc}/trees/decision_tree_{j}{time}{modeltype}{jobid}_{var_list[0]}_{i}.png"
@@ -711,7 +712,7 @@ def main():
             feature=None,
             featurelist=None,
             transform='quantile',
-            jobid=0,
+            jobid=jobid,
             cut_windows=False,
             metric=metric,
             vars = var_list
@@ -856,6 +857,44 @@ def compute_features(data_xr, featurelist, storage_loc="./data", varname="combin
     import xarray as xr
     import ldcpy
     import numpy as np
+
+    variable_order = varname.replace("_combined", "").split(",")
+    combined_paths = [
+        os.path.join(
+            storage_loc,
+            "rf_inputs_time2000",
+            f"{variable}_features_time2000.nc",
+        )
+        for variable in variable_order
+    ]
+
+    missing_paths = [
+        path for path in combined_paths if not os.path.isfile(path)
+    ]
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing precomputed feature files:\n" + "\n".join(missing_paths)
+        )
+
+    if all(os.path.isfile(path) for path in combined_paths):
+        feature_blocks = []
+
+        for path in combined_paths:
+            with xr.open_dataset(path) as dataset:
+                block = (
+                    dataset["feature_values"]
+                    .sel(
+                        collection=orig_label,
+                        feature=featurelist,
+                    )
+                    .isel(timestep=slice(0, times[0]))
+                    .transpose("feature", "timestep")
+                    .load()
+                )
+
+            feature_blocks.append(block.values)
+
+        return np.concatenate(feature_blocks, axis=1)
 
     features_list = []
     n_samples = data_xr.dims['sample']
