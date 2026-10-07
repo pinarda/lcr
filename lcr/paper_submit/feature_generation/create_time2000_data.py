@@ -53,6 +53,12 @@ def parse_args():
         action="store_true",
         help="Replace existing subset files instead of validating and skipping them",
     )
+    parser.add_argument(
+        "--skip-variable",
+        action="append",
+        default=[],
+        help="Variable to omit explicitly; may be repeated",
+    )
     return parser.parse_args()
 
 
@@ -85,10 +91,18 @@ def requested_compressions(paths):
     return sorted(compressions, key=compression_sort_key)
 
 
-def source_records(config, compressions, output_root):
+def source_records(config, compressions, output_root, skip_variables=()):
     variables = flatten_variables(config["VarList"])
     if len(variables) != len(set(variables)):
         raise ValueError("VarList contains duplicate variable names")
+    unknown_skips = set(skip_variables) - set(variables)
+    if unknown_skips:
+        raise ValueError(
+            f"Skipped variables are not present in VarList: {sorted(unknown_skips)}"
+        )
+    variables = [
+        variable for variable in variables if variable not in skip_variables
+    ]
 
     subdirectories = config["SubDirs"]
     prefixes = config["FilenamePre"]
@@ -306,9 +320,16 @@ def main():
     quality_paths = args.quality_config or [args.config]
     compressions = requested_compressions(quality_paths)
     output_root = Path(args.output_root).resolve()
-    records, variables = source_records(config, compressions, output_root)
+    records, variables = source_records(
+        config,
+        compressions,
+        output_root,
+        args.skip_variable,
+    )
 
     print(f"Variables: {len(variables)}", flush=True)
+    if args.skip_variable:
+        print(f"Skipped variables: {', '.join(args.skip_variable)}", flush=True)
     print(f"Collections: orig, {', '.join(compressions)}", flush=True)
     print(f"Files: {len(records)}", flush=True)
     print(f"Destination: {output_root}", flush=True)

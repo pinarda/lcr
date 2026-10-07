@@ -4,7 +4,7 @@ set -euo pipefail
 cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 
 variable_start="${VARIABLE_START:-1}"
-variable_end="${VARIABLE_END:-47}"
+variable_end="${VARIABLE_END:-46}"
 timesteps="${TIMESTEPS:-2000}"
 smoke_test="${SMOKE_TEST:-0}"
 
@@ -14,8 +14,8 @@ if ! [[ "$variable_start" =~ ^[0-9]+$ ]] || \
     echo "VARIABLE_START, VARIABLE_END, and TIMESTEPS must be positive integers" >&2
     exit 2
 fi
-if (( variable_start < 1 || variable_end > 47 || variable_start > variable_end )); then
-    echo "Variable range must satisfy 1 <= VARIABLE_START <= VARIABLE_END <= 47" >&2
+if (( variable_start < 1 || variable_end > 46 || variable_start > variable_end )); then
+    echo "Variable range must satisfy 1 <= VARIABLE_START <= VARIABLE_END <= 46" >&2
     exit 2
 fi
 if (( timesteps < 1 )); then

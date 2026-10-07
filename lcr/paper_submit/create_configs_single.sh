@@ -24,7 +24,6 @@ var_list=(
   '["FLNS"]'
   '["FLNSC"]'
   '["FSNS"]'
-  '["FSNSC"]'
   '["PRECL"]'
   '["PRECSC"]'
   '["QBOT"]'
@@ -78,20 +77,21 @@ var_list=(
 output_dir="."
 
 # Generate one single-variable config per variable for CNN and RF.
-# Configs 1-47 are CNN; configs 48-94 are RF.
+# Preserve the original config IDs while omitting former FSNSC slots 20 and 67.
 model_types=("cnn" "rf")
 
 for model_type in "${model_types[@]}"; do
     if [[ "$model_type" == "cnn" ]]; then
         offset=0
     else
-        offset=${#var_list[@]}
+        offset=47
     fi
 
     for ((i=0; i<${#var_list[@]}; i++)); do
         first_var="${var_list[i]}"
         rotated_var_list_json="[$first_var]"
-        output_file="$output_dir/rotated_config_$((offset+i+1)).json"
+        legacy_slot=$((i < 19 ? i + 1 : i + 2))
+        output_file="$output_dir/rotated_config_$((offset+legacy_slot)).json"
 
         if [[ -e "$output_file" ]]; then
             echo "Skipping existing $output_file"

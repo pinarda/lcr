@@ -57,7 +57,6 @@ var_list=(
   '["FLNS"]'
   '["FLNSC"]'
   '["FSNS"]'
-  '["FSNSC"]'
   '["PRECL"]'
   '["PRECSC"]'
   '["QBOT"]'
@@ -94,7 +93,7 @@ var_list=(
 #]
 #
 #  var_list2 = ["bc_a1_SRF", "dst_a1_SRF", "dst_a3_SRF", "FLNSC",
-#    "FSNS", "FSNSC", "pom_a1_SRF",  "PRECL", "PRECSC", "QBOT",
+#    "FSNS", "pom_a1_SRF",  "PRECL", "PRECSC", "QBOT",
 #     "so4_a1_SRF", "so4_a2_SRF", "so4_a3_SRF", "soa_a1_SRF", "soa_a2_SRF", "T010", "TMQ", "TREFHT",
 #    "TREFHTMN", "U200", "U500", "U850", "UBOT",  "V200", "V500", "V850", "VBOT",  "WSPDSRFAV", "Z050", "Z500",
 
@@ -106,21 +105,22 @@ output_dir="."
 
 # Generate one leave-one-variable-out ordering per variable for CNN and RF.
 # The first variable in each rotated list is the held-out test variable.
-# Configs 1-47 are CNN; configs 48-94 are RF.
+# Preserve the original config IDs while omitting former FSNSC slots 20 and 67.
 model_types=("cnn" "rf")
 
 for model_type in "${model_types[@]}"; do
     if [[ "$model_type" == "cnn" ]]; then
         offset=0
     else
-        offset=${#var_list[@]}
+        offset=47
     fi
 
     for ((i=0; i<${#var_list[@]}; i++)); do
         rotated_vars=("${var_list[@]:i}" "${var_list[@]:0:i}")
         rotated_var_list_json=$(printf '%s, ' "${rotated_vars[@]}" | sed 's/, $//')
         rotated_var_list_json="[$rotated_var_list_json]"
-        output_file="$output_dir/multi_config_$((offset+i+1)).json"
+        legacy_slot=$((i < 19 ? i + 1 : i + 2))
+        output_file="$output_dir/multi_config_$((offset+legacy_slot)).json"
 
         if [[ -e "$output_file" ]]; then
             echo "Skipping existing $output_file"

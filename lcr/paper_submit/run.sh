@@ -37,7 +37,7 @@ for config_file in "$config_dir"/rotated_config_*.json "$config_dir"/multi_confi
 conda activate my-npl-2023a
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
-cd /glade/derecho/scratch/apinard/lcr/lcr/modeling
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
 
 python $main_script -c $config_file
 EOF
