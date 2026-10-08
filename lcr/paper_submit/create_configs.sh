@@ -134,7 +134,7 @@ for model_type in "${model_types[@]}"; do
              | .ModelType = $model_type
              | .Times = [1600]
              | .CompDirs = ["zfp_p_16", "zfp_p_26"]
-             | .Metric = ["dssim", "pcc", "spre"]' \
+             | .Metric = ["dssim", "pcc", "ks"]' \
             "$original_file" > "$output_file"
 
         echo "Created $output_file for $model_type with held-out variable: ${rotated_vars[0]}"

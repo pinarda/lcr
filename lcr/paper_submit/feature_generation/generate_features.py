@@ -54,7 +54,11 @@ def parse_args():
     parser.add_argument(
         "--output-dir",
         default="./data",
-        help="Directory for intermediate feature and quality-metric files",
+        help="Directory for intermediate feature files",
+    )
+    parser.add_argument(
+        "--metrics-dir",
+        help="Directory for intermediate quality-metric files; defaults to --output-dir",
     )
     parser.add_argument("--timesteps", type=int, default=2000)
     parser.add_argument("--workers", type=int, default=16)
@@ -563,7 +567,8 @@ def combine_outputs(
     variables,
     features,
     requested_quality,
-    output_dir,
+    feature_dir,
+    metrics_dir,
     combined_output_dir,
     timesteps,
     overwrite,
@@ -606,7 +611,7 @@ def combine_outputs(
         for collection_index, collection_label in enumerate(feature_collections):
             for feature_index, feature in enumerate(features):
                 path = feature_path(
-                    output_dir, variable, collection_label, feature, timesteps
+                    feature_dir, variable, collection_label, feature, timesteps
                 )
                 if not path.is_file():
                     raise FileNotFoundError(path)
@@ -635,7 +640,7 @@ def combine_outputs(
                 for metric in requested_quality[compression]:
                     metric_index = metric_names.index(metric)
                     path = metric_path(
-                        output_dir,
+                        metrics_dir,
                         variable,
                         original_label,
                         compressed_label,
@@ -717,6 +722,10 @@ def main():
     all_quality = quality_requests(args.quality_config or [args.config])
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    metrics_dir = (
+        Path(args.metrics_dir).resolve() if args.metrics_dir else output_dir
+    )
+    metrics_dir.mkdir(parents=True, exist_ok=True)
 
     if args.mode == "combine":
         combine_outputs(
@@ -725,6 +734,7 @@ def main():
             features,
             all_quality,
             output_dir,
+            metrics_dir,
             args.combined_output_dir,
             args.timesteps,
             args.overwrite,
@@ -808,7 +818,7 @@ def main():
                         args.timesteps,
                         args.workers,
                         ldcpy_path,
-                        output_dir,
+                        metrics_dir,
                         args.overwrite,
                     )
     logging.info("Completed in %.1f seconds", time.perf_counter() - started)

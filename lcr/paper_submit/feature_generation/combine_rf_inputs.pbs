@@ -22,5 +22,6 @@ python feature_generation/generate_features.py \
     --variable-index $VARIABLE_INDEX \
     --timesteps $TIMESTEPS \
     --output-dir ./data \
+    --metrics-dir ./metrics \
     --combined-output-dir ./data/rf_inputs_time${TIMESTEPS} \
     --overwrite
