@@ -21,14 +21,12 @@ if [ -f "$config_file" ]; then
 #PBS -N CNN11_${config_name}_1000
 ### Charging account
 #PBS -A NTDD0005
-### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1
-### Specify that the GPUs will be V100s
-#PBS -l gpu_type=a100
+### Request four CPUs, one A100 GPU, and memory for a single-variable job
+#PBS -l select=1:ncpus=4:mpiprocs=1:ngpus=1:gpu_type=a100:mem=96GB
 ### Allow job to run up to 12 hours
 #PBS -l walltime=12:00:00
 ### Route the job to the casper queue
-#PBS -q casper
+#PBS -q casper@casper-pbs
 ### Join output and error streams into single file
 #PBS -j oe
 

@@ -1,52 +1,35 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Run from the directory containing this launcher and the config files.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir" || exit 1
-config_dir="."
+cd "$script_dir"
 
-# Loop over the single-variable and multi-variable config files
-for config_file in "$config_dir"/rotated_config_*.json "$config_dir"/multi_config_*.json; do
-    # Extract the config file name without extension for the job script name
-    config_name=$(basename "$config_file" .json)
-    job_script="${config_name}.sh"
+shopt -s nullglob
+config_files=(
+    "$script_dir"/rotated_config_*.json
+    "$script_dir"/multi_config_*.json
+)
 
-    # Use the matching modeling entry point for each config family
-    if [[ "$config_name" == multi_config_* ]]; then
-        main_script="newmain_derecho.py"
-    else
-        main_script="newmain.py"
-    fi
+if (( ${#config_files[@]} == 0 )); then
+    echo "No rotated_config_*.json or multi_config_*.json files found" >&2
+    exit 1
+fi
 
-    # Create a new job script for each config file
-    cat <<EOF > "$job_script"
-#!/bin/tcsh
-### Job Name
-#PBS -N CNN11_${config_name}_1000
-### Charging account
-#PBS -A NTDD0005
-### Request a resource chunk with a GPU
-#PBS -l select=1:ngpus=1:mem=384GB
-### Specify the GPU type
-#PBS -l gpu_type=a100
-### Allow job to run up to 12 hours
-#PBS -l walltime=12:00:00
-### Route the job to the casper queue
-#PBS -q casper
-### Join output and error streams into single file
-#PBS -j oe
+# Give every subjob in this submission the same timestamped results directory.
+run_stamp="$(date +%Y-%m-%d_%H%M%S)"
+results_dir="$script_dir/data/model_results_${run_stamp}"
+config_list="$results_dir/modeling_configs.txt"
+mkdir -p "$results_dir"
+printf '%s\n' "${config_files[@]}" > "$config_list"
 
-source /etc/csh.cshrc
-module load conda
-conda activate my-npl-2023a
+config_count=${#config_files[@]}
+job_id=$(qsub \
+    -J "1-${config_count}%8" \
+    -v "CONFIG_LIST=${config_list},MODEL_RESULTS_DIR=${results_dir},PAPER_SUBMIT_DIR=${script_dir}" \
+    "$script_dir/modeling_array.pbs")
 
-setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
-cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
-
-python $main_script -c $config_file
-EOF
-
-    # Submit the job script
-    qsub "$job_script"
-    echo "Submitted job for $config_file using script $job_script"
-done
+echo "Submitted $config_count modeling jobs as array $job_id"
+echo "At most 8 array jobs will run at once"
+echo "Results directory: $results_dir"
