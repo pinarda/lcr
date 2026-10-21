@@ -29,4 +29,4 @@ python feature_generation/generate_features.py \
     --variable-index $VARIABLE_INDEX \
     --timesteps $TIMESTEPS \
     --workers 16 \
-    --output-dir ./data
+    --output-dir ./data/features

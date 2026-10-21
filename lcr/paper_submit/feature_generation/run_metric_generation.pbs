@@ -30,5 +30,5 @@ python feature_generation/generate_features.py \
     --compression-index $COMPRESSION_INDEX \
     --timesteps $TIMESTEPS \
     --workers 16 \
-    --output-dir ./data \
-    --metrics-dir ./metrics
+    --output-dir ./data/features \
+    --metrics-dir ./data/metrics
