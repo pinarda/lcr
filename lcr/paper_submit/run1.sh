@@ -38,7 +38,6 @@ conda activate my-npl-2023a
 
 setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
 cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
-mkdir -p data/trees
 
 python newmain.py -c $config_file
 EOF

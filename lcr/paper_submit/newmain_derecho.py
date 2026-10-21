@@ -51,7 +51,14 @@ def main():
     opt_ldcpy_dev_path = config.get('OptLdcpyDevPath')  # "/Users/alex/git/ldcpy"
     times = config.get('Times')                      # [60]
     navg = config.get('Navg')                        # 1
-    storage_loc = config.get('StorageLoc')           # "./data/"
+    input_storage_loc = config.get('StorageLoc')     # "./data/"
+    run_date = pd.Timestamp.now().strftime("%Y-%m-%d")
+    storage_loc = os.environ.get(
+        "MODEL_RESULTS_DIR",
+        os.path.join(input_storage_loc, f"model_results_{run_date}"),
+    )
+    os.makedirs(os.path.join(storage_loc, "trees"), exist_ok=True)
+    logging.info(f"Model results will be written to {storage_loc}")
     config_name = os.path.splitext(os.path.basename(args.config))[0]
     jobid = f"_{config_name}"
     stride = config.get('Stride')                    # 1
@@ -527,7 +534,7 @@ def main():
 
     if modeltype == 'rf':
         # Feature computation and data loading
-        features_np = compute_features(dataset_xr, featurelist, storage_loc, ','.join(flat_var_list) + '_combined',
+        features_np = compute_features(dataset_xr, featurelist, input_storage_loc, ','.join(flat_var_list) + '_combined',
                                        orig_label, "all", times)
         labels_np = np.array(combined_labels)
         features_np = features_np.T  # Transpose features
