@@ -102,6 +102,10 @@ def parse_command_line_arguments():
     parser.add_argument("-c", "--cutdataset", help="whether to cut the dataset into windows", type=bool, default=0)
     parser.add_argument("-a", '--runonlydata', help='Run only data?', type=ast.literal_eval, default=True)
     parser.add_argument("-y", '--labelsonly', help='Run only labels?', type=ast.literal_eval, default=True)
+    parser.add_argument('--results-dir', required=True,
+                        help='Directory containing outputs from the paired CNN and RF model runs')
+    parser.add_argument('--output-dir',
+                        help='Directory for plots and plot data (default: RESULTS_DIR/plots)')
 
     print(f"Only Data Status: {parser.parse_args().onlydata}")
     # let's add a -v option as well to add debug messages
