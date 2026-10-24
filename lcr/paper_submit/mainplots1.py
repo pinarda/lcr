@@ -47,8 +47,12 @@ def load_result_array(results_dir, prefix, time, model_type, config_name,
         f"{prefix}_*{time}{model_type}_{config_name}_{variable_pattern}.npy",
     )
     matches = sorted(glob.glob(pattern))
-    if len(matches) != 1:
+    if not matches:
         raise FileNotFoundError(
+            f"No result found for pattern {pattern}"
+        )
+    if len(matches) != 1:
+        raise RuntimeError(
             f"Expected exactly one result for pattern {pattern}; found {len(matches)}:\n  "
             + "\n  ".join(matches)
         )
@@ -261,6 +265,8 @@ def main():
                         help="Directory containing outputs from the paired CNN and RF model runs")
     parser.add_argument('--output-dir',
                         help="Directory for plots and table_output.tex (default: RESULTS_DIR/plots)")
+    parser.add_argument('--skip-missing', action='store_true',
+                        help="Skip a variable when any required CNN or RF result file is missing")
 
     # Parse the arguments
     args = parser.parse_args()
@@ -288,10 +294,16 @@ def main():
             # if i not in [1, 2, 4, 5, 12, 13, 16, 19, 20, 21, 22, 24, 26, 27, 37, 43, 44, 45, 46, 47]:
             if i not in [20, 19, 11, 16]:
                 print(f"Processing {config_file}...")
-                (variable, weighted_cnn, macro_cnn,
-                 weighted_rf, macro_rf, feature_importances, rf_feature_list, df_counts) = process_config(
-                    config_file, results_dir
-                )
+                try:
+                    (variable, weighted_cnn, macro_cnn,
+                     weighted_rf, macro_rf, feature_importances, rf_feature_list, df_counts) = process_config(
+                        config_file, results_dir
+                    )
+                except FileNotFoundError as error:
+                    if not args.skip_missing:
+                        raise
+                    print(f"Skipping {config_file}: {error}")
+                    continue
                 all_data.append(df_counts)
 
                 var_list.append(variable)
@@ -308,6 +320,10 @@ def main():
 
         else:
             print(f"Configuration file {config_file} not found. Skipping.")
+
+    if not all_data:
+        print("No complete CNN/RF result pairs were found; no plots were created.")
+        return
 
     # Combine all data into a single DataFrame
     combined_df = pd.concat(all_data, ignore_index=True)
