@@ -36,12 +36,19 @@ def parse_args():
         help="Metrics required in the automatically selected profile",
     )
     parser.add_argument(
+        "--timesteps",
+        type=int,
+        default=2000,
+        help="Timestep count required in the selected cache profile (default: 2000)",
+    )
+    parser.add_argument(
         "--subset",
-        choices=("paper-test", "all"),
-        default="paper-test",
+        choices=("first-1600", "model-test", "all"),
+        default="first-1600",
         help=(
-            "paper-test uses the final test portion after the historical 10%% train "
-            "+ 10%% validation split; all uses every cached timestep"
+            "first-1600 uses timesteps 1--1600; model-test uses the final test "
+            "portion after the historical 10%% train + 10%% validation split; "
+            "all uses every cached timestep"
         ),
     )
     parser.add_argument(
@@ -52,7 +59,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def select_profile(manifest, requested_name, metrics):
+def select_profile(manifest, requested_name, metrics, timesteps):
     profiles = manifest.get("profiles", [])
     if requested_name:
         matches = [profile for profile in profiles if profile["name"] == requested_name]
@@ -65,22 +72,19 @@ def select_profile(manifest, requested_name, metrics):
     candidates = [
         profile
         for profile in profiles
-        if profile["spec"]["metrics"] == metrics
+        if set(profile["spec"]["metrics"]) == set(metrics)
+        and profile["spec"]["timesteps"] == timesteps
     ]
     if not candidates:
-        raise ValueError(f"No manifest profile uses metrics {metrics}")
+        raise ValueError(
+            f"No time-{timesteps} manifest profile uses metrics {metrics}"
+        )
 
     max_levels = max(len(profile["spec"]["comp_dirs"]) for profile in candidates)
     candidates = [
         profile
         for profile in candidates
         if len(profile["spec"]["comp_dirs"]) == max_levels
-    ]
-    max_timesteps = max(profile["spec"]["timesteps"] for profile in candidates)
-    candidates = [
-        profile
-        for profile in candidates
-        if profile["spec"]["timesteps"] == max_timesteps
     ]
     if len(candidates) != 1:
         names = ", ".join(profile["name"] for profile in candidates)
@@ -100,6 +104,12 @@ def select_samples(labels, spec, subset):
     by_collection = labels.reshape(collections, timesteps)
     if subset == "all":
         return by_collection.reshape(-1)
+    if subset == "first-1600":
+        if timesteps < 1600:
+            raise ValueError(
+                f"The selected profile has only {timesteps} timesteps; 1600 are required"
+            )
+        return by_collection[:, :1600].reshape(-1)
 
     train_count = int(0.10 * timesteps)
     remaining = timesteps - train_count
@@ -145,7 +155,12 @@ def main():
     with manifest_path.open() as stream:
         manifest = json.load(stream)
 
-    profile = select_profile(manifest, args.profile, args.metrics)
+    profile = select_profile(
+        manifest,
+        args.profile,
+        args.metrics,
+        args.timesteps,
+    )
     levels, rows = load_counts(cache_dir, profile, args.subset)
     output = args.output
     if output is None:
