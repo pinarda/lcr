@@ -279,7 +279,7 @@ def main():
         'dssim': {'comparison': 'gt', 'threshold': 0.995},
         'pcc': {'comparison': 'gt', 'threshold': 0.9995},
         'spre': {'comparison': 'lt', 'threshold': 95},
-        'ks': {'comparison': 'lt', 'threshold': 0.05}
+        'ks': {'comparison': 'gt', 'threshold': 0.05}
     }
 
     metrics_data = {varname: {m: {} for m in metric} for varname in flat_var_list}  # Separate metrics_data for each variable

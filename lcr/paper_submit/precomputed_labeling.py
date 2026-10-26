@@ -16,7 +16,7 @@ DEFAULT_METRICS_INFO = {
     "dssim": {"comparison": "gt", "threshold": 0.995},
     "pcc": {"comparison": "gt", "threshold": 0.9995},
     "spre": {"comparison": "lt", "threshold": 95},
-    "ks": {"comparison": "lt", "threshold": 0.05},
+    "ks": {"comparison": "gt", "threshold": 0.05},
 }
 PAPER_SUBMIT_DIR = Path(__file__).resolve().parent
 DEFAULT_METRICS_DIR = PAPER_SUBMIT_DIR / "data" / "rf_inputs_time2000"
