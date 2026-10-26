@@ -1,0 +1,26 @@
+#!/bin/tcsh
+#PBS -N combine_spre_2000
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=1:mem=32GB
+#PBS -l walltime=01:00:00
+#PBS -q develop@desched1
+#PBS -j oe
+
+source /etc/csh.cshrc
+module load conda
+conda activate my-npl-2023a
+
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+if (! $?TIMESTEPS) setenv TIMESTEPS 2000
+
+python feature_generation/generate_features.py \
+    --config spre_time2000_config.json \
+    --quality-config spre_time2000_config.json \
+    --mode combine \
+    --variable-index $VARIABLE_INDEX \
+    --timesteps $TIMESTEPS \
+    --output-dir ./data/features \
+    --metrics-dir ./data/metrics \
+    --combined-output-dir ./data/rf_inputs_time${TIMESTEPS}_spre \
+    --overwrite

@@ -1,0 +1,26 @@
+#!/bin/tcsh
+#PBS -N precompute_spre_labels
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=1:mem=8GB
+#PBS -l walltime=00:30:00
+#PBS -q develop@desched1
+#PBS -j oe
+
+source /etc/csh.cshrc
+module load conda
+conda activate my-npl-2023a
+
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+python precompute_labels.py \
+    --config spre_time2000_config.json \
+    --metrics-dir ./data/rf_inputs_time2000_spre \
+    --output-dir ./data/precomputed_labels_spre \
+    --overwrite
+
+python label_distribution_table.py \
+    --cache-dir ./data/precomputed_labels_spre \
+    --metrics dssim pcc spre \
+    --timesteps 2000 \
+    --subset first-1600 \
+    --output ./data/label_distribution_spre_1600.csv
