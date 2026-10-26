@@ -296,7 +296,7 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
             label[int(num_windows * time * nvar * 0.1):(num_windows * time * nvar)], test_size=0.1)
 
     elif testset == "1var":
-        # leave out a single variable for testing, and use the rest for training and validation
+        # leave out a single variable for testing, and use the rest for training
         # test_data = dataset[0:(num_windows * time)]
         stop = num_windows * time
         if modeltype == "cnn":
@@ -307,7 +307,7 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
         if label is not None:
             test_labels = label[0:(num_windows * time)]
 
-        # This will randomize the training and validation data, an alternative would be to use the last variable(s) for validation
+        # Use all remaining samples for training; leave validation empty.
         if label is not None:
             # -------------------------------------------------------------------
             # 1.  Choose the rows (samples) you want
@@ -330,12 +330,10 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
                 X_full = dataset[start:stop]
 
             # -------------------------------------------------------------------
-            # 3.  Split once, get NumPy arrays ready for scikit-learn / PyTorch
+            # 3.  Keep every non-test sample in the training set
             # -------------------------------------------------------------------
-            train_data, val_data, train_labels, val_labels = train_test_split(
-                X_full, y_full,
-                test_size=0.1
-            )
+            train_data, train_labels = X_full, y_full
+            val_data, val_labels = X_full[:0], y_full[:0]
 
 
 
@@ -836,9 +834,9 @@ def train_cnn(
     filter2 = 64
     dropout = 0.5
     conv_layers = 2
-    # set the random seed
-    np.random.seed(1)
-    tf.random.set_seed(1)
+    # Seed Python, NumPy, and TensorFlow and require deterministic GPU ops.
+    tf.keras.utils.set_random_seed(1)
+    tf.config.experimental.enable_op_determinism()
 
     all_labels = np.concatenate([train_labels_np, test_labels_np])
     num_classes = len(np.unique(all_labels))
@@ -884,7 +882,7 @@ def train_cnn(
         model.fit(
             train_data_np,
             train_labels_np,
-            validation_data=(val_data_np, val_labels_np),
+            validation_data=(val_data_np, val_labels_np) if val_data_np.shape[0] > 0 else None,
             epochs=num_epochs,
             batch_size=batch_size,
         )

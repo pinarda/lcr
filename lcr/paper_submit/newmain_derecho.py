@@ -600,10 +600,11 @@ def main():
 
         print("All decision tree plots have been saved.")
 
-        # Evaluate on validation data
-        val_predictions_rf = rf_model.predict(val_data_np)
-        val_accuracy_rf = accuracy_score(val_labels_np, val_predictions_rf)
-        print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
+        # Evaluate on validation data when present
+        if val_data_np.shape[0] > 0:
+            val_predictions_rf = rf_model.predict(val_data_np)
+            val_accuracy_rf = accuracy_score(val_labels_np, val_predictions_rf)
+            print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
 
         # Evaluate on test data
         test_predictions_rf = rf_model.predict(test_data_np)
@@ -643,10 +644,11 @@ def main():
         dt_model = DecisionTreeClassifier(max_depth=10, random_state=111, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
-        # Evaluate on validation data
-        val_predictions_dt = dt_model.predict(val_data_np)
-        val_accuracy_dt = accuracy_score(val_labels_np, val_predictions_dt)
-        print(f"Decision Tree Validation Accuracy: {val_accuracy_dt}")
+        # Evaluate on validation data when present
+        if val_data_np.shape[0] > 0:
+            val_predictions_dt = dt_model.predict(val_data_np)
+            val_accuracy_dt = accuracy_score(val_labels_np, val_predictions_dt)
+            print(f"Decision Tree Validation Accuracy: {val_accuracy_dt}")
 
         # Evaluate on test data
         test_predictions_dt = dt_model.predict(test_data_np)
