@@ -48,15 +48,12 @@ var_list=(
   '["Q500"]'
   '["Q850"]'
   '["SHFLX"]'
-  '["T200"]'
   '["T500"]'
   '["T850"]'
   '["TAUX"]'
   '["TAUY"]'
-  '["U010"]'
   '["FLNS"]'
   '["FLNSC"]'
-  '["FSNS"]'
   '["PRECL"]'
   '["PRECSC"]'
   '["QBOT"]'
@@ -105,7 +102,8 @@ output_dir="."
 
 # Generate one leave-one-variable-out ordering per variable for CNN and RF.
 # The first variable in each rotated list is the held-out test variable.
-# Preserve the original config IDs while omitting former FSNSC slots 20 and 67.
+# Preserve the original config IDs while omitting T200, U010, FSNS, and the
+# former FSNSC slot.
 model_types=("cnn" "rf")
 
 for model_type in "${model_types[@]}"; do
@@ -119,7 +117,12 @@ for model_type in "${model_types[@]}"; do
         rotated_vars=("${var_list[@]:i}" "${var_list[@]:0:i}")
         rotated_var_list_json=$(printf '%s, ' "${rotated_vars[@]}" | sed 's/, $//')
         rotated_var_list_json="[$rotated_var_list_json]"
-        legacy_slot=$((i < 19 ? i + 1 : i + 2))
+        legacy_slot=$((i + 1))
+        for omitted_slot in 11 16 19 20; do
+            if ((legacy_slot >= omitted_slot)); then
+                ((legacy_slot += 1))
+            fi
+        done
         output_file="$output_dir/multi_config_$((offset+legacy_slot)).json"
 
         if [[ -e "$output_file" ]]; then
