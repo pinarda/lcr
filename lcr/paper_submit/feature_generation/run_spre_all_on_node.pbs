@@ -1,0 +1,167 @@
+#!/bin/bash -l
+#PBS -N spre_all_2000
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=128:mem=235GB
+#PBS -l walltime=03:00:00
+#PBS -q main@desched1
+#PBS -j oe
+
+set -eo pipefail
+
+module load conda
+conda activate my-npl-2023a
+set -u
+
+export HDF5_PLUGIN_PATH=/glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+timesteps="${TIMESTEPS:-2000}"
+variable_count=43
+compression_count=9
+parallel_jobs="${SPRE_PARALLEL_JOBS:-4}"
+workers_per_task="${SPRE_WORKERS_PER_TASK:-16}"
+
+for value in "$timesteps" "$parallel_jobs" "$workers_per_task"; do
+    if ! [[ "$value" =~ ^[1-9][0-9]*$ ]]; then
+        echo "TIMESTEPS, SPRE_PARALLEL_JOBS, and SPRE_WORKERS_PER_TASK must be positive integers" >&2
+        exit 2
+    fi
+done
+if ((timesteps != 2000)); then
+    echo "This workflow requires TIMESTEPS=2000" >&2
+    exit 2
+fi
+if ((parallel_jobs * workers_per_task > 128)); then
+    echo "SPRE_PARALLEL_JOBS * SPRE_WORKERS_PER_TASK cannot exceed 128" >&2
+    exit 2
+fi
+
+run_id="${PBS_JOBID%%.*}_$(date +%Y-%m-%d_%H%M%S)"
+log_dir="$PWD/data/spre_direct_${run_id}"
+task_file="$log_dir/metric_tasks.txt"
+failed_file="$log_dir/failed_metrics.txt"
+mkdir -p "$log_dir"
+
+for variable_index in $(seq 1 "$variable_count"); do
+    for compression_index in $(seq 1 "$compression_count"); do
+        printf '%s %s\n' "$variable_index" "$compression_index"
+    done
+done > "$task_file"
+
+export SPRE_LOG_DIR="$log_dir"
+export SPRE_WORKERS_PER_TASK="$workers_per_task"
+
+echo "SPRE metric run: $run_id"
+echo "Tasks: $((variable_count * compression_count))"
+echo "Concurrent tasks: $parallel_jobs"
+echo "Workers per task: $workers_per_task"
+echo "Logs: $log_dir"
+
+metric_exit=0
+xargs -n 2 -P "$parallel_jobs" bash -c '
+    variable_index="$1"
+    compression_index="$2"
+    log="$SPRE_LOG_DIR/metric_v${variable_index}_c${compression_index}.log"
+
+    echo "Starting variable $variable_index compression $compression_index" > "$log"
+    if python -u feature_generation/generate_features.py \
+        --config spre_time2000_config.json \
+        --quality-config spre_time2000_config.json \
+        --mode metrics \
+        --variable-index "$variable_index" \
+        --compression-index "$compression_index" \
+        --timesteps 2000 \
+        --workers "$SPRE_WORKERS_PER_TASK" \
+        --output-dir ./data/features \
+        --metrics-dir ./data/metrics >> "$log" 2>&1
+    then
+        echo "SUCCESS" >> "$log"
+        echo "SUCCESS variable=$variable_index compression=$compression_index"
+    else
+        echo "FAILED" >> "$log"
+        echo "FAILED variable=$variable_index compression=$compression_index log=$log" >&2
+        exit 1
+    fi
+' _ < "$task_file" || metric_exit=$?
+
+: > "$failed_file"
+while read -r variable_index compression_index; do
+    log="$log_dir/metric_v${variable_index}_c${compression_index}.log"
+    if [[ ! -f "$log" ]] || ! grep -qx 'SUCCESS' "$log"; then
+        echo "$log" >> "$failed_file"
+    fi
+done < "$task_file"
+
+if ((metric_exit != 0)) || [[ -s "$failed_file" ]]; then
+    echo "One or more metric tasks failed. See $failed_file" >&2
+    exit 1
+fi
+
+echo "All $((variable_count * compression_count)) metric tasks succeeded"
+
+combine_exit=0
+seq 1 "$variable_count" |
+xargs -n 1 -P "$parallel_jobs" bash -c '
+    variable_index="$1"
+    log="$SPRE_LOG_DIR/combine_v${variable_index}.log"
+
+    if python -u feature_generation/generate_features.py \
+        --config spre_time2000_config.json \
+        --quality-config spre_time2000_config.json \
+        --mode combine \
+        --variable-index "$variable_index" \
+        --timesteps 2000 \
+        --output-dir ./data/features \
+        --metrics-dir ./data/metrics \
+        --combined-output-dir ./data/rf_inputs_time2000_spre \
+        --overwrite > "$log" 2>&1
+    then
+        echo "SUCCESS" >> "$log"
+        echo "COMBINED variable=$variable_index"
+    else
+        echo "FAILED" >> "$log"
+        echo "COMBINE FAILED variable=$variable_index log=$log" >&2
+        exit 1
+    fi
+' _ || combine_exit=$?
+
+failed_combines="$log_dir/failed_combines.txt"
+: > "$failed_combines"
+for variable_index in $(seq 1 "$variable_count"); do
+    log="$log_dir/combine_v${variable_index}.log"
+    if [[ ! -f "$log" ]] || ! grep -qx 'SUCCESS' "$log"; then
+        echo "$log" >> "$failed_combines"
+    fi
+done
+
+if ((combine_exit != 0)) || [[ -s "$failed_combines" ]]; then
+    echo "One or more combine tasks failed. See $failed_combines" >&2
+    exit 1
+fi
+
+echo "All $variable_count per-variable inputs were combined"
+
+python -u precompute_labels.py \
+    --config spre_time2000_config.json \
+    --metrics-dir ./data/rf_inputs_time2000_spre \
+    --output-dir ./data/precomputed_labels_spre \
+    --overwrite 2>&1 | tee "$log_dir/precompute_labels.log"
+
+python -u label_distribution_table.py \
+    --cache-dir ./data/precomputed_labels_spre \
+    --metrics dssim pcc spre \
+    --timesteps 2000 \
+    --subset first-1600 \
+    --output ./data/label_distribution_spre_1600.csv \
+    2>&1 | tee "$log_dir/label_distribution_table.log"
+
+echo "SPRE workflow complete"
+echo "Combined inputs: $PWD/data/rf_inputs_time2000_spre"
+echo "Labels: $PWD/data/precomputed_labels_spre"
+echo "Table: $PWD/data/label_distribution_spre_1600.csv"
+echo "Logs: $log_dir"
