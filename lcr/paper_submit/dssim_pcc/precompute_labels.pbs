@@ -1,0 +1,25 @@
+#!/bin/bash -l
+#PBS -N dssim_pcc_labels
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=1:mem=8GB
+#PBS -l walltime=00:30:00
+#PBS -q develop@desched1
+#PBS -j oe
+
+set -eo pipefail
+
+module load conda
+conda activate my-npl-2023a
+set -u
+
+: "${DSSIM_PCC_DIR:?DSSIM_PCC_DIR was not supplied by the launcher}"
+
+paper_submit_dir="$(cd "$DSSIM_PCC_DIR/.." && pwd)"
+cd "$paper_submit_dir"
+
+python -u precompute_labels.py \
+    --config-dir "$DSSIM_PCC_DIR/configs" \
+    --metrics-dir "$paper_submit_dir/data/rf_inputs_time2000" \
+    --output-dir "$DSSIM_PCC_DIR/precomputed_labels" \
+    --overwrite
+
