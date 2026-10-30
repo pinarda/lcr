@@ -635,8 +635,9 @@ def main():
         print("Training Random Forest...")
         start_time=pd.Timestamp.now()
 
-        random.seed(1)
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=1, min_samples_leaf=10)
+        rf_random_seed = int(os.environ.get("MODEL_RANDOM_SEED", "1"))
+        random.seed(rf_random_seed)
+        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=rf_random_seed, min_samples_leaf=10)
         rf_model.fit(train_data_np, train_labels_np)
 
         end_time = pd.Timestamp.now()
@@ -733,9 +734,10 @@ def main():
 
         # --- Decision Tree ---
 
-        random.seed(1)
+        dt_random_seed = int(os.environ.get("MODEL_RANDOM_SEED", "11"))
+        random.seed(dt_random_seed)
         print("Training Decision Tree...")
-        dt_model = DecisionTreeClassifier(max_depth=10, random_state=11, min_samples_leaf=5)
+        dt_model = DecisionTreeClassifier(max_depth=10, random_state=dt_random_seed, min_samples_leaf=5)
         dt_model.fit(train_data_np, train_labels_np)
 
         # Evaluate on validation data

@@ -835,7 +835,8 @@ def train_cnn(
     dropout = 0.5
     conv_layers = 2
     # Seed Python, NumPy, and TensorFlow and require deterministic GPU ops.
-    tf.keras.utils.set_random_seed(1)
+    model_random_seed = int(os.environ.get("MODEL_RANDOM_SEED", "1"))
+    tf.keras.utils.set_random_seed(model_random_seed)
     tf.config.experimental.enable_op_determinism()
 
     all_labels = np.concatenate([train_labels_np, test_labels_np])
@@ -877,7 +878,7 @@ def train_cnn(
         batch_size = 32  # Adjust as needed
 
 
-        random.seed(1)
+        random.seed(model_random_seed)
 
         model.fit(
             train_data_np,
