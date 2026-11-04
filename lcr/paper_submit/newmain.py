@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import time as tm
 import csv
 import random
+from model_timing import append_model_timing
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -66,6 +67,9 @@ def main():
     jobid = f"_{config_name}"
     timings_csv = os.path.join(storage_loc, f"timings_{config_name}.csv")
     timings_txt = os.path.join(storage_loc, f"timings_{config_name}.txt")
+    model_timings_txt = os.path.join(
+        storage_loc, f"model_timing_{config_name}.txt"
+    )
     stride = config.get('Stride')                    # 1
     cut_dataset = config.get('CutDataset')            # 0
     metric = config.get('Metric')                    # ["dssim", "pcc", "spre"]
@@ -638,13 +642,25 @@ def main():
         rf_random_seed = int(os.environ.get("MODEL_RANDOM_SEED", "1"))
         random.seed(rf_random_seed)
         rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=rf_random_seed, min_samples_leaf=10)
+        fit_started = tm.perf_counter()
         rf_model.fit(train_data_np, train_labels_np)
+        rf_fit_seconds = tm.perf_counter() - fit_started
+        append_model_timing(
+            model_timings_txt,
+            "single_variable",
+            config_name,
+            flat_var_list[0],
+            "rf",
+            "fit",
+            len(train_labels_np),
+            rf_fit_seconds,
+        )
 
         end_time = pd.Timestamp.now()
-        logging.info(f"Time taken for RF Training: {end_time - start_time}")
+        logging.info(f"Time taken for RF fit: {rf_fit_seconds:.9f} seconds")
 
         activity = "RF Training"
-        elapsed = end_time - start_time  # seconds (float)
+        elapsed = rf_fit_seconds
 
         row = [var_list[0], elapsed, activity]
         fname = timings_csv
@@ -683,9 +699,9 @@ def main():
         print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
 
         end_time = pd.Timestamp.now()
-        logging.info(f"Time taken for RF Prediction: {end_time - start_time}")
+        logging.info(f"Time taken for RF validation prediction: {end_time - start_time}")
 
-        activity = "RF Prediction"
+        activity = "RF Validation Prediction"
         elapsed = end_time - start_time  # seconds (float)
 
         row = [var_list[0], elapsed, activity]
@@ -700,7 +716,19 @@ def main():
             writer.writerow(row)
 
         # Evaluate on test data
+        predict_started = tm.perf_counter()
         test_predictions_rf = rf_model.predict(test_data_np)
+        rf_predict_seconds = tm.perf_counter() - predict_started
+        append_model_timing(
+            model_timings_txt,
+            "single_variable",
+            config_name,
+            flat_var_list[0],
+            "rf",
+            "predict",
+            len(test_labels_np),
+            rf_predict_seconds,
+        )
         test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
         print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
         #h
@@ -895,8 +923,7 @@ def main():
 
         # Call the function to train the model
         start_time = pd.Timestamp.now()
-        start = tm.perf_counter()
-        model = train_cnn(
+        model, cnn_fit_seconds = train_cnn(
             train_data_np,
             train_labels_np,
             val_data_np,
@@ -905,17 +932,27 @@ def main():
             test_labels_np,
             modeltype="cnn",
             transform=None,
+            return_fit_seconds=True,
         )
-        elapsed = tm.perf_counter() - start
+        append_model_timing(
+            model_timings_txt,
+            "single_variable",
+            config_name,
+            flat_var_list[0],
+            "cnn",
+            "fit",
+            len(train_labels_np),
+            cnn_fit_seconds,
+        )
         with open(timings_txt, "a") as f:
-            f.write(f"Train cnn {flat_var_list} time: {elapsed:.3f} s\n")
+            f.write(f"Fit cnn {flat_var_list} time: {cnn_fit_seconds:.3f} s\n")
 
         # log time and start the process
         end_time = pd.Timestamp.now()
-        logging.info(f"Time taken for CNN Training: {end_time - start_time}")
+        logging.info(f"Time taken for CNN fit: {cnn_fit_seconds:.9f} seconds")
 
         activity = "CNN Training"
-        elapsed = end_time - start_time  # seconds (float)
+        elapsed = cnn_fit_seconds
 
         row = [var_list[0], elapsed, activity]
         fname = timings_csv
@@ -929,12 +966,29 @@ def main():
             writer.writerow(row)
 
         start_time = pd.Timestamp.now()
-        accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
+        accuracy, confusion, classreport, test_predictions, cnn_predict_seconds = evaluate_model(
+            model,
+            test_data_np,
+            test_labels_np,
+            return_predict_seconds=True,
+        )
+        append_model_timing(
+            model_timings_txt,
+            "single_variable",
+            config_name,
+            flat_var_list[0],
+            "cnn",
+            "predict",
+            len(test_labels_np),
+            cnn_predict_seconds,
+        )
         end_time = pd.Timestamp.now()
-        logging.info(f"Time taken for CNN Prediction: {end_time - start_time}")
+        logging.info(
+            f"Time taken for CNN test prediction: {cnn_predict_seconds:.9f} seconds"
+        )
 
         activity = "CNN Prediction"
-        elapsed = end_time - start_time  # seconds (float)
+        elapsed = cnn_predict_seconds
 
         row = [var_list[0], elapsed, activity]
         fname = timings_csv

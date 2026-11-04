@@ -1,0 +1,37 @@
+#!/bin/tcsh
+#PBS -N preprocessing_timing
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=1:mem=64GB
+#PBS -l walltime=12:00:00
+#PBS -q casper@casper-pbs
+#PBS -j oe
+
+source /etc/csh.cshrc
+module load conda
+conda activate my-npl-2023a
+
+setenv HDF5_PLUGIN_PATH /glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+setenv OMP_NUM_THREADS 1
+setenv OPENBLAS_NUM_THREADS 1
+setenv MKL_NUM_THREADS 1
+setenv NUMEXPR_NUM_THREADS 1
+cd /glade/derecho/scratch/apinard/lcr/lcr/paper_submit
+
+if (! $?BENCHMARK_CONFIG) then
+    setenv BENCHMARK_CONFIG "$PWD/multi_config_48.json"
+endif
+if (! $?BENCHMARK_TIMESTEPS) then
+    setenv BENCHMARK_TIMESTEPS 10
+endif
+if (! $?BENCHMARK_OUTPUT_DIR) then
+    setenv BENCHMARK_OUTPUT_DIR "$PWD/data/preprocessing_benchmarks/$PBS_JOBID"
+endif
+
+mkdir -p "$BENCHMARK_OUTPUT_DIR"
+
+python -u benchmark_preprocessing.py \
+    --config "$BENCHMARK_CONFIG" \
+    --timesteps "$BENCHMARK_TIMESTEPS" \
+    --output-dir "$BENCHMARK_OUTPUT_DIR"
+
+echo "Preprocessing timing results: $BENCHMARK_OUTPUT_DIR"

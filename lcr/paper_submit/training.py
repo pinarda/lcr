@@ -8,6 +8,7 @@ from sklearn.preprocessing import quantile_transform, LabelEncoder
 from sklearn.model_selection import train_test_split
 import sklearn
 import random
+import time
 from math import floor
 from classification_labels import classify
 # os.environ["HDF5_PLUGIN_PATH"]
@@ -769,6 +770,7 @@ def train_cnn(
         modeltype,
         transform,
         featurelist=None,
+        return_fit_seconds=False,
 ):
     """
     Train a model for the given data and labels.
@@ -783,9 +785,10 @@ def train_cnn(
         modeltype (str): The model type ("cnn", "rf", "mlp").
         transform (str): The transformation type (e.g., "quantile").
         featurelist (list of str, optional): List of features to compute using ldcpy.
+        return_fit_seconds (bool): Return the model.fit wall time with the model.
 
     Returns:
-        Trained model.
+        Trained model, optionally paired with model.fit elapsed seconds.
     """
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.metrics import accuracy_score
@@ -880,6 +883,7 @@ def train_cnn(
 
         random.seed(model_random_seed)
 
+        fit_started = time.perf_counter()
         model.fit(
             train_data_np,
             train_labels_np,
@@ -887,6 +891,7 @@ def train_cnn(
             epochs=num_epochs,
             batch_size=batch_size,
         )
+        fit_seconds = time.perf_counter() - fit_started
 
 
 
@@ -894,9 +899,11 @@ def train_cnn(
         test_loss, test_accuracy = model.evaluate(test_data_np, test_labels_np)
         print(f"Test Accuracy: {test_accuracy}")
 
+        if return_fit_seconds:
+            return model, fit_seconds
         return model
 
-def evaluate_model(model, test_data, test_labels):
+def evaluate_model(model, test_data, test_labels, return_predict_seconds=False):
     """
     Evaluate the trained model on test data.
 
@@ -904,6 +911,7 @@ def evaluate_model(model, test_data, test_labels):
         model: The trained model.
         test_data (np.ndarray): The test data.
         test_labels (np.ndarray): The true labels for the test data.
+        return_predict_seconds (bool): Include model.predict wall time in the return.
 
     Returns:
         accuracy (float): The accuracy of the model on the test data.
@@ -913,7 +921,9 @@ def evaluate_model(model, test_data, test_labels):
     from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
     # Get predicted probabilities
+    predict_started = time.perf_counter()
     predictions_prob = model.predict(test_data)
+    predict_seconds = time.perf_counter() - predict_started
 
     # Convert probabilities to class labels
     predictions = np.argmax(predictions_prob, axis=1)
@@ -935,7 +945,10 @@ def evaluate_model(model, test_data, test_labels):
     # save the confusion matrix and classification report
 
 
-    return accuracy, conf_matrix, class_report, predictions
+    result = (accuracy, conf_matrix, class_report, predictions)
+    if return_predict_seconds:
+        return (*result, predict_seconds)
+    return result
 
     # # Define filter sizes, dropout rate, and number of convolutional layers as needed
     # filter1 = 32  # Example value, adjust as needed

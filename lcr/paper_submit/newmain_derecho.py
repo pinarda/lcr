@@ -13,6 +13,8 @@ import numpy as np
 import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
+import time as tm
+from model_timing import append_model_timing
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
@@ -61,6 +63,9 @@ def main():
     logging.info(f"Model results will be written to {storage_loc}")
     config_name = os.path.splitext(os.path.basename(args.config))[0]
     jobid = f"_{config_name}"
+    model_timings_txt = os.path.join(
+        storage_loc, f"model_timing_{config_name}.txt"
+    )
     stride = config.get('Stride')                    # 1
     cut_dataset = config.get('CutDataset')            # 0
     metric = config.get('Metric')                    # ["dssim", "pcc", "spre"]
@@ -586,7 +591,19 @@ def main():
         elif rf_random_seed_value.lower() != "none":
             rf_options["random_state"] = int(rf_random_seed_value)
         rf_model = RandomForestClassifier(**rf_options)
+        fit_started = tm.perf_counter()
         rf_model.fit(train_data_np, train_labels_np)
+        rf_fit_seconds = tm.perf_counter() - fit_started
+        append_model_timing(
+            model_timings_txt,
+            "multiple_variable",
+            config_name,
+            flat_var_list[0],
+            "rf",
+            "fit",
+            len(train_labels_np),
+            rf_fit_seconds,
+        )
 
         # Directory to save tree plots
         # output_dir = "decision_tree_plots"
@@ -614,7 +631,19 @@ def main():
             print(f"Random Forest Validation Accuracy: {val_accuracy_rf}")
 
         # Evaluate on test data
+        predict_started = tm.perf_counter()
         test_predictions_rf = rf_model.predict(test_data_np)
+        rf_predict_seconds = tm.perf_counter() - predict_started
+        append_model_timing(
+            model_timings_txt,
+            "multiple_variable",
+            config_name,
+            flat_var_list[0],
+            "rf",
+            "predict",
+            len(test_labels_np),
+            rf_predict_seconds,
+        )
         test_accuracy_rf = accuracy_score(test_labels_np, test_predictions_rf)
         print(f"Random Forest Test Accuracy: {test_accuracy_rf}")
 
@@ -773,7 +802,7 @@ def main():
 
 
         # Call the function to train the model
-        model = train_cnn(
+        model, cnn_fit_seconds = train_cnn(
             train_data_np,
             train_labels_np,
             val_data_np,
@@ -782,12 +811,38 @@ def main():
             test_labels_np,
             modeltype="cnn",
             transform=None,
+            return_fit_seconds=True,
+        )
+        append_model_timing(
+            model_timings_txt,
+            "multiple_variable",
+            config_name,
+            flat_var_list[0],
+            "cnn",
+            "fit",
+            len(train_labels_np),
+            cnn_fit_seconds,
         )
 
         # log time and start the process
         end_time = pd.Timestamp.now()
 
-        accuracy, confusion, classreport, test_predictions = evaluate_model(model, test_data_np, test_labels_np)
+        accuracy, confusion, classreport, test_predictions, cnn_predict_seconds = evaluate_model(
+            model,
+            test_data_np,
+            test_labels_np,
+            return_predict_seconds=True,
+        )
+        append_model_timing(
+            model_timings_txt,
+            "multiple_variable",
+            config_name,
+            flat_var_list[0],
+            "cnn",
+            "predict",
+            len(test_labels_np),
+            cnn_predict_seconds,
+        )
 
         # save the test predictions
         np.save(f"{storageloc}/test_predictions_{j}{time}{modeltype}{jobid}_{var_list[0]}.npy", test_predictions)

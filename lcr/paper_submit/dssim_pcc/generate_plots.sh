@@ -24,6 +24,14 @@ fi
 
 mkdir -p "$single_plots" "$multi_plots" "$table_dir"
 
+if compgen -G "$results_dir/model_timing_*.txt" > /dev/null; then
+    python -u "$paper_submit_dir/model_timing.py" \
+        --results-dir "$results_dir" \
+        --output "$run_dir/model_timing_summary.txt"
+else
+    echo "No model timing files found; timing summary skipped"
+fi
+
 python -u "$paper_submit_dir/mainplots1.py" \
     --num_configs 47 \
     --config_prefix "$config_dir/rotated_config_" \
