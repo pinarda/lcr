@@ -579,7 +579,13 @@ def main():
         # --- Random Forest ---
         print("Training Random Forest...")
         model_random_seed = int(os.environ.get("MODEL_RANDOM_SEED", "111"))
-        rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=model_random_seed, min_samples_leaf=5)
+        rf_random_seed_value = os.environ.get("RF_RANDOM_SEED")
+        rf_options = dict(n_estimators=100, max_depth=10, min_samples_leaf=5)
+        if rf_random_seed_value is None:
+            rf_options["random_state"] = model_random_seed
+        elif rf_random_seed_value.lower() != "none":
+            rf_options["random_state"] = int(rf_random_seed_value)
+        rf_model = RandomForestClassifier(**rf_options)
         rf_model.fit(train_data_np, train_labels_np)
 
         # Directory to save tree plots
