@@ -446,15 +446,15 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
                     val_labels = np.concatenate((val_labels, label[int(remaining_start_index + split_index):]))
 
             if not cut_windows:
-                train_data = dataset[0:int(index_10pct/num_windows)]
+                test_data = dataset[0:int(num_windows_test/num_windows)]
                 if label is not None:
-                    train_labels = label[0:int(index_10pct/num_windows)]
-                val_data = dataset[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
+                    test_labels = label[0:int(num_windows_test/num_windows)]
+                val_data = dataset[int(num_windows_test/num_windows):(int(num_windows_test/num_windows)+int(num_windows_val/num_windows))]
                 if label is not None:
-                    val_labels = label[int(index_10pct/num_windows):(int(index_10pct/num_windows)+int(num_windows_val/num_windows))]
-                test_data = dataset[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+                    val_labels = label[int(num_windows_test/num_windows):(int(num_windows_test/num_windows)+int(num_windows_val/num_windows))]
+                train_data = dataset[(int(num_windows_test/num_windows)+int(num_windows_val/num_windows)):(int(num_windows_test/num_windows)+int(num_windows_val/num_windows)+int(index_10pct/num_windows))]
                 if label is not None:
-                    test_labels = label[(int(index_10pct/num_windows)+int(num_windows_val/num_windows)):(int(index_10pct/num_windows)+int(num_windows_val/num_windows)+int(num_windows_test/num_windows))]
+                    train_labels = label[(int(num_windows_test/num_windows)+int(num_windows_val/num_windows)):(int(num_windows_test/num_windows)+int(num_windows_val/num_windows)+int(index_10pct/num_windows))]
 
             len_train = len(train_labels)
             len_test = len(test_labels)
@@ -500,16 +500,17 @@ def split_data_old(dataset: xr.Dataset, label: np.ndarray, time: int, nvar: int,
                 n_val_slices = n_val // num_windows
                 n_test_slices = n_test // num_windows
 
-                train_data = dataset.isel(sample=slice(0, idx10))
-                val_data = dataset.isel(sample=slice(idx10, idx10 + n_val_slices))
-                test_data = dataset.isel(sample=slice(idx10 + n_val_slices,
-                                                       idx10 + n_val_slices + n_test_slices))
+                test_data = dataset.isel(sample=slice(0, n_test_slices))
+                val_data = dataset.isel(sample=slice(n_test_slices,
+                                                      n_test_slices + n_val_slices))
+                train_data = dataset.isel(sample=slice(n_test_slices + n_val_slices,
+                                                        n_test_slices + n_val_slices + idx10))
 
                 if label is not None:
-                    train_labels = label[0:idx10]
-                    val_labels = label[idx10:idx10 + n_val_slices]
-                    test_labels = label[idx10 + n_val_slices:
-                                        idx10 + n_val_slices + n_test_slices]
+                    test_labels = label[0:n_test_slices]
+                    val_labels = label[n_test_slices:n_test_slices + n_val_slices]
+                    train_labels = label[n_test_slices + n_val_slices:
+                                         n_test_slices + n_val_slices + idx10]
 
             # ------------------------------------------------------------------
             # log sizes
