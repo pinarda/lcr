@@ -1015,6 +1015,7 @@ def main():
 
         # Define all possible labels
         all_labels = list(label_encoder.classes_)
+        confusion = confusion_matrix(test_labels_np, test_predictions, labels=np.arange(len(all_labels)))
 
         # Set up confusion matrix DataFrame with both labels, filling missing values with 0
         confusion_df = pd.DataFrame(
