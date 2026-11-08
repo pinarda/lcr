@@ -1,0 +1,39 @@
+#!/bin/bash -l
+#PBS -N single_seed_models
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=4:mpiprocs=1:ngpus=1:gpu_type=a100:mem=192GB
+#PBS -l walltime=12:00:00
+#PBS -q casper@casper-pbs
+#PBS -j oe
+
+set -eo pipefail
+
+: "${PBS_ARRAY_INDEX:?PBS_ARRAY_INDEX is not set}"
+: "${TASK_FILE:?TASK_FILE was not supplied by the launcher}"
+: "${PAPER_SUBMIT_DIR:?PAPER_SUBMIT_DIR was not supplied by the launcher}"
+: "${PRECOMPUTED_LABEL_DIR:?PRECOMPUTED_LABEL_DIR was not supplied by the launcher}"
+
+task_line="$(sed -n "${PBS_ARRAY_INDEX}p" "$TASK_FILE")"
+if [[ -z "$task_line" ]]; then
+    echo "No task found for array index $PBS_ARRAY_INDEX" >&2
+    exit 1
+fi
+IFS=$'\t' read -r model_seed config_file results_dir <<< "$task_line"
+
+module load conda
+conda activate my-npl-2023a
+
+export HDF5_PLUGIN_PATH=/glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+export MODEL_RANDOM_SEED="$model_seed"
+export MODEL_RESULTS_DIR="$results_dir"
+export PRECOMPUTED_LABEL_DIR
+export USE_PRECOMPUTED_LABELS=1
+
+mkdir -p "$MODEL_RESULTS_DIR"
+cd "$PAPER_SUBMIT_DIR"
+
+echo "Array index: $PBS_ARRAY_INDEX"
+echo "Seed: $MODEL_RANDOM_SEED"
+echo "Config: $config_file"
+echo "Results: $MODEL_RESULTS_DIR"
+python -u newmain.py -c "$config_file"

@@ -1,0 +1,62 @@
+#!/bin/bash -l
+#PBS -N single_seed_plots
+#PBS -A NTDD0005
+#PBS -l select=1:ncpus=4:mem=32GB
+#PBS -l walltime=02:00:00
+#PBS -q casper@casper-pbs
+#PBS -j oe
+
+set -eo pipefail
+
+: "${PAPER_SUBMIT_DIR:?PAPER_SUBMIT_DIR was not supplied by the launcher}"
+: "${SWEEP_DIR:?SWEEP_DIR was not supplied by the launcher}"
+
+module load conda
+conda activate my-npl-2023a
+
+export HDF5_PLUGIN_PATH=/glade/work/haiyingx/H5Z-ZFP-PLUGIN-unbiased/plugin
+export MPLBACKEND=Agg
+
+config_dir="$PAPER_SUBMIT_DIR/dssim_pcc/configs"
+variables=(LHFLX pom_a1_SRF TAUX)
+for seed in {1..10}; do
+    seed_dir="$SWEEP_DIR/seed_$(printf '%02d' "$seed")"
+    results_dir="$seed_dir/model_results"
+    plot_dir="$seed_dir/stacked_bars"
+    plot_logs="$seed_dir/plot_logs"
+    mkdir -p "$plot_dir" "$plot_logs"
+
+    if compgen -G "$results_dir/model_timing_*.txt" >/dev/null; then
+        python -u "$PAPER_SUBMIT_DIR/model_timing.py" \
+            --results-dir "$results_dir" \
+            --output "$seed_dir/model_timing_summary.txt"
+    fi
+
+    for variable in "${variables[@]}"; do
+        config_file=""
+        for candidate in "$config_dir"/rotated_config_*.json; do
+            if [[ "$(jq -r '.VarList[0][0]' "$candidate")" == "$variable" &&
+                  "$(jq -r '.ModelType' "$candidate")" == cnn ]]; then
+                config_file=$candidate
+                break
+            fi
+        done
+        if [[ -z "$config_file" ]]; then
+            echo "No CNN config found for $variable" >&2
+            continue
+        fi
+
+        if ! python -u "$PAPER_SUBMIT_DIR/main_plots.py" \
+            --json "$config_file" \
+            --model cnn \
+            --labelsonly True \
+            --results-dir "$results_dir" \
+            --output-dir "$plot_dir" \
+            > "$plot_logs/${variable}.log" 2>&1
+        then
+            echo "Plot skipped for seed $seed, $variable; see $plot_logs/${variable}.log" >&2
+        fi
+    done
+done
+
+echo "Seed-sweep stacked bars: $SWEEP_DIR"
