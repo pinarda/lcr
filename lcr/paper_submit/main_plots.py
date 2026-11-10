@@ -956,7 +956,7 @@ def main_plots():
             # Add labels, title, and legend
             ax.set_xlabel('Compression Level')
             ax.set_ylabel('Count')
-            ax.set_title('Counts of True, Correct, and Incorrect Predictions\nby Compression Level for CNN and RF')
+            ax.set_title(f'Counts of True, Correct, and Incorrect Predictions\nby Compression Level for CNN and RF: {vliststring}')
             ax.set_xticks(bar_positions)
             ax.set_xticklabels(unique_labels, rotation=45)
             ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
